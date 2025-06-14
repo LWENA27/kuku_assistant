@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="nameInputLayout" type="id" />
+    <item name="confirmPasswordInputLayout" type="id" />
+    <item name="confirmPasswordInput" type="id" />
+    <item name="fullNameInputLayout" type="id" />
+    <item name="fullNameInput" type="id" />
+    <item name="btnBackToLogin" type="id" />
+    <item name="txtTotalChickens" type="id" />
+    <item name="alertsContainer" type="id" />
+    <item name="btnDiseaseInfo" type="id" />
+    <item name="btnReminders" type="id" />
+    <item name="btnReport" type="id" />
+    <item name="btnConsultVet" type="id" />
+    <item name="tilIdentifier" type="id" />
+    <item name="tvRegisterLink" type="id" />
+    <item name="etIdentifier" type="id" />
+</resources>

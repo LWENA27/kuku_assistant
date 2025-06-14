@@ -1,0 +1,26 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme -->
+    <style name="Base.Theme.FowlTyphoidMonitor" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <!-- App Theme -->
+    <style name="Theme.FowlTyphoidMonitor" parent="Base.Theme.FowlTyphoidMonitor" />
+
+    <!-- Splash Screen Theme -->
+    <style name="Theme.FowlTyphoidMonitor.Splash" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <!-- Custom Bottom Navigation Indicator -->
+    <style name="CustomBottomNavIndicator">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">3dp</item>
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:layout_marginTop">4dp</item>
+    </style>
+
+</resources>

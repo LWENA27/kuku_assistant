@@ -1,0 +1,32 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Background Circle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M100,100m-90,0a90,90 0,1 1,180 0a90,90 0,1 1,-180 0" />
+
+    <!-- Chicken Icon -->
+    <path
+        android:fillColor="#FF6B35"
+        android:pathData="M100,60 C85,60 75,70 75,85 C75,95 80,103 87,108 L87,130 C87,140 95,148 105,148 L105,148 C115,148 123,140 123,130 L123,108 C130,103 135,95 135,85 C135,70 125,60 110,60 Z" />
+
+    <!-- Beak -->
+    <path
+        android:fillColor="#FFA500"
+        android:pathData="M100,85 L105,90 L95,90 Z" />
+
+    <!-- Eye -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M92,80 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0" />
+
+    <!-- Medical Cross -->
+    <path
+        android:fillColor="#FF0000"
+        android:pathData="M98,100 L102,100 L102,110 L110,110 L110,114 L102,114 L102,124 L98,124 L98,114 L90,114 L90,110 L98,110 Z" />
+
+</vector>

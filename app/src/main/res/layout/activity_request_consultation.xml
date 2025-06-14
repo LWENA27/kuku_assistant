@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#FAFAFA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Toolbar -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="#2E7D32"
+            android:elevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_menu_revert"
+                    android:tint="#FFFFFF"
+                    android:contentDescription="Rudi nyuma" />
+
+                <TextView
+                    android:id="@+id/txtTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Omba Ushauri wa Daktari"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="16dp" />
+
+            </LinearLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <!-- User Info Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#E8F5E8"
+            android:padding="16dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/txtUserInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mfugaji: Username"
+                android:textSize="16sp"
+                android:textColor="#212121"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <!-- Main Form Content -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Patient Information Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Taarifa za Mgonjwa"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#2E7D32"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Patient Name -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jina la Mgonjwa *"
+                android:textSize="14sp"
+                android:textColor="#212121"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/etPatientName"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Ingiza jina la mgonjwa"
+                android:inputType="textPersonName"
+                android:textSize="16sp"
+                android:background="@android:drawable/edit_text"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Phone Number -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nambari ya Simu *"
+                android:textSize="14sp"
+                android:textColor="#212121"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/etPhoneNumber"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Ingiza nambari ya simu"
+                android:inputType="phone"
+                android:textSize="16sp"
+                android:background="@android:drawable/edit_text"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Email -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Barua Pepe (Siyo Lazima)"
+                android:textSize="14sp"
+                android:textColor="#212121"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Ingiza barua pepe"
+                android:inputType="textEmailAddress"
+                android:textSize="16sp"
+                android:background="@android:drawable/edit_text"
+                android:padding="12dp"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Consultation Details Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Taarifa za Ushauri"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#2E7D32"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Consultation Type -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aina ya Ushauri *"
+                android:textSize="14sp"
+                android:textColor="#212121"
+                android:layout_marginBottom="4dp" />
+
+            <Spinner
+                android:id="@+id/spinnerConsultationType"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Urgency Level -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kiwango cha Haraka"
+                android:textSize="14sp"
+                android:textColor="#212121"
+                android:layout_marginBottom="4dp" />
+
+            <Spinner
+                android:id="@+id/spinnerUrgencyLevel"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Date and Time Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <!-- Preferred Date -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tarehe *"
+                        android:textSize="14sp"
+                        android:textColor="#212121"
+                        android:layout_marginBottom="4dp" />
+
+                    <EditText
+                        android:id="@+id/etPreferredDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:hint="Chagua tarehe"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:textSize="16sp"
+                        android:background="@android:drawable/edit_text"
+                        android:padding="12dp" />
+
+                </LinearLayout>
+
+                <!-- Preferred Time -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Muda *"
+                        android:textSize="14sp"
+                        android:textColor="#212121"
+                        android:layout_marginBottom="4dp" />
+
+                    <EditText
+                        android:id="@+id/etPreferredTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:hint="Chagua muda"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:textSize="16sp"
+                        android:background="@android:drawable/edit_text"
+                        android:padding="12dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Symptoms -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dalili za Ugonjwa *"
+                android:textSize="14sp"
+                android:textColor="#212121"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/etSymptoms"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:hint="Eleza dalili za ugonjwa"
+                android:inputType="textMultiLine"
+                android:gravity="top|start"
+                android:textSize="16sp"
+                android:background="@android:drawable/edit_text"
+                android:padding="12dp"
+                android:maxLines="5"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Additional Notes -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Maelezo ya Ziada (Siyo Lazima)"
+                android:textSize="14sp"
+                android:textColor="#212121"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/etAdditionalNotes"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:hint="Maelezo mengine ya ziada"
+                android:inputType="textMultiLine"
+                android:gravity="top|start"
+                android:textSize="16sp"
+                android:background="@android:drawable/edit_text"
+                android:padding="12dp"
+                android:maxLines="4"
+                android:layout_marginBottom="32dp" />
+
+            <!-- Required Fields Note -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="* Sehemu za lazima"
+                android:textSize="12sp"
+                android:textColor="#757575"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Action Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="end">
+
+                <!-- Cancel Button -->
+                <Button
+                    android:id="@+id/btnCancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="56dp"
+                    android:text="Ghairi"
+                    android:textSize="16sp"
+                    android:textColor="#2E7D32"
+                    android:background="@android:drawable/btn_default"
+                    android:layout_marginEnd="12dp"
+                    android:minWidth="120dp" />
+
+                <!-- Submit Button -->
+                <Button
+                    android:id="@+id/btnSubmitRequest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="56dp"
+                    android:text="Peleka Ombi"
+                    android:textSize="16sp"
+                    android:textColor="#FFFFFF"
+                    android:background="#2E7D32"
+                    android:minWidth="140dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

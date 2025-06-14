@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/admin_navigation_home"
+        android:icon="@drawable/ic_dashboard"
+        android:title="Dashibodi" />
+
+    <item
+        android:id="@+id/nav_farmers"
+        android:icon="@drawable/ic_farmers"
+        android:title="Wakulima" />
+
+    <item
+        android:id="@+id/admin_navigation_reports"
+        android:icon="@drawable/ic_report"
+        android:title="Ripoti" />
+
+    <item
+        android:id="@+id/admin_navigation_consultations"
+        android:icon="@drawable/ic_consultations"
+        android:title="Mazungumzo" />
+
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/ic_profile"
+        android:title="Wasifu" />
+
+    <item
+        android:id="@+id/admin_navigation_alerts"
+        android:icon="@drawable/ic_notifications"
+        android:title="Tuma" />
+
+    <item
+        android:id="@+id/admin_navigation_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="Mipangilio" />
+</menu>

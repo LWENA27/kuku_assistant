@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@android:color/background_light">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mlinzi wa Kuku"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:paddingBottom="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ratiba ya Chanjo"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/edtDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Chagua tarehe"
+        android:focusable="false"
+        android:padding="10dp"/>
+
+    <EditText
+        android:id="@+id/edtTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Chagua muda"
+        android:focusable="false"
+        android:padding="10dp"/>
+
+    <EditText
+        android:id="@+id/edtVaccineType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ingiza aina ya chanjo"
+        android:padding="10dp"/>
+
+    <EditText
+        android:id="@+id/edtChickenBatch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ingiza kundi la kuku"
+        android:padding="10dp"/>
+
+    <Button
+        android:id="@+id/btnSetReminder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set Reminder"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/primary_color"
+        android:padding="10dp"/>
+
+    <Button
+        android:id="@+id/btnSetDailyReminder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set Daily Reminder"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/primary_color"
+        android:padding="10dp"/>
+
+    <!-- Add any other elements here -->
+
+</LinearLayout>

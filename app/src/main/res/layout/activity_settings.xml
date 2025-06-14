@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color">
+
+    <!-- Toolbar with back button -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary_color"
+        android:elevation="4dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="Mipangilio"
+        app:titleTextColor="@android:color/white">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@drawable/ic_back"
+            android:contentDescription="Rudi nyuma" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- App Settings Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Mipangilio ya Programu"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_color_primary"
+                        android:layout_marginBottom="12dp" />
+
+                    <!-- Notification Setting -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Vikumbusho"
+                                android:textSize="16sp"
+                                android:textColor="@color/text_color_primary" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Pata taarifa muhimu kuhusu afya ya kuku wako"
+                                android:textSize="14sp"
+                                android:textColor="@color/text_color_secondary" />
+                        </LinearLayout>
+
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:id="@+id/switchNotifications"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <!-- Dark Mode Setting -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Hali ya Giza"
+                                android:textSize="16sp"
+                                android:textColor="@color/text_color_primary" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Badilisha muonekano wa programu kuwa wa giza"
+                                android:textSize="14sp"
+                                android:textColor="@color/text_color_secondary" />
+                        </LinearLayout>
+
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:id="@+id/switchDarkMode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <!-- Data Saver Setting -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Hifadhi Data"
+                                android:textSize="16sp"
+                                android:textColor="@color/text_color_primary" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Punguza matumizi ya data kwenye programu"
+                                android:textSize="14sp"
+                                android:textColor="@color/text_color_secondary" />
+                        </LinearLayout>
+
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:id="@+id/switchDataSaver"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Language Settings Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Lugha"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_color_primary"
+                        android:layout_marginBottom="12dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnLanguage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Chagua Lugha"
+                        android:textAllCaps="false"
+                        app:icon="@drawable/ic_language"
+                        app:iconGravity="textStart"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:gravity="start|center_vertical"
+                        android:padding="12dp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Help and About Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Msaada na Taarifa"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_color_primary"
+                        android:layout_marginBottom="12dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnHelp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Msaada na Maswali"
+                        android:textAllCaps="false"
+                        app:icon="@drawable/ic_help"
+                        app:iconGravity="textStart"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:gravity="start|center_vertical"
+                        android:padding="12dp"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAbout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Kuhusu Programu"
+                        android:textAllCaps="false"
+                        app:icon="@drawable/ic_info"
+                        app:iconGravity="textStart"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:gravity="start|center_vertical"
+                        android:padding="12dp"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPrivacyPolicy"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Sera ya Faragha"
+                        android:textAllCaps="false"
+                        app:icon="@drawable/ic_privacy"
+                        app:iconGravity="textStart"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:gravity="start|center_vertical"
+                        android:padding="12dp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Version Info -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Toleo la Programu: 1.0.0"
+                android:textSize="14sp"
+                android:textColor="@color/text_color_secondary"
+                android:gravity="center"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:itemIconTint="@color/primary_color_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

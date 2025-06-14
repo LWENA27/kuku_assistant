@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color"
+    tools:context=".ReportAnalyticsActivity">
+
+    <!-- App Bar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/primary_color"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Rudi"
+                    android:src="@drawable/ic_back"
+                    android:padding="12dp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Uchambuzi wa Ripoti"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="8dp" />
+
+                <LinearLayout
+                    android:id="@+id/layoutSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:text="Muhtasari wa Takwimu"
+                        android:textColor="@color/primary_color"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <!-- Statistics Grid -->
+
+                    <!-- Additional Stats -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Eneo lenye Athari Kubwa:"
+                                android:textColor="@color/text_color_secondary"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/txtMostAffectedArea"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Dar es Salaam"
+                                android:textColor="@color/text_color_primary"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Uchambuzi wa Mwelekeo:"
+                                android:textColor="@color/text_color_secondary"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/txtTrendAnalysis"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Kiwango cha kawaida"
+                                android:textColor="@color/text_color_primary"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:text="Chuja Ripoti"
+                            android:textColor="@color/text_color_primary"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <!-- Report Type Filter -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp"
+                            android:text="Aina ya Ripoti:"
+                            android:textColor="@color/text_color_primary"
+                            android:textSize="14sp" />
+
+                        <Spinner
+                            android:id="@+id/spinnerReportType"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/spinner_background" />
+
+                        <!-- Time Range Filter -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp"
+                            android:text="Kipindi cha Muda:"
+                            android:textColor="@color/text_color_secondary"
+                            android:textSize="14sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="3">
+
+                            <!-- Total Reports -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="4dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/stat_item_background"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:padding="12dp">
+
+                                <TextView
+                                    android:id="@+id/txtTotalReports"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="125"
+                                    android:textColor="@color/primary_color"
+                                    android:textSize="24sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="Jumla ya Ripoti"
+                                    android:textColor="@color/text_color_secondary"
+                                    android:textSize="12sp" />
+
+                            </LinearLayout>
+
+                            <!-- Active Reports -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="4dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/stat_item_background"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:padding="12dp">
+
+                                <TextView
+                                    android:id="@+id/txtActiveReports"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="38"
+                                    android:textColor="@color/warning_color"
+                                    android:textSize="24sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="Zinaendelea"
+                                    android:textColor="@color/text_color_secondary"
+                                    android:textSize="12sp" />
+
+                            </LinearLayout>
+
+                            <!-- Resolved Reports -->
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="4dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/stat_item_background"
+                                android:gravity="center"
+                                android:orientation="vertical"
+                                android:padding="12dp">
+
+                                <TextView
+                                    android:id="@+id/txtResolvedReports"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="87"
+                                    android:textColor="@color/success_color"
+                                    android:textSize="24sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="Zimetatuliwa"
+                                    android:textColor="@color/text_color_secondary"
+                                    android:textSize="12sp" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <Spinner
+                            android:id="@+id/spinnerTimeRange"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/spinner_background" />
+
+                        <!-- Date Range Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnDateRange"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Chagua Kipindi"
+                            android:visibility="gone"
+                            app:icon="@drawable/ic_calendar_today_24dp" />
+
+                        <!-- Selected Date Range Display -->
+                        <TextView
+                            android:id="@+id/txtDateRange"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/date_range_background"
+                            android:padding="8dp"
+                            android:text="01/01/2024 - 31/01/2024"
+                            android:textColor="@color/text_color_secondary"
+                            android:textSize="14sp" />
+
+                        <!-- Action Buttons -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnGenerateReport"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:text="Tengeneza"
+                                app:icon="@drawable/ic_assessment_24dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnExportReport"
+                                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Hamisha"
+                                app:icon="@drawable/ic_file_download_24dp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Main Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Filter Section -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Progress Bar -->
+            <ProgressBar
+                android:id="@+id/progressBarAnalytics"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+
+            <!-- Summary Statistics -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Charts Section -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardCharts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:id="@+id/layoutCharts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Michoro ya Takwimu"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/primary_color"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- Pie Chart - Report Status -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Hali ya Ripoti"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_color_primary"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/pieChartReportStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:layout_marginBottom="24dp" />
+
+                    <!-- Bar Chart - Area Wise Reports -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Ripoti kwa Eneo"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_color_primary"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/barChartAreaWise"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:layout_marginBottom="24dp" />
+
+                    <!-- Line Chart - Trend Analysis -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Uchambuzi wa Mwelekeo"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_color_primary"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/lineChartTrend"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:layout_marginBottom="16dp" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Empty State for No Data -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardEmptyState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:visibility="gone"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="32dp"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:src="@drawable/ic_assessment_24dp"
+                        android:alpha="0.3"
+                        android:layout_marginBottom="16dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hakuna Takwimu"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/design_default_color_secondary"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chagua vichuja na ubonyeze 'Tengeneza' kuona takwimu"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_color_secondary"
+                        android:textAlignment="center"
+                        android:gravity="center" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

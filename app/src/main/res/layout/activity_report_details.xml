@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color"
+    tools:context=".ReportDetailsActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/primary_color"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_back"
+                app:tint="@color/white"
+                android:contentDescription="Go back" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="16dp">
+
+                <TextView
+                    android:id="@+id/txtReportTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ripoti ya Fowl Typhoid"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtReportId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ID: RPT001"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:alpha="0.8"
+                    android:layout_marginTop="2dp" />
+
+            </LinearLayout>
+
+            <!-- Status and Severity Chips -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="end">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:text="Inasubiri"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    app:chipMinHeight="32dp"
+                    app:chipBackgroundColor="@color/accent_color" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipSeverity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:text="Wastani"
+                    android:textColor="@color/white"
+                    android:textSize="9sp"
+                    android:layout_marginTop="4dp"
+                    app:chipMinHeight="28dp"
+                    app:chipBackgroundColor="@color/primary_color" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Report Details Card -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardReportDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Maelezo ya Ripoti"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_color_primary"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:id="@+id/txtReportDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Kuku 9 wameonyesha dalili za ugonjwa wa Fowl Typhoid"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_color_primary"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Details Grid -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="8dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_calendar_today_24dp"
+                            app:tint="@color/background_color"
+                            android:layout_marginEnd="12dp" />
+
+                        <TextView
+                            android:id="@+id/txtSubmissionDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tarehe: 15/12/2024"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_color_secondary" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="8dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_location"
+                            app:tint="@color/background_color"
+                            android:layout_marginEnd="12dp" />
+
+                        <TextView
+                            android:id="@+id/txtLocation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Eneo: Banda la 2"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_color_secondary" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_bird"
+                            app:tint="@color/warning_color"
+                            android:layout_marginEnd="12dp" />
+
+                        <TextView
+                            android:id="@+id/txtAffectedBirds"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Kuku walioathiriwa: 9"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_color_secondary" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Farmer Information Card -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardFarmerInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Taarifa za Mkulima"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_color_primary"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:id="@+id/txtFarmerName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Jina: John Doe"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_color_primary"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/txtFarmerPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Simu: +255 123 456 789"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_color_primary"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/txtFarmerLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Mahali: Dodoma, Tanzania"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_color_primary" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Treatment Information Card -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardTreatmentInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Taarifa za Matibabu"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_color_primary"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Dalili:"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_color_primary"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/txtSymptoms"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Kuku wamepoteza hamu ya kula, unyevu, na kidogo cha homa"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_color_secondary"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Matibabu yaliyotolewa:"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_color_primary"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/txtTreatmentGiven"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Amoxicillin, vitamini, na kuongeza chakula chenye protini"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_color_secondary"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Ushauri wa daktari:"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_color_primary"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/txtVetConsultation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Fuata matibabu kwa siku 7, tenga kuku waliogonjwa"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_color_secondary"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Maelezo ya ziada:"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_color_primary"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/txtAdditionalNotes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Kuwa makini na usafi wa banda na maji"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_color_secondary" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="16dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnContact"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Piga simu"
+                android:layout_marginEnd="8dp"
+                app:icon="@drawable/ic_phone"
+                style="@style/Widget.MaterialComponents.Button" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEdit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Hariri"
+                android:layout_marginHorizontal="4dp"
+                app:icon="@drawable/ic_edit"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDelete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Futa"
+                android:layout_marginStart="8dp"
+                app:icon="@drawable/ic_delete"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                app:strokeColor="@color/error_color"
+                android:textColor="@color/error_color" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

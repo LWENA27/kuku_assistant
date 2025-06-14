@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.fowltyphoidmonitor">
+
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.FowlTyphoidMonitor">
+
+        <!-- LAUNCHER ACTIVITY - Main launcher activity -->
+        <activity
+            android:name=".screens.MainActivity"
+            android:theme="@style/Theme.FowlTyphoidMonitor.Splash"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- SPLASH ACTIVITY -->
+        <activity
+            android:name=".screens.SplashActivity"
+            android:theme="@style/Theme.FowlTyphoidMonitor.Splash"
+            android:exported="false" />
+
+        <!-- LOGIN SELECTION ACTIVITY - New activity for choosing user type -->
+        <activity
+            android:name=".screens.LoginSelectionActivity"
+            android:exported="false" />
+
+        <!-- REGISTER SELECTION ACTIVITY - New activity for choosing registration type -->
+        <activity
+            android:name=".screens.RegisterSelectionActivity"
+            android:exported="false" />
+
+        <!-- USER TYPE SELECTION ACTIVITY -->
+        <activity
+            android:name=".screens.UserTypeSelectionActivity"
+            android:exported="false" />
+
+        <!-- LOGIN ACTIVITY -->
+        <activity
+            android:name=".screens.LoginActivity"
+            android:exported="false" />
+
+        <!-- Remove duplicate MainActivity declaration since it's already declared above -->
+        <activity android:name=".screens.AdminLoginActivity" />
+        <activity android:name=".screens.AdminRegisterActivity" />
+        <activity android:name=".screens.AdminMainActivity" />
+        <activity android:name=".screens.RegisterActivity" />
+
+        <!-- LauncherActivity - Add from file structure -->
+        <activity
+            android:name=".screens.LauncherActivity"
+            android:exported="false" />
+
+        <!-- Other activities -->
+        <activity android:name=".screens.SymptomTrackerActivity" android:exported="false" />
+        <activity android:name=".screens.DiseaseInfoActivity" android:exported="false" />
+        <activity android:name=".screens.ReminderActivity" android:exported="false" />
+        <activity android:name=".screens.VetConsultationActivity" android:exported="false" />
+        <activity android:name=".screens.ReportSymptomsActivity" android:exported="false" />
+        <activity android:name=".screens.FarmerProfileEditActivity" android:exported="false" />
+        <activity android:name=".screens.ProfileActivity" android:exported="false" />
+        <activity android:name=".screens.SettingsActivity" android:exported="false" />
+        <activity android:name=".screens.ForgotPasswordActivity" android:exported="false" />
+        <activity android:name=".screens.HistoryActivity" android:exported="false" />
+        <activity android:name=".screens.SetRemindersActivity" android:exported="false" />
+        <activity android:name=".screens.ManageUsersActivity" android:exported="false" />
+        <activity android:name=".screens.AdminProfileEditActivity" android:exported="false" />
+        <activity android:name=".screens.AdminConsultationsActivity" android:exported="false" />
+        <activity android:name=".screens.AdminSettingsActivity" android:exported="false" />
+        <activity android:name=".screens.NotificationsActivity" android:exported="false" />
+        <activity android:name=".screens.SendAlertsActivity" android:exported="false" />
+        <activity android:name=".screens.FarmerConsultationsActivity" android:exported="false" />
+        <activity android:name=".screens.FarmerReportsActivity" android:exported="false" />
+        <activity android:name=".screens.DashboardActivity" android:exported="false" />
+        <activity android:name=".screens.SubmitReportActivity" android:exported="false" />
+        <activity
+            android:name=".screens.WebViewAuthActivity" android:exported="false" />
+
+        <!-- Broadcast Receiver -->
+        <receiver
+            android:name=".screens.ReminderReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+</manifest>

@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context=".SubmitReportActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Back Button -->
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"
+            android:src="@drawable/ic_back"
+            android:padding="8dp" />
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Wasilisha Ripoti"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Report Type -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Chagua Aina ya Ripoti">
+
+            <AutoCompleteTextView
+                android:id="@+id/spinnerReportType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:focusable="false"
+                android:clickable="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Farm Name -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <EditText
+                android:id="@+id/editFarmName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Jina la Shamba"
+                android:inputType="textPersonName" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Farm Location -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <EditText
+                android:id="@+id/editFarmLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Mahali pa Shamba"
+                android:inputType="textPostalAddress" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Animal Count -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <EditText
+                android:id="@+id/editAnimalCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Idadi ya Wanyamapori"
+                android:inputType="number" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Symptoms -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <EditText
+                android:id="@+id/editSymptoms"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Dalili Zilizoonekana"
+                android:inputType="textMultiLine"
+                android:minLines="3" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Duration -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <EditText
+                android:id="@+id/editDuration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Muda wa Dalili (siku)"
+                android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Additional Info -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <EditText
+                android:id="@+id/editAdditionalInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Maelezo ya Ziada (si lazima)"
+                android:inputType="textMultiLine"
+                android:minLines="2" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Severity RadioGroup -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Kiwango cha Ukali:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <RadioGroup
+            android:id="@+id/radioSeverity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <RadioButton
+                android:id="@+id/radioSeverityLow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Chini" />
+
+            <RadioButton
+                android:id="@+id/radioSeverityMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Wastani" />
+
+            <RadioButton
+                android:id="@+id/radioSeverityHigh"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Juu" />
+
+            <RadioButton
+                android:id="@+id/radioSeverityCritical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hatari" />
+
+        </RadioGroup>
+
+        <!-- Urgency RadioGroup -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Kiwango cha Dharura:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <RadioGroup
+            android:id="@+id/radioUrgency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp">
+
+            <RadioButton
+                android:id="@+id/radioUrgencyLow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Si haraka" />
+
+            <RadioButton
+                android:id="@+id/radioUrgencyMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Wastani" />
+
+            <RadioButton
+                android:id="@+id/radioUrgencyHigh"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Haraka" />
+
+            <RadioButton
+                android:id="@+id/radioUrgencyEmergency"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Dharura" />
+
+        </RadioGroup>
+
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="16dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancelReport"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Ghairi"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSubmitReport"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="Wasilisha" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

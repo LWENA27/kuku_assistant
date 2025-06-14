@@ -1,0 +1,89 @@
+<resources>
+    <string name="app_name">Kudhibiti Tyfoid Ya Kuku</string>
+    <string name="msaada">Msaada</string>
+    <string name="wasiliana_na_daktari_wa_mifugo_kwa_ushauri_zaidi">*Wasiliana na daktari wa mifugo kwa ushauri zaidi</string>
+    <string name="chakula_na_maji_safi">Chakula na maji safi</string>
+    <string name="usafi_wa_banda">Usafi wa banda</string>
+    <string name="chanjo_kwa_wakati">Chanjo kwa wakati</string>
+    <string name="alama_ya_sahihi">Alama ya sahihi</string>
+    <string name="Ongeza_Ripoti">Ongeza Ripoti</string>
+    <string name="Rudi">Rudi</string>
+    <string name="njia_za_kujikinga">Njia za Kujikinga</string>
+    <string name="matibabu">Matibabu</string>
+    <string name="kutaga_mayai_machache">Kutaga mayai machache</string>
+    <string name="kuharisha_kwa_rangi_ya_kijani">Kuharisha kwa rangi ya kijani</string>
+    <string name="kukosa_hamu_ya_kula">Kukosa hamu ya kula</string>
+    <string name="kunywa_maji_kwa_wingi">Kunywa maji kwa wingi</string>
+    <string name="dalili">Dalili</string>
+    <string name="ugonjwa_huu_husababishwa_na_bacteria_aina_ya_salmonella_gallinarum">Ugonjwa huu husababishwa na bacteria aina ya Salmonella gallinarum.</string>
+    <string name="sababu_za_ugonjwa">Sababu za Ugonjwa</string>
+    <string name="tabs_for_disease_information_categories">Tabs for disease information categories</string>
+    <string name="taarifa_kuhusu_fowl_typhoid">Taarifa Kuhusu Fowl Typhoid</string>
+    <string name="picha_ya_kuku">Picha ya Kuku</string>
+    <string name="fowl_typhoid_husababishwa_na_bakteria_aitwaye_salmonella_gallinarum_huenea_kwa_njia_ya_chakula_au_maji_machafu">Fowl Typhoid husababishwa na bakteria aitwaye *Salmonella Gallinarum*, huenea kwa njia ya chakula au maji machafu.</string>
+    <string name="dalili_kuu_ni_homa_kali_kuhara_ya_manjano_kupungua_mayai_kukosa_hamu_ya_kula_na_udhaifu">Dalili kuu ni: homa kali, kuhara ya manjano, kupungua mayai, kukosa hamu ya kula, na udhaifu.</string>
+    <string name="zuia_ugonjwa_kwa_usafi_wa_vyombo_chanjo_ya_mara_kwa_mara_na_udhibiti_wa_maambukizi_kati_ya_kuku">Zuia ugonjwa kwa usafi wa vyombo, chanjo ya mara kwa mara, na udhibiti wa maambukizi kati ya kuku.</string>
+    <string name="chagua_dalili">Chagua Dalili</string>
+    <string name="homa_kali">Homa Kali</string>
+    <string name="mapendekezo">Mapendekezo</string>
+    <string name="udhaifu">Udhaifu</string>
+    <string name="wasilisha_dalili">Wasilisha Dalili</string>
+    <string name="mapendekezo_yataonekana_hapa">Mapendekezo yataonekana hapa</string>
+    <string name="kuhara_ya_manjano">Kuhara ya Manjano</string>
+    <string name="majibu_yataonekana_hapa">Majibu yataonekana hapa</string>
+    <string name="vikumbusho_vya_chanjo_na_matibabu">Vikumbusho vya Chanjo na Matibabu</string>
+    <string name="ongeza_kikumbusho">Ongeza Kikumbusho</string>
+
+    <!-- Privacy Settings strings -->
+    <string name="privacy_settings">Privacy Settings</string>
+    <string name="back">Nyuma</string>
+    <string name="save_settings">Hifadhi Mipangilio</string>
+
+    <!-- Data Collection -->
+    <string name="data_collection">Data Collection</string>
+    <string name="data_collection_description">Allow the app to collect anonymous data to improve fowl typhoid monitoring</string>
+
+    <!-- Location Sharing -->
+    <string name="location_sharing">Location Sharing</string>
+    <string name="location_sharing_description">Share farm location for regional outbreak monitoring and alerts</string>
+
+    <!-- Notifications -->
+    <string name="notifications">Notifications</string>
+    <string name="notifications_description">Receive alerts about potential fowl typhoid outbreaks in your area</string>
+
+    <!-- Launcher Activity -->
+    <string name="loading">Inapakia...</string>
+    <string name="checking_user_status">Inaangalia hali ya mtumiaji...</string>
+    <string name="redirecting_to_login">Inakuelekeza kwenye skrini ya kuingia...</string>
+    <string name="redirecting_to_dashboard">Inakuelekeza kwenye dashibodi...</string>
+    <string name="welcome_first_time">Karibu! Inaandaa kwa mara ya kwanza...</string>
+    <string name="error_occurred">Hitilafu imetokea. Inakuelekeza upya...</string>
+
+    Dashboard -->
+    <string name="dashboard">Dashibodi</string>
+    <string name="reports">Ripoti</string>
+    <string name="consultations">Ushauri</string>
+    <string name="alerts">Arifa</string>
+    <string name="analytics">Uchambuzi</string>
+    <string name="settings">Mipangilio</string>
+
+    <!-- Error Messages -->
+    <string name="error_generic">Hitilafu imetokea</string>
+    <string name="error_network">Tatizo la mtandao</string>
+    <string name="error_login">Hitilafu ya kuingia</string>
+    <string name="something_went_wrong">Kitu kimekosa</string>
+
+    <!-- Content Descriptions for Accessibility -->
+    <string name="profile_image">Picha ya wasifu</string>
+    <string name="menu_button">Kitufe cha menyu</string>
+    <string name="search_button">Kitufe cha utafutaji</string>
+    <string name="notification_icon">Aikoni ya arifa</string>
+
+    <!-- Success Messages -->
+    <string name="login_successful">Umeingia kwa mafanikio</string>
+    <string name="logout_successful">Umetoka kwa mafanikio</string>
+    <string name="profile_updated">Wasifu umesasishwa</string>
+    <string name="dashboard_updated">Dashboard imesasishwa</string>
+    <string name="authentication" />
+    <string name="cancel" />
+</resources>

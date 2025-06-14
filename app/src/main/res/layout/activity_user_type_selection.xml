@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="@color/white">
+
+    <!-- App Logo -->
+    <ImageView
+        android:id="@+id/appLogo"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginBottom="32dp"
+        android:src="@drawable/ic_launcher_foreground"
+        android:contentDescription="App Logo" />
+
+    <!-- App Title -->
+    <TextView
+        android:id="@+id/appTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fowl Typhoid Monitor"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/primary_color"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Subtitle -->
+    <TextView
+        android:id="@+id/subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose your user type"
+        android:textSize="16sp"
+        android:textColor="@color/primary_color_light"
+        android:layout_marginBottom="48dp" />
+
+    <!-- Farmer Login Button -->
+    <Button
+        android:id="@+id/btnFarmerLogin"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Farmer Login"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:backgroundTint="@color/primary_color"
+        android:textColor="@color/background_color"
+        android:layout_marginBottom="16dp"
+        android:drawableLeft="@drawable/ic_launcher_foreground"
+        android:drawablePadding="8dp"
+        android:gravity="center" />
+
+    <!-- Vet Login Button -->
+    <Button
+        android:id="@+id/btnVetLogin"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Veterinarian Login"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:backgroundTint="@color/primary_color"
+        android:textColor="@color/white"
+        android:drawableLeft="@drawable/ic_launcher_foreground"
+        android:drawablePadding="8dp"
+        android:gravity="center" />
+
+    <!-- Footer Text -->
+    <TextView
+        android:id="@+id/footerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select the appropriate login type for your account"
+        android:textSize="12sp"
+        android:textColor="@color/primary_color_light"
+        android:layout_marginTop="32dp"
+        android:gravity="center" />
+
+</LinearLayout>

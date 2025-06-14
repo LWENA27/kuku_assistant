@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_dashboard"
+        android:title="Dashibodi"
+        android:icon="@drawable/ic_dashboard"
+        android:enabled="true" />
+
+    <item
+        android:id="@+id/nav_reports"
+        android:title="Ripoti"
+        android:icon="@drawable/ic_report"
+        android:enabled="true" />
+
+    <item
+        android:id="@+id/nav_analytics"
+        android:title="Takwimu"
+        android:icon="@drawable/ic_analytics"
+        android:enabled="true" />
+
+    <item
+        android:id="@+id/nav_trends"
+        android:title="Mielekeo"
+        android:icon="@drawable/ic_trending_up"
+        android:enabled="true" />
+
+    <item
+        android:id="@+id/nav_settings"
+        android:title="Mipangilio"
+        android:icon="@drawable/ic_settings"
+        android:enabled="true" />
+
+</menu>

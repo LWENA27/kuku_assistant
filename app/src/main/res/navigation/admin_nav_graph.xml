@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/admin_nav_graph"
+    app:startDestination="@id/dashboardFragment">
+
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.yourpackage.ui.admin.DashboardFragment"
+        android:label="Dashibodi" />
+
+    <fragment
+        android:id="@+id/farmersFragment"
+        android:name="com.yourpackage.ui.admin.FarmersFragment"
+        android:label="Wakulima" />
+
+    <fragment
+        android:id="@+id/reportsFragment"
+        android:name="com.yourpackage.ui.admin.ReportsFragment"
+        android:label="Ripoti" />
+
+    <fragment
+        android:id="@+id/consultationsFragment"
+        android:name="com.yourpackage.ui.admin.ConsultationsFragment"
+        android:label="Mazungumzo" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.yourpackage.ui.admin.ProfileFragment"
+        android:label="Wasifu" />
+
+    <!-- Detail screens -->
+    <fragment
+        android:id="@+id/manageInformationFragment"
+        android:name="com.fowltyphoidmonitor.ui.admin.ManageInformationFragment"
+        android:label="Simamia Taarifa">
+        <action
+            android:id="@+id/action_manageInfo_to_dashboard"
+            app:destination="@id/dashboardFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/setRemindersFragment"
+        android:name="com.fowltyphoidmonitor.ui.admin.SetRemindersFragment"
+        android:label="Weka Vikumbusho">
+        <action
+            android:id="@+id/action_reminders_to_dashboard"
+            app:destination="@id/dashboardFragment" />
+    </fragment>
+
+</navigation>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".VetConsultationActivity">
+
+    <TextView
+        android:id="@+id/currentRoleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:background="#EAEAEA"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:text="Wajibu wa sasa: Mkulima" />
+
+    <Button
+        android:id="@+id/switchRoleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Badilisha Wajibu" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ListView
+            android:id="@+id/chatListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:stackFromBottom="true"
+            android:transcriptMode="alwaysScroll" />
+
+        <LinearLayout
+            android:id="@+id/typingIndicatorLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp"
+            android:background="#F0F0F0"
+            android:padding="8dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/typingProgressBar"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="8dp"
+                style="?android:attr/progressBarStyleSmall" />
+
+            <TextView
+                android:id="@+id/typingTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mtu mwingine anaandika..." />
+        </LinearLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <EditText
+            android:id="@+id/messageEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Andika ujumbe wako..."
+            android:inputType="textMultiLine"
+            android:maxLines="4"
+            android:padding="12dp" />
+
+        <Button
+            android:id="@+id/sendButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:enabled="false"
+            android:text="Tuma" />
+    </LinearLayout>
+
+</LinearLayout>

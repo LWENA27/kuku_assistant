@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Header with status indicator -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+
+            <!-- Status Indicator -->
+            <View
+                android:id="@+id/statusIndicator"
+                android:layout_width="4dp"
+                android:layout_height="24dp"
+                android:background="#FF9800"
+                android:layout_marginEnd="12dp" />
+
+            <!-- Consultation Type -->
+            <TextView
+                android:id="@+id/txtConsultationType"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Matibabu ya Haraka"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#212121" />
+
+            <!-- Status -->
+            <TextView
+                android:id="@+id/txtStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Inadangaza"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:background="#E3F2FD"
+                android:padding="6dp"
+                android:textColor="#1976D2" />
+
+        </LinearLayout>
+
+        <!-- Patient Name -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="👤"
+                android:textSize="16sp"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:id="@+id/txtPatientName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Jina la Mgonjwa"
+                android:textSize="15sp"
+                android:textColor="#424242" />
+
+        </LinearLayout>
+
+        <!-- Date and Time -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <!-- Date -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📅"
+                    android:textSize="14sp"
+                    android:layout_marginEnd="6dp" />
+
+                <TextView
+                    android:id="@+id/txtDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="25/12/2024"
+                    android:textSize="14sp"
+                    android:textColor="#616161" />
+
+            </LinearLayout>
+
+            <!-- Time -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⏰"
+                    android:textSize="14sp"
+                    android:layout_marginEnd="6dp" />
+
+                <TextView
+                    android:id="@+id/txtTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="14:30"
+                    android:textSize="14sp"
+                    android:textColor="#616161" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Urgency Level -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⚡"
+                android:textSize="14sp"
+                android:layout_marginEnd="6dp" />
+
+            <TextView
+                android:id="@+id/txtUrgency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Haraka Sana"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#F44336" />
+
+        </LinearLayout>
+
+        <!-- Symptoms Preview -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🩺"
+                android:textSize="14sp"
+                android:layout_marginEnd="6dp"
+                android:layout_marginTop="2dp" />
+
+            <TextView
+                android:id="@+id/txtSymptoms"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Dalili za ugonjwa..."
+                android:textSize="14sp"
+                android:textColor="#757575"
+                android:maxLines="2"
+                android:ellipsize="end" />
+
+        </LinearLayout>
+
+        <!-- Action Indicator -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical|end"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/txtActionText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bonyeza kuona zaidi"
+                android:textSize="12sp"
+                android:textColor="#1976D2"
+                android:textStyle="italic"
+                android:layout_marginEnd="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="▶"
+                android:textSize="12sp"
+                android:textColor="#1976D2" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

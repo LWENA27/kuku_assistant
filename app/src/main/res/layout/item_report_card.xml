@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Report Type and Status -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/txtReportType"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Ripoti ya Ugonjwa"
+                android:textColor="@color/primary_color"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hali: Inasubiri"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:background="@drawable/status_background"
+                android:padding="4dp"
+                android:textColor="@android:color/holo_orange_dark" />
+
+        </LinearLayout>
+
+        <!-- Farm Information -->
+        <TextView
+            android:id="@+id/txtFarmName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Shamba: Shamba la Kuku"
+            android:textColor="@color/text_color_primary"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/txtFarmLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mahali: Dar es Salaam"
+            android:textColor="@color/text_color_secondary"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp" />
+
+        <!-- Farmer Name (visible only for admin/vet) -->
+        <TextView
+            android:id="@+id/txtFarmerName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mfugaji: John Doe"
+            android:textColor="@color/text_color_secondary"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp"
+            android:visibility="gone" />
+
+        <!-- Animal Count -->
+        <TextView
+            android:id="@+id/txtAnimalCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Idadi: 50 Kuku"
+            android:textColor="@color/text_color_secondary"
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Symptoms -->
+        <TextView
+            android:id="@+id/txtSymptoms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dalili: Kuhara, Kutapika"
+            android:textColor="@color/text_color_primary"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp" />
+
+        <!-- Duration -->
+        <TextView
+            android:id="@+id/txtDuration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Muda: 3 siku"
+            android:textColor="@color/text_color_secondary"
+            android:textSize="14sp"
+            android:layout_marginBottom="4dp" />
+
+        <!-- Severity and Urgency -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="4dp">
+
+            <TextView
+                android:id="@+id/txtSeverity"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Ukubwa: Wastani"
+                android:textColor="@color/text_color_secondary"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/txtUrgency"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Haraka: Kali"
+                android:textColor="@color/text_color_secondary"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <!-- Additional Info (shown only if not empty) -->
+        <TextView
+            android:id="@+id/txtAdditionalInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Maelezo mengine: Baadhi ya kuku wamekufa"
+            android:textColor="@color/text_color_primary"
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone" />
+
+        <!-- Submission Date -->
+        <TextView
+            android:id="@+id/txtSubmissionDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tarehe: 2024-01-15"
+            android:textColor="@color/text_color_secondary"
+            android:textSize="12sp"
+            android:gravity="end" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

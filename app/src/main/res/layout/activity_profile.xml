@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color">
+
+    <!-- Toolbar with back button -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary_color"
+        android:elevation="4dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="Wasifu"
+        app:titleTextColor="@android:color/white">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@drawable/ic_back"
+            android:contentDescription="Rudi nyuma" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Profile Details Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Wasifu wako"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_color_primary"
+                        android:layout_marginBottom="12dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="16dp">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/profileImage"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:src="@drawable/default_profile"
+                            android:layout_marginEnd="16dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/txtUsername"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Jina la Mtumiaji"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_color_primary" />
+
+                            <TextView
+                                android:id="@+id/txtLocation"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Eneo: Arusha"
+                                android:textColor="@color/text_color_secondary"
+                                android:textSize="16sp" />
+
+                            <TextView
+                                android:id="@+id/txtFarmSize"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Idadi ya kuku: 50"
+                                android:textSize="16sp"
+                                android:textColor="@color/text_color_secondary" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnEditProfile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Hariri Wasifu"
+                        android:textAllCaps="false"
+                        app:icon="@drawable/ic_edit"
+                        app:iconGravity="textStart"
+                        android:padding="12dp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Farm Information Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Taarifa za Shamba"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_color_primary"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:id="@+id/txtFarmAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Anwani: Moshi Road, P.O Box 123"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_color_secondary"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:id="@+id/txtFarmType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Aina ya kuku: Mayai"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_color_secondary"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:id="@+id/txtExperience"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Uzoefu: Miaka 5"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_color_secondary" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Health History Summary Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Historia ya Afya"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_color_primary"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Historia ya ripoti: 12"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_color_secondary"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Ripoti za mwisho: 02-04-2023"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_color_secondary"
+                        android:layout_marginBottom="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnViewHistory"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Angalia Historia Yote"
+                        android:textAllCaps="false"
+                        app:icon="@drawable/ic_history"
+                        app:iconGravity="textStart"
+                        android:padding="12dp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:itemIconTint="@color/primary_color_light"
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
