@@ -1,0 +1,68 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.example.fowltyphoidmonitor'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.example.fowltyphoidmonitor"
+        minSdk 23
+        targetSdk 35
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    // Core Android dependencies
+    implementation libs.appcompat
+    implementation libs.material
+    implementation libs.activity
+    implementation libs.constraintlayout
+
+    // Navigation
+    implementation libs.navigation.fragment
+    implementation libs.navigation.ui
+
+    // UI Components
+    implementation libs.circleimageview
+    implementation libs.swiperefreshlayout
+    implementation libs.mpandroidchart
+
+    // Networking
+    implementation libs.okhttp
+    implementation libs.retrofit
+    implementation libs.converter.gson
+    implementation libs.gson
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
+    implementation 'com.squareup.retrofit2:retrofit-mock:2.9.0'
+    implementation 'com.squareup.okhttp3:okhttp-tls:4.9.1'
+
+    // Image loading
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
+
+    // Room database
+    implementation libs.room.runtime
+    annotationProcessor libs.room.compiler
+
+    // Testing
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+}

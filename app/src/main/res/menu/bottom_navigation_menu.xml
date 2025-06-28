@@ -26,9 +26,5 @@
         android:icon="@drawable/ic_analytics"
         android:title="Uchambuzi" />
 
-    <item
-        android:id="@+id/navigation_settings"
-        android:icon="@drawable/ic_settings"
-        android:title="Mipangilio" />
 
 </menu>

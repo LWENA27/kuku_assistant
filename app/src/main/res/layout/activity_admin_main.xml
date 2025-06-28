@@ -227,116 +227,307 @@
                 android:textSize="12sp"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Admin Only Section -->
+            <!-- Professional Tools Section (Available to both Vets and Admins) -->
             <LinearLayout
-                android:id="@+id/adminOnlySection"
+                android:id="@+id/professionalToolsSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:visibility="gone">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Vipengele vya Msimamizi"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnDashboardManager"
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Simamia Dashboard"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="6dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnManageUsers"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Simamia Watumiaji"
-                    android:layout_marginBottom="8dp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSendAlerts"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Tuma Arifa"
-                    android:layout_marginBottom="8dp" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="12dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnReportAnalytics"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Uchambuzi wa Ripoti"
-                    android:layout_marginBottom="8dp" />
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_analytics"
+                                android:layout_marginEnd="8dp"
+                                android:tint="@color/primary_color" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnManageInformation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Simamia Taarifa za Magonjwa"
-                    android:layout_marginBottom="8dp" />
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Vipengele vya Kitaalamu"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/primary_color" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSetReminders"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Weka Vikumbusho"
-                    android:layout_marginBottom="8dp" />
+                            <ImageView
+                                android:id="@+id/expandProfessionalTools"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:clickable="true"
+                                android:focusable="true" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnViewReports"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Ona Ripoti"
-                    android:layout_marginBottom="8dp" />
+                        </LinearLayout>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnConsultations"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Mazungumzo"
-                    android:layout_marginBottom="16dp" />
+                        <LinearLayout
+                            android:id="@+id/professionalToolsContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <!-- Analytics & Reports Row -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginBottom="8dp">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnReportAnalytics"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginEnd="4dp"
+                                    android:text="Uchambuzi wa Ripoti"
+                                    android:drawableTop="@drawable/ic_analytics"
+                                    android:drawablePadding="4dp"
+                                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnViewReports"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="4dp"
+                                    android:text="Ona Ripoti"
+                                    android:drawableTop="@drawable/ic_report"
+                                    android:drawablePadding="4dp"
+                                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
+
+                            </LinearLayout>
+
+                            <!-- Communication & Alerts Row -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginBottom="8dp">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnConsultations"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginEnd="4dp"
+                                    android:text="Mazungumzo"
+                                    android:drawableTop="@drawable/ic_consultation"
+                                    android:drawablePadding="4dp"
+                                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnSendAlerts"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="4dp"
+                                    android:text="Tuma Arifa"
+                                    android:drawableTop="@drawable/ic_alert"
+                                    android:drawablePadding="4dp"
+                                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
+
+                            </LinearLayout>
+
+                            <!-- Management Tools Row -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginBottom="8dp">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnManageUsers"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginEnd="4dp"
+                                    android:text="Simamia Watumiaji"
+                                    android:drawableTop="@drawable/ic_user"
+                                    android:drawablePadding="4dp"
+                                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnManageInformation"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="4dp"
+                                    android:text="Taarifa za Magonjwa"
+                                    android:drawableTop="@drawable/ic_info"
+                                    android:drawablePadding="4dp"
+                                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
+
+                            </LinearLayout>
+
+                            <!-- Utilities Row -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnSetReminders"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginEnd="4dp"
+                                    android:text="Weka Vikumbusho"
+                                    android:drawableTop="@drawable/ic_reminder"
+                                    android:drawablePadding="4dp"
+                                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnDashboardManager"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="4dp"
+                                    android:text="Dashboard"
+                                    android:drawableTop="@drawable/ic_dashboard"
+                                    android:drawablePadding="4dp"
+                                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
 
             </LinearLayout>
 
-            <!-- Farmer Only Section -->
+            <!-- Farmer Tools Section -->
             <LinearLayout
-                android:id="@+id/farmerOnlySection"
+                android:id="@+id/farmerToolsSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:visibility="gone">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Vipengele vya Mfugaji"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSubmitReport"
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Tuma Ripoti"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="6dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnViewMyReports"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Ona Ripoti Zangu"
-                    android:layout_marginBottom="8dp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnRequestConsultation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Omba Ushauri"
-                    android:layout_marginBottom="16dp" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="12dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_farm"
+                                android:layout_marginEnd="8dp"
+                                android:tint="@color/secondary_color" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Vipengele vya Mfugaji"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/secondary_color" />
+
+                            <ImageView
+                                android:id="@+id/expandFarmerTools"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_expand_more"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:clickable="true"
+                                android:focusable="true" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/farmerToolsContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <!-- Report Tools Row -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginBottom="8dp">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnSubmitReport"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginEnd="4dp"
+                                    android:text="Tuma Ripoti"
+                                    android:drawableTop="@drawable/ic_report_add"
+                                    android:drawablePadding="4dp"
+                                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btnViewMyReports"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="4dp"
+                                    android:text="Ripoti Zangu"
+                                    android:drawableTop="@drawable/ic_report"
+                                    android:drawablePadding="4dp"
+                                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
+
+                            </LinearLayout>
+
+                            <!-- Consultation Button -->
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnRequestConsultation"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Omba Ushauri"
+                                android:drawableStart="@drawable/ic_consultation"
+                                android:drawablePadding="8dp"
+                                style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
 
             </LinearLayout>
 
@@ -348,20 +539,78 @@
                 android:orientation="vertical"
                 android:visibility="visible">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Vipengele vya Pamoja"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnLogout"
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Ondoka"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="6dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="12dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_settings"
+                                android:layout_marginEnd="8dp"
+                                android:tint="@color/accent_color" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Mipangilio na Utawala"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/accent_color" />
+
+                        </LinearLayout>
+
+                        <!-- Quick Actions Row -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnSettings"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="4dp"
+                                android:text="Mipangilio"
+                                android:drawableTop="@drawable/ic_settings"
+                                android:drawablePadding="4dp"
+                                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnLogout"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="4dp"
+                                android:text="Ondoka"
+                                android:drawableTop="@drawable/ic_logout"
+                                android:drawablePadding="4dp"
+                                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
 
             </LinearLayout>
 

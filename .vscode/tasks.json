@@ -1,0 +1,220 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Android: Clean",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": [
+                "clean"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Clean all build artifacts"
+        },
+        {
+            "label": "Android: Build Debug",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": [
+                "assembleDebug"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Build debug APK",
+            "dependsOn": "Make gradlew executable"
+        },
+        {
+            "label": "Android: Build Release",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": [
+                "assembleRelease"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Build release APK",
+            "dependsOn": "Make gradlew executable"
+        },
+        {
+            "label": "Android: Install Debug",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": [
+                "installDebug"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Install debug APK to connected device/emulator",
+            "dependsOn": "Android: Build Debug"
+        },
+        {
+            "label": "Android: Uninstall Debug",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": [
+                "uninstallDebug"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Uninstall debug APK from connected device/emulator"
+        },
+        {
+            "label": "Android: Run Tests",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": [
+                "test"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Run unit tests"
+        },
+        {
+            "label": "Android: Connected Android Test",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": [
+                "connectedAndroidTest"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Run instrumented tests on connected device/emulator"
+        },
+        {
+            "label": "Android: Lint Check",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": [
+                "lint"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Run lint analysis"
+        },
+        {
+            "label": "Make gradlew executable",
+            "type": "shell",
+            "command": "chmod",
+            "args": [
+                "+x",
+                "gradlew"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": false,
+                "reveal": "never",
+                "focus": false,
+                "panel": "shared"
+            },
+            "detail": "Make gradlew script executable"
+        },
+        {
+            "label": "ADB: List Devices",
+            "type": "shell",
+            "command": "adb",
+            "args": [
+                "devices"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "detail": "List connected Android devices"
+        },
+        {
+            "label": "ADB: Logcat",
+            "type": "shell",
+            "command": "adb",
+            "args": [
+                "logcat",
+                "-c",
+                "&&",
+                "adb",
+                "logcat",
+                "*:V"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "isBackground": true,
+            "detail": "Clear and start ADB logcat"
+        },
+        {
+            "label": "Gradle: Refresh Dependencies",
+            "type": "shell",
+            "command": "./gradlew",
+            "args": [
+                "build",
+                "--refresh-dependencies"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Refresh Gradle dependencies"
+        }
+    ]
+}

@@ -19,9 +19,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FowlTyphoidMonitor">
 
-        <!-- LAUNCHER ACTIVITY - Main launcher activity -->
+        <!-- LAUNCHER ACTIVITY - Changed to launch LauncherActivity instead of MainActivity -->
         <activity
-            android:name=".screens.MainActivity"
+            android:name=".ui.auth.LauncherActivity"
             android:theme="@style/Theme.FowlTyphoidMonitor.Splash"
             android:exported="true">
             <intent-filter>
@@ -30,71 +30,69 @@
             </intent-filter>
         </activity>
 
-        <!-- SPLASH ACTIVITY -->
-        <activity
-            android:name=".screens.SplashActivity"
-            android:theme="@style/Theme.FowlTyphoidMonitor.Splash"
-            android:exported="false" />
+        <!-- Farmer Activities -->
+        <activity android:name=".ui.farmer.MainActivity" android:exported="false" />
+        <activity android:name=".ui.farmer.FarmerProfileEditActivity" android:exported="false" />
+        <activity android:name=".ui.farmer.FarmerConsultationsActivity" android:exported="false" />
+        <activity android:name=".ui.farmer.FarmerReportsActivity" android:exported="false" />
+        <activity android:name=".ui.farmer.FarmerAlertsActivity" android:exported="false" />
+        <activity android:name=".ui.farmer.FarmerAnalyticsActivity" android:exported="false" />
+        <activity android:name=".ui.farmer.FarmerSettingsActivity" android:exported="false" />
+        <activity android:name=".ui.farmer.ReportSymptomsActivity" android:exported="false" />
+        <activity android:name=".ui.farmer.RequestConsultationActivity" android:exported="false" />
 
-        <!-- LOGIN SELECTION ACTIVITY - New activity for choosing user type -->
+        <!-- Vet Activities -->
+        <activity android:name=".ui.vet.VetConsultationActivity" android:exported="false" />
+        <activity android:name=".ui.vet.ViewReportsActivity" android:exported="false" />
+        <activity android:name=".ui.vet.ConsultationDetailsActivity" android:exported="false" />
         <activity
-            android:name=".screens.LoginSelectionActivity"
-            android:exported="false" />
+            android:name=".ui.vet.VetProfileEditActivity"
+            android:label="@string/title_activity_vet_profile_edit"
+            android:windowSoftInputMode="adjustResize" />
 
-        <!-- REGISTER SELECTION ACTIVITY - New activity for choosing registration type -->
-        <activity
-            android:name=".screens.RegisterSelectionActivity"
-            android:exported="false" />
+        <!-- Admin Activities -->
+        <activity android:name=".ui.admin.AdminLoginActivity" android:exported="false" />
+        <activity android:name=".ui.admin.AdminRegisterActivity" android:exported="false" />
+        <activity android:name=".ui.admin.AdminMainActivity" android:exported="false" />
+        <activity android:name=".ui.admin.AdminProfileEditActivity" android:exported="false" />
+        <activity android:name=".ui.admin.AdminConsultationsActivity" android:exported="false" />
+        <activity android:name=".ui.admin.AdminSettingsActivity" android:exported="false" />
+        <activity android:name=".ui.admin.ManageUsersActivity" android:exported="false" />
+        <activity android:name=".ui.admin.SendAlertsActivity" android:exported="false" />
+        <activity android:name=".ui.admin.ReportAnalyticsActivity" android:exported="false" />
+        <activity android:name=".ui.admin.ManageDiseaseInfoActivity" android:exported="false" />
 
-        <!-- USER TYPE SELECTION ACTIVITY -->
-        <activity
-            android:name=".screens.UserTypeSelectionActivity"
-            android:exported="false" />
+        <!-- Auth Activities -->
+        <activity android:name=".ui.auth.LoginActivity" android:exported="false" />
+        <activity android:name=".ui.auth.LoginSelectionActivity" android:exported="false" />
+        <activity android:name=".ui.auth.RegisterActivity" android:exported="false" />
+        <activity android:name=".ui.auth.RegisterSelectionActivity" android:exported="false" />
+        <activity android:name=".ui.auth.UserTypeSelectionActivity" android:exported="false" />
+        <activity android:name=".ui.auth.ForgotPasswordActivity" android:exported="false" />
+        <activity android:name=".ui.auth.WebViewAuthActivity" android:exported="false" />
 
-        <!-- LOGIN ACTIVITY -->
-        <activity
-            android:name=".screens.LoginActivity"
-            android:exported="false" />
-
-        <!-- Remove duplicate MainActivity declaration since it's already declared above -->
-        <activity android:name=".screens.AdminLoginActivity" />
-        <activity android:name=".screens.AdminRegisterActivity" />
-        <activity android:name=".screens.AdminMainActivity" />
-        <activity android:name=".screens.RegisterActivity" />
-
-        <!-- LauncherActivity - Add from file structure -->
-        <activity
-            android:name=".screens.LauncherActivity"
-            android:exported="false" />
-
-        <!-- Other activities -->
-        <activity android:name=".screens.SymptomTrackerActivity" android:exported="false" />
-        <activity android:name=".screens.DiseaseInfoActivity" android:exported="false" />
-        <activity android:name=".screens.ReminderActivity" android:exported="false" />
-        <activity android:name=".screens.VetConsultationActivity" android:exported="false" />
-        <activity android:name=".screens.ReportSymptomsActivity" android:exported="false" />
-        <activity android:name=".screens.FarmerProfileEditActivity" android:exported="false" />
-        <activity android:name=".screens.ProfileActivity" android:exported="false" />
-        <activity android:name=".screens.SettingsActivity" android:exported="false" />
-        <activity android:name=".screens.ForgotPasswordActivity" android:exported="false" />
-        <activity android:name=".screens.HistoryActivity" android:exported="false" />
-        <activity android:name=".screens.SetRemindersActivity" android:exported="false" />
-        <activity android:name=".screens.ManageUsersActivity" android:exported="false" />
-        <activity android:name=".screens.AdminProfileEditActivity" android:exported="false" />
-        <activity android:name=".screens.AdminConsultationsActivity" android:exported="false" />
-        <activity android:name=".screens.AdminSettingsActivity" android:exported="false" />
-        <activity android:name=".screens.NotificationsActivity" android:exported="false" />
-        <activity android:name=".screens.SendAlertsActivity" android:exported="false" />
-        <activity android:name=".screens.FarmerConsultationsActivity" android:exported="false" />
-        <activity android:name=".screens.FarmerReportsActivity" android:exported="false" />
-        <activity android:name=".screens.DashboardActivity" android:exported="false" />
-        <activity android:name=".screens.SubmitReportActivity" android:exported="false" />
-        <activity
-            android:name=".screens.WebViewAuthActivity" android:exported="false" />
+        <!-- Common UI Activities -->
+        <activity android:name=".ui.common.ProfileActivity" android:exported="false" />
+        <activity android:name=".ui.common.ProfileSetupActivity" android:exported="false" />
+        <activity android:name=".ui.common.DashboardActivity" android:exported="false" />
+        <activity android:name=".ui.common.DashboardManagerActivity" android:exported="false" />
+        <activity android:name=".ui.common.SettingsActivity" android:exported="false" />
+        <activity android:name=".ui.common.DiseaseInfoActivity" android:exported="false" />
+        <activity android:name=".ui.common.HistoryActivity" android:exported="false" />
+        <activity android:name=".ui.common.NotificationsActivity" android:exported="false" />
+        <activity android:name=".ui.common.ReminderActivity" android:exported="false" />
+        <activity android:name=".ui.common.SetRemindersActivity" android:exported="false" />
+        <activity android:name=".ui.common.SubmitReportActivity" android:exported="false" />
+        <activity android:name=".ui.common.SymptomTrackerActivity" android:exported="false" />
+        <activity android:name=".ui.common.VaccinationReminderActivity" android:exported="false" />
+        <activity android:name=".ui.common.ConsultationActivity" android:exported="false" />
+        <activity android:name=".ui.common.ReportDetailsActivity" android:exported="false" />
+        <activity android:name=".ui.common.LanguageSettingsActivity" android:exported="false" />
+        <activity android:name=".ui.common.PrivacySettingsActivity" android:exported="false" />
 
         <!-- Broadcast Receiver -->
         <receiver
-            android:name=".screens.ReminderReceiver"
+            android:name=".services.reminders.ReminderReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

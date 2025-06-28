@@ -1,0 +1,43 @@
+{
+    "java.home": "/usr/lib/jvm/java-17-openjdk-amd64",
+    "android.home": "~/Android/Sdk",
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "gradle.nestedProjects": true,
+    "files.exclude": {
+        "**/.gradle": true,
+        "**/build": true,
+        "**/.idea": true,
+        "**/*.iml": true,
+        ".DS_Store": true,
+        "**/captures": true,
+        "**/.externalNativeBuild": true,
+        "**/.cxx": true,
+        "**/local.properties": true
+    },
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.gradle.buildServer.enabled": "on",
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-17",
+            "path": "/usr/lib/jvm/java-17-openjdk-amd64"
+        }
+    ],
+    "gradle.javaDebug": true,
+    "gradle.debug": true,
+    "android.defaultEmulator": "Pixel_7_API_34",
+    "xml.format.maxLineWidth": 120,
+    "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "[java]": {
+        "editor.defaultFormatter": "vscjava.vscode-java-pack",
+        "editor.tabSize": 4
+    },
+    "[xml]": {
+        "editor.tabSize": 4
+    },
+    "[gradle]": {
+        "editor.tabSize": 4
+    }
+}

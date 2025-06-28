@@ -134,12 +134,12 @@
                 android:layout_marginBottom="24dp" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRequestConsultation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Omba Ushauri"
                 android:textColor="#FFFFFF"
-                android:backgroundTint="#2E7D32"
-                android:onClick="openNewConsultationForm" />
+                android:backgroundTint="#2E7D32" />
 
         </LinearLayout>
 

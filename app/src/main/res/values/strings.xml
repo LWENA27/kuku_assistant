@@ -86,4 +86,5 @@
     <string name="dashboard_updated">Dashboard imesasishwa</string>
     <string name="authentication" />
     <string name="cancel" />
+    <string name="title_activity_vet_profile_edit" />
 </resources>
