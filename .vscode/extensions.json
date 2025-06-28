@@ -1,11 +1,5 @@
 {
-    "recommendations": [
-        "vscjava.vscode-java-pack",
-        "adelphes.android-dev-ext",
-        "DiemasMichiels.emulate",
-        "vscjava.vscode-gradle",
-        "fwcd.kotlin",
-        "ms-vscode.vscode-json",
-        "redhat.vscode-xml"
-    ]
+  "recommendations": [
+    "denoland.vscode-deno"
+  ]
 }
