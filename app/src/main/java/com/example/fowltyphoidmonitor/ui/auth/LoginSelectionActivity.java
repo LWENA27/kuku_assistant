@@ -14,7 +14,6 @@ import androidx.cardview.widget.CardView;
 
 import com.example.fowltyphoidmonitor.services.auth.AuthManager;
 import com.example.fowltyphoidmonitor.R;
-import com.example.fowltyphoidmonitor.ui.admin.AdminLoginActivity;
 import com.example.fowltyphoidmonitor.ui.farmer.MainActivity;
 import com.example.fowltyphoidmonitor.utils.SharedPreferencesManager;
 import com.google.android.material.button.MaterialButton;
@@ -28,7 +27,7 @@ import java.util.TimeZone;
  * LoginSelectionActivity - Allows users to choose their account type
  *
  * Provides options for:
- * - Veterinarian/Admin login (navigates to AdminLoginActivity)
+ * - Veterinarian/Admin login (navigates to LoginActivity)
  * - Farmer login (navigates to LoginActivity)
  * - Support contact information
  */
@@ -139,31 +138,16 @@ public class LoginSelectionActivity extends AppCompatActivity {
                 // Save user type preference
                 saveUserSelection("vet");
 
-                // Try standard login first (preferred approach)
-                try {
-                    Intent loginIntent = new Intent(LoginSelectionActivity.this, LoginActivity.class);
-                    loginIntent.putExtra("userType", "vet");
-                    loginIntent.putExtra("fromSelection", true);
-                    startActivity(loginIntent);
-                    return;
-                } catch (Exception e) {
-                    Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error navigating to LoginActivity, trying AdminLoginActivity", e);
-                }
+                // Navigate to LoginActivity (Veterinarian login)
+                Intent loginIntent = new Intent(LoginSelectionActivity.this, LoginActivity.class);
+                loginIntent.putExtra("userType", "vet");
+                loginIntent.putExtra("fromSelection", true);
+                startActivity(loginIntent);
 
-                // Fallback to AdminLoginActivity if available
-                try {
-                    Intent adminLoginIntent = new Intent(LoginSelectionActivity.this, AdminLoginActivity.class);
-                    adminLoginIntent.putExtra("userType", "vet");
-                    adminLoginIntent.putExtra("fromSelection", true);
-                    startActivity(adminLoginIntent);
-                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Successfully navigated to AdminLoginActivity");
-                } catch (Exception e) {
-                    Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error navigating to AdminLoginActivity", e);
-                    showNavigationError("Hitilafu imetokea wakati wa kwenda kwenye skrini ya kuingia");
-                }
+                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Successfully navigated to LoginActivity");
 
             } catch (Exception e) {
-                Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error processing vet login click: " + e.getMessage());
+                Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error navigating to LoginActivity: " + e.getMessage());
                 showNavigationError("Hitilafu imetokea wakati wa kwenda kwenye skrini ya daktari");
             }
         };

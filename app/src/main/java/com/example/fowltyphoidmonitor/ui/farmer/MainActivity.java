@@ -6,30 +6,40 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import com.example.fowltyphoidmonitor.services.auth.AuthManager;
 import com.example.fowltyphoidmonitor.R;
-import com.example.fowltyphoidmonitor.models.Farmer;
+import com.example.fowltyphoidmonitor.data.models.Farmer;
 import com.example.fowltyphoidmonitor.services.notification.AppNotificationManager;
 import com.example.fowltyphoidmonitor.services.notification.NotificationHelper;
 import com.example.fowltyphoidmonitor.ui.auth.LoginActivity;
 import com.example.fowltyphoidmonitor.ui.common.DiseaseInfoActivity;
 import com.example.fowltyphoidmonitor.ui.common.NotificationItem;
+import com.example.fowltyphoidmonitor.ui.common.ProfileActivity;
 import com.example.fowltyphoidmonitor.ui.common.ReminderActivity;
 import com.example.fowltyphoidmonitor.ui.common.SettingsActivity;
 import com.example.fowltyphoidmonitor.ui.common.SymptomTrackerActivity;
-import com.example.fowltyphoidmonitor.ui.vet.VetConsultationActivity;
+import com.example.fowltyphoidmonitor.ui.farmer.FarmerConsultationsActivity;
+import com.example.fowltyphoidmonitor.ui.farmer.FarmerProfileEditActivity;
+import com.example.fowltyphoidmonitor.ui.farmer.FarmerReportsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * MainActivity for Farmers - Fowl Typhoid Monitor App
@@ -37,7 +47,6 @@ import com.google.android.material.button.MaterialButton;
 public class MainActivity extends AppCompatActivity implements AppNotificationManager.NotificationListener {
 
     private static final String TAG = "MainActivity";
-    private static final int REQUEST_CODE_EDIT_PROFILE = 1001;
 
     // UI Elements
     private TextView txtUsername;
@@ -50,190 +59,178 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
     private ImageView notificationBell;
     private TextView notificationBadge;
     private LinearLayout alertsContainer;
-
-    // Additional UI elements for modern design
-    private LinearLayout btnSubmitReport, btnSymptomTracker, btnRequestConsultation;
-    private LinearLayout btnViewMyReports, btnDiseaseInfo, btnReminders, btnEditProfile;
     private CardView alertsCard;
 
-    // Auth manager
+    // Buttons
+    private LinearLayout btnSubmitReport;
+    private LinearLayout btnSymptomTracker;
+    private LinearLayout btnRequestConsultation;
+    private MaterialButton btnViewMyReports;
+    private MaterialButton btnDiseaseInfo;
+    private MaterialButton btnReminders;
+    private MaterialButton btnEditProfile;
+    private MaterialButton btnLogout;
+
+    // Auth and Notification Managers
     private AuthManager authManager;
+    private AppNotificationManager notificationManager;
+    private NotificationHelper notificationHelper;
+
+    // Activity Result Launcher for Profile Edit
+    private ActivityResultLauncher<Intent> profileEditLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
         // Initialize AuthManager
         authManager = AuthManager.getInstance(this);
 
-        // Authentication check
+        // Check authentication immediately
         if (!authManager.isLoggedIn()) {
+            Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - Authentication check failed - token: " + authManager.getAuthToken());
             redirectToLogin();
             return;
         }
 
-        setContentView(R.layout.activity_main);
+        // Initialize Activity Result Launcher
+        profileEditLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        loadUserData();
+                        Toast.makeText(this, "Wasifu umesasishwa", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
-        // Initialize components
+        // Initialize UI and systems
         initializeViews();
         initializeNotificationSystem();
         setupClickListeners();
         setupBottomNavigation();
-
-        // Load data
         loadUserData();
         updateNotificationBadge();
 
-        // Handle incomplete profile
-        if (!authManager.isProfileComplete()) {
-            navigateToProfileEditActivity();
-        }
-
-        Log.d(TAG, "MainActivity created successfully");
+        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - MainActivity created successfully with token: " + authManager.getAuthToken() + ", userType: " + authManager.getUserType());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         if (!authManager.isLoggedIn()) {
+            Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - User not logged in on resume, redirecting to LoginActivity");
             redirectToLogin();
             return;
         }
-
-        // Refresh token if needed
         authManager.autoRefreshIfNeeded(new AuthManager.AuthCallback() {
             @Override
             public void onSuccess(com.example.fowltyphoidmonitor.data.requests.AuthResponse response) {
-                // Token is valid or refreshed, load user data
+                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Token refresh successful");
                 loadUserData();
             }
 
             @Override
             public void onError(String error) {
-                // Refresh token failed, redirect to login
-                Toast.makeText(MainActivity.this, "Session expired. Please log in again.",
-                        Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Token refresh failed: " + error);
+                Toast.makeText(MainActivity.this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show();
                 redirectToLogin();
             }
         });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE_EDIT_PROFILE && resultCode == RESULT_OK) {
-            loadUserData();
-            Toast.makeText(this, "Wasifu umesasishwa", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    // ========== VIEW INITIALIZATION ==========
-
     private void initializeViews() {
-        // Profile section
-        txtUsername = findViewById(R.id.txtUsername);
-        txtLocation = findViewById(R.id.txtLocation);
-        txtFarmSize = findViewById(R.id.txtFarmSize);
-
         try {
+            // Profile section
+            txtUsername = findViewById(R.id.txtUsername);
+            txtLocation = findViewById(R.id.txtLocation);
+            txtFarmSize = findViewById(R.id.txtFarmSize);
             txtTotalChickens = findViewById(R.id.txtTotalChickens);
-        } catch (Exception e) {
-            Log.w(TAG, "txtTotalChickens not found", e);
-        }
 
-        // Progress indicator
-        progressBar = findViewById(R.id.progressBar);
-        loadingOverlay = findViewById(R.id.loadingOverlay);
+            // Progress indicator
+            progressBar = findViewById(R.id.progressBar);
+            loadingOverlay = findViewById(R.id.loadingOverlay);
 
-        // Modern UI elements - Quick actions
-        btnSubmitReport = findViewById(R.id.btnSubmitReport);
-        btnSymptomTracker = findViewById(R.id.btnSymptomTracker);
-        btnRequestConsultation = findViewById(R.id.btnRequestConsultation);
-        
-        // Farm management buttons
-        btnViewMyReports = findViewById(R.id.btnViewMyReports);
-        btnDiseaseInfo = findViewById(R.id.btnDiseaseInfo);
-        btnReminders = findViewById(R.id.btnReminders);
-        btnEditProfile = findViewById(R.id.btnEditProfile);
-        
-        // Cards
-        alertsCard = findViewById(R.id.alertsCard);
+            // Quick Action Buttons (LinearLayout)
+            btnSubmitReport = findViewById(R.id.btnSubmitReport);
+            btnSymptomTracker = findViewById(R.id.btnSymptomTracker);
+            btnRequestConsultation = findViewById(R.id.btnRequestConsultation);
 
-        // Notification views
-        initializeNotificationViews();
+            // Farm Management Buttons (MaterialButton)
+            btnViewMyReports = findViewById(R.id.btnViewMyReports);
+            btnDiseaseInfo = findViewById(R.id.btnDiseaseInfo);
+            btnReminders = findViewById(R.id.btnReminders);
+            btnEditProfile = findViewById(R.id.btnEditProfile);
+            btnLogout = findViewById(R.id.btnLogout);
 
-        // Navigation
-        bottomNavigation = findViewById(R.id.bottomNavigation);
-    }
-
-    private void initializeNotificationViews() {
-        try {
+            // Notification views
             notificationBell = findViewById(R.id.notificationBell);
             notificationBadge = findViewById(R.id.notificationBadge);
-        } catch (Exception e) {
-            Log.w(TAG, "Notification views not found", e);
-        }
-
-        try {
-            CardView alertsCard = findViewById(R.id.alertsCard);
+            alertsCard = findViewById(R.id.alertsCard);
             if (alertsCard != null) {
                 alertsContainer = alertsCard.findViewById(R.id.alertsContainer);
             }
+
+            // Navigation
+            bottomNavigation = findViewById(R.id.bottomNavigation);
+
+            // Log initialization status
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Button initialization status: " +
+                    "Submit Report: " + (btnSubmitReport != null) +
+                    ", Symptom Tracker: " + (btnSymptomTracker != null) +
+                    ", Request Consultation: " + (btnRequestConsultation != null) +
+                    ", View Reports: " + (btnViewMyReports != null) +
+                    ", Disease Info: " + (btnDiseaseInfo != null) +
+                    ", Reminders: " + (btnReminders != null) +
+                    ", Edit Profile: " + (btnEditProfile != null) +
+                    ", Logout: " + (btnLogout != null) +
+                    ", Alerts Container: " + (alertsContainer != null) +
+                    ", Bottom Navigation: " + (bottomNavigation != null));
         } catch (Exception e) {
-            Log.w(TAG, "Alerts container not found", e);
+            Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error initializing views: " + e.getMessage(), e);
+            Toast.makeText(this, "Error initializing UI", Toast.LENGTH_SHORT).show();
         }
     }
-
-    // ========== NOTIFICATION SYSTEM ==========
-
-    private AppNotificationManager notificationManager;
-    private NotificationHelper notificationHelper;
 
     private void initializeNotificationSystem() {
         try {
             notificationHelper = new NotificationHelper(this);
             notificationManager = AppNotificationManager.getInstance();
             notificationManager.addListener(this);
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Notification system initialized");
         } catch (Exception e) {
-            Log.e(TAG, "Error initializing notification system", e);
+            Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error initializing notification system: " + e.getMessage(), e);
         }
     }
 
     private void updateNotificationBadge() {
-        if (notificationManager == null || notificationBadge == null) return;
-
+        if (notificationManager == null || notificationBadge == null) {
+            Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - Notification manager or badge not initialized");
+            return;
+        }
         int unreadCount = notificationManager.getUnreadCount();
-
         if (unreadCount > 0) {
             notificationBadge.setVisibility(View.VISIBLE);
-            notificationBadge.setText(String.valueOf(unreadCount > 99 ? "99+" : unreadCount));
-
-            // Update bell color if available
+            notificationBadge.setText(unreadCount > 99 ? "99+" : String.valueOf(unreadCount));
             if (notificationBell != null) {
                 notificationBell.setColorFilter(0xFFF59E0B); // Orange
             }
         } else {
             notificationBadge.setVisibility(View.GONE);
-
-            // Reset bell color if available
             if (notificationBell != null) {
                 notificationBell.setColorFilter(0xFFFFFFFF); // White
             }
         }
+        setupNotificationAlerts();
     }
 
     private void setupNotificationAlerts() {
-        if (alertsContainer == null || notificationManager == null) return;
-
-        // Clear existing alerts
+        if (alertsContainer == null || notificationManager == null) {
+            Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - Alerts container or notification manager not initialized");
+            return;
+        }
         alertsContainer.removeAllViews();
-
-        // Get notifications
         java.util.List<NotificationItem> notifications = notificationManager.getUnreadNotifications();
-
-        // Show no notifications message if empty
         if (notifications == null || notifications.isEmpty()) {
             TextView noNotificationsText = new TextView(this);
             noNotificationsText.setText("Hakuna tahadhari za hivi karibuni");
@@ -244,358 +241,357 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
             alertsContainer.addView(noNotificationsText);
             return;
         }
-
-        // Add notification views
         for (NotificationItem notification : notifications) {
-            View alertView = createAlertView(notification);
-            alertsContainer.addView(alertView);
+            alertsContainer.addView(createAlertView(notification));
         }
     }
 
     private View createAlertView(NotificationItem notification) {
-        // Create a layout for the alert
         LinearLayout alertLayout = new LinearLayout(this);
         alertLayout.setOrientation(LinearLayout.HORIZONTAL);
         alertLayout.setPadding(32, 24, 32, 24);
         alertLayout.setGravity(android.view.Gravity.CENTER_VERTICAL);
-
-        // Set layout parameters
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
         layoutParams.setMargins(0, 0, 0, 20);
         alertLayout.setLayoutParams(layoutParams);
+        alertLayout.setBackgroundColor(getColor(android.R.color.white));
+        alertLayout.setBackgroundResource(android.R.drawable.dialog_holo_light_frame);
 
-        // Set background based on alert type
-        int backgroundColor;
-        switch (notification.getType()) {
-            case CRITICAL:
-                backgroundColor = 0xFFFFEBEE; // Light red
-                break;
-            case WARNING:
-                backgroundColor = 0xFFFFF3E0; // Light orange
-                break;
-            case INFO:
-                backgroundColor = 0xFFE3F2FD; // Light blue
-                break;
-            case SUCCESS:
-                backgroundColor = 0xFFE8F5E8; // Light green
-                break;
-            default:
-                backgroundColor = 0xFFECEFF1; // Light gray
-                break;
-        }
-        alertLayout.setBackgroundColor(backgroundColor);
-        alertLayout.setBackground(getResources().getDrawable(android.R.drawable.dialog_holo_light_frame));
-
-        // Add icon
         ImageView icon = new ImageView(this);
         LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(64, 64);
         icon.setLayoutParams(iconParams);
-
-        int iconColor;
+        int iconRes, iconColor;
         switch (notification.getType()) {
             case CRITICAL:
-                icon.setImageResource(android.R.drawable.ic_dialog_alert);
+                iconRes = android.R.drawable.ic_dialog_alert;
                 iconColor = 0xFFDC2626; // Red
                 break;
             case WARNING:
-                icon.setImageResource(android.R.drawable.ic_dialog_alert);
+                iconRes = android.R.drawable.ic_dialog_alert;
                 iconColor = 0xFFF59E0B; // Orange
                 break;
             case INFO:
-                icon.setImageResource(android.R.drawable.ic_dialog_info);
+                iconRes = android.R.drawable.ic_dialog_info;
                 iconColor = 0xFF2563EB; // Blue
                 break;
             case SUCCESS:
-                icon.setImageResource(android.R.drawable.checkbox_on_background);
+                iconRes = android.R.drawable.checkbox_on_background;
                 iconColor = 0xFF10B981; // Green
                 break;
             default:
-                icon.setImageResource(android.R.drawable.ic_dialog_info);
+                iconRes = android.R.drawable.ic_dialog_info;
                 iconColor = 0xFF6B7280; // Gray
                 break;
         }
+        icon.setImageResource(iconRes);
         icon.setColorFilter(iconColor);
 
-        // Add message
         TextView message = new TextView(this);
         message.setText(notification.getMessage());
         message.setTextSize(14);
         message.setTextColor(0xFF1F2937); // Dark gray
-
         LinearLayout.LayoutParams messageParams = new LinearLayout.LayoutParams(
                 0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
         messageParams.setMargins(32, 0, 32, 0);
         message.setLayoutParams(messageParams);
 
-        // Add close button
         ImageView closeButton = new ImageView(this);
         LinearLayout.LayoutParams closeParams = new LinearLayout.LayoutParams(48, 48);
         closeButton.setLayoutParams(closeParams);
         closeButton.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
         closeButton.setColorFilter(0xFF6B7280); // Gray
         closeButton.setPadding(8, 8, 8, 8);
-
-        final int notificationId = notification.getId();
         closeButton.setOnClickListener(v -> {
-            if (notificationManager != null) {
-                notificationManager.dismissNotification(notificationId);
-            }
+            notificationManager.dismissNotification(notification.getId());
+            updateNotificationBadge();
         });
 
-        // Add views to layout
         alertLayout.addView(icon);
         alertLayout.addView(message);
         alertLayout.addView(closeButton);
-
         return alertLayout;
     }
 
-    // Required implementation of NotificationListener interface
     @Override
     public void onNotificationsChanged() {
-        runOnUiThread(() -> {
-            updateNotificationBadge();
-            setupNotificationAlerts();
-        });
+        runOnUiThread(this::updateNotificationBadge);
     }
-
-    // ========== DATA LOADING ==========
 
     private void loadUserData() {
         setLoading(true);
-
         authManager.loadUserProfile(new AuthManager.ProfileCallback() {
             @Override
-            public void onFarmerProfileLoaded(Farmer farmer) {
+            public void onProfileLoaded(Map<String, Object> profile) {
                 setLoading(false);
-                if (farmer != null) {
-                    displayFarmerData(farmer);
+                if (profile != null) {
+                    // More flexible validation - check if user type is farmer or if profile data exists
+                    String userType = (String) profile.get("user_type");
+                    if ("farmer".equals(userType) || "farmer".equals(profile.get("userType"))) {
+                        // Try to get farmer data, but don't require it to be a specific type
+                        Object data = profile.get("data");
+                        if (data instanceof Farmer) {
+                            displayFarmerData((Farmer) data);
+                        } else {
+                            // Use basic profile info from auth manager
+                            displayBasicProfile();
+                        }
+                    } else {
+                        // Still allow login even if user type validation fails
+                        Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - User type not farmer, but allowing access");
+                        displayBasicProfile();
+                    }
+                } else {
+                    Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - No profile data, displaying basic info");
+                    displayBasicProfile();
                 }
-            }
-
-            @Override
-            public void onVetProfileLoaded(com.example.fowltyphoidmonitor.models.Vet vet) {
-                // We shouldn't reach here in the farmer's MainActivity
-                setLoading(false);
-                Toast.makeText(MainActivity.this, "Unexpected user type: Vet", Toast.LENGTH_SHORT).show();
-                logout();
             }
 
             @Override
             public void onError(String error) {
                 setLoading(false);
-                Log.e(TAG, "Error loading profile: " + error);
-                Toast.makeText(MainActivity.this, "Error loading your profile", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error loading profile: " + error);
+                // Don't logout on error, just display basic profile
+                displayBasicProfile();
+                Toast.makeText(MainActivity.this, "Profile data will be loaded from local storage", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void displayFarmerData(Farmer farmer) {
-        // Set user information
         if (txtUsername != null) {
-            txtUsername.setText(farmer.getFullName() != null ? farmer.getFullName() : "User");
+            String displayName = farmer.getFullName() != null && !farmer.getFullName().isEmpty()
+                    ? farmer.getFullName()
+                    : authManager.getDisplayName() != null && !authManager.getDisplayName().isEmpty()
+                    ? authManager.getDisplayName()
+                    : getSharedPreferences("FowlTyphoidMonitorPrefs", MODE_PRIVATE).getString("username", "Mkulima");
+            txtUsername.setText(displayName);
         }
-
         if (txtLocation != null) {
-            String location = farmer.getFarmLocation();
-            txtLocation.setText("Eneo: " + (location != null ? location : "Unknown"));
+            String location = farmer.getFarmLocation() != null && !farmer.getFarmLocation().isEmpty()
+                    ? farmer.getFarmLocation()
+                    : getSharedPreferences("FowlTyphoidMonitorPrefs", MODE_PRIVATE).getString("location", "Haijawekwa");
+            txtLocation.setText("Eneo: " + location);
         }
-
-        if (txtFarmSize != null) {
-            String farmSize = farmer.getFarmSize();
-            txtFarmSize.setText("Idadi ya kuku: " + (farmSize != null ? farmSize : "0"));
-        }
-
-        if (txtTotalChickens != null) {
-            String farmSize = farmer.getFarmSize();
-            txtTotalChickens.setText(farmSize != null ? farmSize : "0");
+        if (txtFarmSize != null || txtTotalChickens != null) {
+            String farmSizeStr = farmer.getBirdCount() != null
+                    ? String.valueOf(farmer.getBirdCount()) + " Kuku"
+                    : farmer.getFarmSize() != null && !farmer.getFarmSize().isEmpty()
+                    ? farmer.getFarmSize()
+                    : String.valueOf(getSharedPreferences("FowlTyphoidMonitorPrefs", MODE_PRIVATE).getInt("farmSize", 0));
+            String displayText = farmSizeStr != null && !farmSizeStr.equals("0") ? farmSizeStr : "-- Kuku";
+            if (txtFarmSize != null) {
+                txtFarmSize.setText(displayText);
+            }
+            if (txtTotalChickens != null) {
+                txtTotalChickens.setText(displayText);
+            }
         }
     }
 
-    // ========== CLICK LISTENERS ==========
+    private void displayBasicProfile() {
+        // Fallback to display basic profile info from SharedPreferences
+        SharedPreferences prefs = getSharedPreferences("FowlTyphoidMonitorPrefs", MODE_PRIVATE);
+        String username = prefs.getString("username", "");
+        String farmerName = prefs.getString("farmerName", "");
+        String location = prefs.getString("location", "Unknown");
+        int farmSize = prefs.getInt("farmSize", 0);
+
+        // Use the best available name
+        String displayName = "";
+        if (!username.isEmpty()) {
+            displayName = username;
+        } else if (!farmerName.isEmpty()) {
+            displayName = farmerName;
+        } else {
+            String email = authManager.getUserEmail();
+            if (email != null && !email.isEmpty()) {
+                displayName = email.split("@")[0];
+            } else {
+                displayName = "Mfugaji";
+            }
+        }
+
+        if (txtUsername != null) txtUsername.setText(displayName);
+        if (txtLocation != null) txtLocation.setText(location);
+        if (txtFarmSize != null) txtFarmSize.setText(String.valueOf(farmSize));
+        if (txtTotalChickens != null) txtTotalChickens.setText(String.valueOf(farmSize));
+
+        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Displayed basic profile - Name: " + displayName + ", Location: " + location);
+    }
 
     private void setupClickListeners() {
-        // Quick Actions
+        // Submit Report
         if (btnSubmitReport != null) {
-            btnSubmitReport.setOnClickListener(v -> 
-                navigateToActivity(ReportSymptomsActivity.class));
+            btnSubmitReport.setOnClickListener(v -> navigateToActivity(ReportSymptomsActivity.class, "ripoti ya magonjwa"));
+        } else {
+            Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - btnSubmitReport is null");
         }
 
+        // Symptom Tracker
         if (btnSymptomTracker != null) {
-            btnSymptomTracker.setOnClickListener(v -> 
-                navigateToActivity(SymptomTrackerActivity.class));
+            btnSymptomTracker.setOnClickListener(v -> navigateToActivity(SymptomTrackerActivity.class, "ufuatiliaji wa dalili"));
+        } else {
+            Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - btnSymptomTracker is null");
         }
 
+        // Request Consultation
         if (btnRequestConsultation != null) {
-            btnRequestConsultation.setOnClickListener(v -> 
-                navigateToActivity(VetConsultationActivity.class));
+            btnRequestConsultation.setOnClickListener(v -> navigateToActivity(FarmerConsultationsActivity.class, "mahojiano ya daktari"));
+        } else {
+            Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - btnRequestConsultation is null");
         }
 
-        // Farm Management buttons
+        // View Reports
         if (btnViewMyReports != null) {
-            btnViewMyReports.setOnClickListener(v -> 
-                navigateToActivity(FarmerReportsActivity.class));
+            btnViewMyReports.setOnClickListener(v -> navigateToActivity(FarmerReportsActivity.class, "ripoti zangu"));
+        } else {
+            Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - btnViewMyReports is null");
         }
 
+        // Disease Info
         if (btnDiseaseInfo != null) {
-            btnDiseaseInfo.setOnClickListener(v -> 
-                navigateToActivity(DiseaseInfoActivity.class));
+            btnDiseaseInfo.setOnClickListener(v -> navigateToActivity(DiseaseInfoActivity.class, "maelezo ya magonjwa"));
+        } else {
+            Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - btnDiseaseInfo is null");
         }
 
+        // Reminders
         if (btnReminders != null) {
-            btnReminders.setOnClickListener(v -> 
-                navigateToActivity(ReminderActivity.class));
+            btnReminders.setOnClickListener(v -> navigateToActivity(ReminderActivity.class, "vikumbusho"));
+        } else {
+            Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - btnReminders is null");
         }
 
+        // Edit Profile
         if (btnEditProfile != null) {
             btnEditProfile.setOnClickListener(v -> navigateToProfileEditActivity());
+        } else {
+            Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - btnEditProfile is null");
         }
 
-        // Notification bell
+        // Logout
+        if (btnLogout != null) {
+            btnLogout.setOnClickListener(v -> logout());
+        } else {
+            Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - btnLogout is null");
+        }
+
+        // Notification Bell
         if (notificationBell != null) {
             notificationBell.setOnClickListener(v -> {
                 markAllNotificationsAsRead();
                 setupNotificationAlerts();
             });
-        }
-
-        // Legacy feature buttons (backward compatibility)
-        setupLegacyFeatureButtons();
-    }
-
-    private void setupLegacyFeatureButtons() {
-        // Profile edit button (legacy)
-        MaterialButton btnEditProfileLegacy = findViewById(R.id.btnEditProfile);
-        if (btnEditProfileLegacy != null && btnEditProfile == null) {
-            btnEditProfileLegacy.setOnClickListener(v -> navigateToProfileEditActivity());
-        }
-
-        // Symptom tracking (legacy)
-        MaterialButton btnSymptoms = findViewById(R.id.btnSymptoms);
-        if (btnSymptoms != null) {
-            btnSymptoms.setOnClickListener(v ->
-                    navigateToActivity(SymptomTrackerActivity.class));
-        }
-
-        // Report symptoms (legacy)
-        MaterialButton btnReport = findViewById(R.id.btnReport);
-        if (btnReport != null) {
-            btnReport.setOnClickListener(v ->
-                    navigateToActivity(ReportSymptomsActivity.class));
-        }
-
-        // Vet consultation (legacy)
-        MaterialButton btnConsultVet = findViewById(R.id.btnConsultVet);
-        if (btnConsultVet != null) {
-            btnConsultVet.setOnClickListener(v ->
-                    navigateToActivity(VetConsultationActivity.class));
-        }
-
-        // Logout button
-        MaterialButton btnLogout = findViewById(R.id.btnLogout);
-        if (btnLogout != null) {
-            btnLogout.setOnClickListener(v -> logout());
+        } else {
+            Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - notificationBell is null");
         }
     }
-
-    // ========== NAVIGATION ==========
 
     private void setupBottomNavigation() {
         if (bottomNavigation != null) {
             bottomNavigation.setOnItemSelectedListener(item -> {
                 int itemId = item.getItemId();
-
                 if (itemId == R.id.navigation_home) {
-                    return true; // Already on home
+                    return true;
                 } else if (itemId == R.id.navigation_report) {
-                    navigateToActivity(ReportSymptomsActivity.class);
+                    navigateToActivity(ReportSymptomsActivity.class, "ripoti ya magonjwa");
                     return true;
                 } else if (itemId == R.id.navigation_profile) {
-                    navigateToProfileEditActivity();
+                    navigateToActivity(ProfileActivity.class, "wasifu");
                     return true;
                 } else if (itemId == R.id.navigation_settings) {
-                    try {
-                        navigateToActivity(SettingsActivity.class);
-                        return true;
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error navigating to settings", e);
-                    }
+                    navigateToActivity(SettingsActivity.class, "mipangilio");
+                    return true;
                 }
                 return false;
             });
+        } else {
+            Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - Bottom navigation view not found");
         }
     }
 
-    private void navigateToActivity(Class<?> activityClass) {
+    private void navigateToActivity(Class<?> activityClass, String featureName) {
         try {
-            startActivity(new Intent(MainActivity.this, activityClass));
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Navigating to " + activityClass.getSimpleName());
+            Intent intent = new Intent(this, activityClass);
+            startActivity(intent);
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Successfully navigated to " + activityClass.getSimpleName());
         } catch (Exception e) {
-            Log.e(TAG, "Error navigating to " + activityClass.getSimpleName(), e);
-            Toast.makeText(this, "Feature not available", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error navigating to " + activityClass.getSimpleName() + ": " + e.getMessage(), e);
+            Toast.makeText(this, "Imeshindikana kufungua " + featureName, Toast.LENGTH_SHORT).show();
         }
     }
 
     private void navigateToProfileEditActivity() {
         try {
-            Intent intent = new Intent(MainActivity.this, FarmerProfileEditActivity.class);
-            startActivityForResult(intent, REQUEST_CODE_EDIT_PROFILE);
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Navigating to FarmerProfileEditActivity");
+            Intent intent = new Intent(this, FarmerProfileEditActivity.class);
+            profileEditLauncher.launch(intent);
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Successfully launched FarmerProfileEditActivity");
         } catch (Exception e) {
-            Log.e(TAG, "Error navigating to profile edit", e);
-            Toast.makeText(this, "Profile edit not available", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error navigating to FarmerProfileEditActivity: " + e.getMessage(), e);
+            Toast.makeText(this, "Imeshindikana kufungua wasifu", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void redirectToLogin() {
-        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Redirecting to LoginActivity");
+        Intent intent = new Intent(this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
 
-    // ========== UTILITY METHODS ==========
+    private void logout() {
+        setLoading(true);
+        authManager.logout(new AuthManager.AuthCallback() {
+            @Override
+            public void onSuccess(com.example.fowltyphoidmonitor.data.requests.AuthResponse response) {
+                setLoading(false);
+                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Logout successful");
+                redirectToLogin();
+            }
 
-    private void setLoading(boolean isLoading) {
-        if (loadingOverlay != null) {
-            loadingOverlay.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-        } else if (progressBar != null) {
-            progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-        }
+            @Override
+            public void onError(String error) {
+                setLoading(false);
+                Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Logout failed: " + error);
+                redirectToLogin();
+            }
+        });
     }
 
     private void markAllNotificationsAsRead() {
-        if (notificationManager == null) return;
-
+        if (notificationManager == null) {
+            Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - Notification manager not initialized");
+            return;
+        }
         java.util.List<NotificationItem> unread = notificationManager.getUnreadNotifications();
         if (unread != null) {
             for (NotificationItem notification : unread) {
                 notificationManager.markAsRead(notification.getId());
             }
         }
-
         Toast.makeText(this, "Tahadhari zote zimesomwa", Toast.LENGTH_SHORT).show();
         updateNotificationBadge();
     }
 
-    private void logout() {
-        setLoading(true);
+    private void setLoading(boolean isLoading) {
+        if (loadingOverlay != null) {
+            loadingOverlay.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        }
+        if (progressBar != null) {
+            progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        }
+    }
 
-        authManager.logout(new AuthManager.AuthCallback() {
-            @Override
-            public void onSuccess(com.example.fowltyphoidmonitor.data.requests.AuthResponse response) {
-                setLoading(false);
-                redirectToLogin();
-            }
-
-            @Override
-            public void onError(String error) {
-                setLoading(false);
-                // Even if there's an error, we should still log out locally
-                redirectToLogin();
-            }
-        });
+    private String getCurrentTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+03:00"));
+        return sdf.format(new Date());
     }
 
     @Override
@@ -606,3 +602,4 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
         }
     }
 }
+

@@ -100,7 +100,7 @@
 
         <!-- Empty State -->
         <LinearLayout
-            android:id="@+id/txtEmptyState"
+            android:id="@+id/emptyStateLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"

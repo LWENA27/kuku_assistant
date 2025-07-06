@@ -57,6 +57,12 @@ public class User {
     public User() {
     }
 
+    public User(String userId, String email, String phone) {
+        this.id = userId;
+        this.email = email;
+        this.phone = phone;
+    }
+
     // Getters and Setters
     public String getId() {
         return id;

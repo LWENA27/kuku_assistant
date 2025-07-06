@@ -1,6 +1,8 @@
 package com.example.fowltyphoidmonitor.ui.common;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -105,22 +107,28 @@ public class SettingsActivity extends AppCompatActivity {
         bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
-            if (itemId == R.id.navigation_home) {
-                finish(); // Go back to MainActivity
-                return true;
-            } else if (itemId == R.id.navigation_report) {
-                // Navigate to report activity
-                finish();
-                startActivity(getIntent().setClass(this, ReportSymptomsActivity.class));
-                return true;
-            } else if (itemId == R.id.navigation_profile) {
-                // Navigate to profile
-                finish();
-                startActivity(getIntent().setClass(this, ProfileActivity.class));
-                return true;
-            } else if (itemId == R.id.navigation_settings) {
-                // Already on settings screen
-                return true;
+            try {
+                if (itemId == R.id.navigation_home) {
+                    finish(); // Go back to MainActivity
+                    return true;
+                } else if (itemId == R.id.navigation_report) {
+                    // Navigate to report activity
+                    finish();
+                    startActivity(new Intent(this, ReportSymptomsActivity.class));
+                    return true;
+                } else if (itemId == R.id.navigation_profile) {
+                    // Navigate to profile with proper intent
+                    Intent profileIntent = new Intent(this, ProfileActivity.class);
+                    startActivity(profileIntent);
+                    finish();
+                    return true;
+                } else if (itemId == R.id.navigation_settings) {
+                    // Already on settings screen
+                    return true;
+                }
+            } catch (Exception e) {
+                Log.e("SettingsActivity", "Navigation error: " + e.getMessage(), e);
+                Toast.makeText(this, "Imeshindikana kufungua ukurasa. Jaribu tena.", Toast.LENGTH_SHORT).show();
             }
 
             return false;

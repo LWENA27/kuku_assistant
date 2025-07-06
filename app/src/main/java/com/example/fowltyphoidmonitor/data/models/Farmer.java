@@ -1,11 +1,11 @@
-package com.example.fowltyphoidmonitor.models;
+package com.example.fowltyphoidmonitor.data.models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Farmer {
     @SerializedName("farmer_id")
-    private Integer farmerId;
+    private String farmerId;
 
     @SerializedName("user_id")
     private String userId;
@@ -22,11 +22,17 @@ public class Farmer {
     @SerializedName("phone_number")
     private String phoneNumber;
 
-    @SerializedName("farm_location")
+    @SerializedName("location")
     private String farmLocation;
 
     @SerializedName("farm_size")
     private String farmSize;
+
+    @SerializedName("farm_address")
+    private String farmAddress;
+
+    @SerializedName("bird_type")
+    private String birdType;
 
     @SerializedName("registered_at")
     private String registeredAt;
@@ -34,11 +40,8 @@ public class Farmer {
     @SerializedName("bird_count")
     private Integer birdCount;
 
-    // Mark display_name as transient since it doesn't exist in the database
-    // Remove SerializedName annotation to prevent it from being included in JSON
     transient private String displayName;
 
-    // Constructors
     public Farmer() {}
 
     public Farmer(String email, String password) {
@@ -46,18 +49,16 @@ public class Farmer {
         this.password = password;
     }
 
-    // Constructor with phone number
     public Farmer(String phoneNumber, String password, boolean isPhone) {
         this.phoneNumber = phoneNumber;
         this.password = password;
     }
 
-    // Constructor with display name
     public Farmer(String email, String password, String displayName) {
         this.email = email;
         this.password = password;
         this.displayName = displayName;
-        this.fullName = displayName; // For backward compatibility
+        this.fullName = displayName;
     }
 
     public Farmer(String email, String fullName, String phoneNumber, String farmLocation) {
@@ -67,23 +68,23 @@ public class Farmer {
         this.farmLocation = farmLocation;
     }
 
-    // Comprehensive constructor
     public Farmer(String email, String phoneNumber, String displayName, String fullName,
-                  String farmLocation, String farmSize) {
+                  String farmLocation, String farmSize, String farmAddress, String birdType) {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.displayName = displayName;
         this.fullName = fullName;
         this.farmLocation = farmLocation;
         this.farmSize = farmSize;
+        this.farmAddress = farmAddress;
+        this.birdType = birdType;
     }
 
-    // Getters and Setters
-    public Integer getFarmerId() {
+    public String getFarmerId() {
         return farmerId;
     }
 
-    public void setFarmerId(Integer farmerId) {
+    public void setFarmerId(String farmerId) {
         this.farmerId = farmerId;
     }
 
@@ -95,7 +96,6 @@ public class Farmer {
         this.userId = userId;
     }
 
-    // Helper method to set userId from Integer (for when you get Integer from auth)
     public void setUserId(Integer userId) {
         this.userId = userId != null ? userId.toString() : null;
     }
@@ -124,6 +124,14 @@ public class Farmer {
         this.fullName = fullName;
     }
 
+    public String getName() {
+        return fullName;
+    }
+
+    public void setName(String name) {
+        this.fullName = name;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -132,7 +140,6 @@ public class Farmer {
         this.phoneNumber = phoneNumber;
     }
 
-    // For compatibility with AuthManager's new methods
     public String getPhone() {
         return phoneNumber;
     }
@@ -157,6 +164,22 @@ public class Farmer {
         this.farmSize = farmSize;
     }
 
+    public String getFarmAddress() {
+        return farmAddress;
+    }
+
+    public void setFarmAddress(String farmAddress) {
+        this.farmAddress = farmAddress;
+    }
+
+    public String getBirdType() {
+        return birdType;
+    }
+
+    public void setBirdType(String birdType) {
+        this.birdType = birdType;
+    }
+
     public String getRegisteredAt() {
         return registeredAt;
     }
@@ -179,29 +202,17 @@ public class Farmer {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
-
-        // If full name is empty, use display name for backward compatibility
         if (fullName == null || fullName.isEmpty()) {
             this.fullName = displayName;
         }
     }
 
-    // Additional helper methods for compatibility with AuthManager
-
-    // For compatibility with profile completion checks
     public String getLocation() {
         return farmLocation;
     }
 
-    /**
-     * Check if this user has all required profile information filled
-     * @return true if profile is complete, false otherwise
-     */
     public boolean isProfileComplete() {
-        // At minimum, we need a full name and farm location
-        boolean hasName = fullName != null && !fullName.isEmpty();
         boolean hasLocation = farmLocation != null && !farmLocation.isEmpty();
-
-        return hasName && hasLocation;
+        return hasLocation; // Relaxed to allow missing fullName for new users
     }
 }

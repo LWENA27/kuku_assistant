@@ -1,18 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme -->
-    <style name="Base.Theme.FowlTyphoidMonitor" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.FowlTyphoidMonitor" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your light theme here -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-    </style>
-
-    <!-- App Theme -->
-    <style name="Theme.FowlTyphoidMonitor" parent="Base.Theme.FowlTyphoidMonitor" />
-
-    <!-- Splash Screen Theme -->
-    <style name="Theme.FowlTyphoidMonitor.Splash" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowContentOverlay">@null</item>
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorPrimaryDark">@color/primary_dark_color</item>
+        <item name="colorAccent">@color/accent_color</item>
+        <item name="android:textColorPrimary">@color/text_color_primary</item>
+        <item name="android:textColorSecondary">@color/text_color_secondary</item>
+        <item name="android:windowBackground">@color/background_color</item>
+        <item name="textInputStyle">@style/Widget.App.TextInput</item>
+        <item name="materialButtonStyle">@style/Widget.App.Button</item>
     </style>
 
     <!-- Custom Bottom Navigation Indicator -->
@@ -21,6 +19,64 @@
         <item name="android:layout_height">3dp</item>
         <item name="android:background">?attr/colorPrimary</item>
         <item name="android:layout_marginTop">4dp</item>
+    </style>
+
+    <!-- Base Widget Style -->
+    <style name="Widget.App" parent="@android:style/Widget" />
+
+    <!-- Text Input Style -->
+    <style name="Widget.App.TextInput" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxCornerRadiusTopStart">8dp</item>
+        <item name="boxCornerRadiusTopEnd">8dp</item>
+        <item name="boxCornerRadiusBottomStart">8dp</item>
+        <item name="boxCornerRadiusBottomEnd">8dp</item>
+        <item name="android:minHeight">56dp</item>
+    </style>
+
+    <!-- Button Styles -->
+    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:minHeight">56dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Widget.App.Button.TextButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+    </style>
+
+    <!-- Text Styles -->
+    <style name="TextAppearance.App.Title" parent="TextAppearance.MaterialComponents.Headline5">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="TextAppearance.App.Subtitle" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:alpha">0.87</item>
+    </style>
+
+    <!-- Error Banner Style -->
+    <style name="Widget.App.ErrorBanner">
+        <item name="android:background">#FFEBEE</item>
+        <item name="android:textColor">#B71C1C</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <!-- Loading Overlay Style -->
+    <style name="Widget.App.LoadingOverlay">
+        <item name="android:background">#80000000</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
     </style>
 
 </resources>

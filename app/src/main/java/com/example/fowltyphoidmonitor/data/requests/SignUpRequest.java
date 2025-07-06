@@ -59,6 +59,41 @@ public class SignUpRequest {
         this.userMetadata = new HashMap<>();
     }
 
+    /**
+     * Constructor for sign up with either email or phone number
+     * @param identifier Email or phone number
+     * @param password Password
+     * @param metadata User metadata
+     * @param isPhone Flag to indicate if identifier is a phone number
+     */
+    public SignUpRequest(String identifier, String password, Map<String, Object> metadata, boolean isPhone) {
+        if (isPhone) {
+            this.phone = identifier;
+        } else {
+            this.email = identifier;
+        }
+        this.password = password;
+        this.data = new HashMap<>();
+        this.userMetadata = metadata != null ? metadata : new HashMap<>();
+
+        // Copy metadata to data for backward compatibility
+        if (metadata != null) {
+            for (Map.Entry<String, Object> entry : metadata.entrySet()) {
+                this.data.put(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+    
+    /**
+     * Constructor for email signup with metadata
+     * @param email Email address
+     * @param password Password
+     * @param metadata User metadata
+     */
+    public SignUpRequest(String email, String password, Map<String, Object> metadata) {
+        this(email, password, metadata, false);
+    }
+
     // Add data to user's data in the database
     public void addData(String key, Object value) {
         if (data == null) {

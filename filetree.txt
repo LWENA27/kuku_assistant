@@ -1,0 +1,382 @@
+.
+├── ANDROID_TESTING_GUIDE.md
+├── app
+│   ├── build.gradle
+│   ├── proguard-rules.pro
+│   └── src
+│       ├── androidTest
+│       │   └── java
+│       │       └── com
+│       │           └── example
+│       │               └── fowltyphoidmonitor
+│       │                   └── ExampleInstrumentedTest.java
+│       ├── main
+│       │   ├── AndroidManifest.xml
+│       │   ├── java
+│       │   │   └── com
+│       │   │       └── example
+│       │   │           └── fowltyphoidmonitor
+│       │   │               ├── config
+│       │   │               │   └── SupabaseConfig.java
+│       │   │               ├── data
+│       │   │               │   ├── api
+│       │   │               │   │   ├── ApiClient.java
+│       │   │               │   │   ├── ApiService.java
+│       │   │               │   │   ├── AuthService.java
+│       │   │               │   │   ├── RequestHandler.java
+│       │   │               │   │   └── SupabaseClient.java
+│       │   │               │   ├── models
+│       │   │               │   │   ├── Consultation.java
+│       │   │               │   │   ├── ConsultationMessage.java
+│       │   │               │   │   ├── DiseaseInfo.java
+│       │   │               │   │   ├── Farmer.java
+│       │   │               │   │   ├── Reminder.java
+│       │   │               │   │   ├── SymptomReport.java
+│       │   │               │   │   ├── SymptomsReport.java
+│       │   │               │   │   └── Vet.java
+│       │   │               │   └── requests
+│       │   │               │       ├── ApiResponse.java
+│       │   │               │       ├── AuthResponse.java
+│       │   │               │       ├── ConsultationAnswerRequest.java
+│       │   │               │       ├── LoginRequest.java
+│       │   │               │       ├── PhoneLoginRequest.java
+│       │   │               │       ├── RefreshTokenRequest.java
+│       │   │               │       ├── ReminderStatusRequest.java
+│       │   │               │       ├── SignUpRequest.java
+│       │   │               │       ├── User.java
+│       │   │               │       └── VetAvailabilityRequest.java
+│       │   │               ├── models
+│       │   │               │   └── Consultation.java
+│       │   │               ├── services
+│       │   │               │   ├── auth
+│       │   │               │   │   ├── AuthCallback.java
+│       │   │               │   │   ├── AuthCallbackWrapper.java
+│       │   │               │   │   ├── AuthManager.java
+│       │   │               │   │   ├── ProfileCallback.java
+│       │   │               │   │   └── UserManager.java
+│       │   │               │   ├── ConsultationService.java
+│       │   │               │   ├── notification
+│       │   │               │   │   ├── AlertManager.java
+│       │   │               │   │   ├── AppNotificationManager.java
+│       │   │               │   │   └── NotificationHelper.java
+│       │   │               │   ├── reminders
+│       │   │               │   │   ├── ReminderHelper.java
+│       │   │               │   │   └── ReminderReceiver.java
+│       │   │               │   └── SupabaseChatService.java
+│       │   │               ├── ui
+│       │   │               │   ├── admin
+│       │   │               │   │   ├── AdminConsultationActivity.java
+│       │   │               │   │   ├── AdminConsultationsActivity.java
+│       │   │               │   │   ├── AdminLoginActivity.java
+│       │   │               │   │   ├── AdminMainActivity.java
+│       │   │               │   │   ├── AdminProfileEditActivity.java
+│       │   │               │   │   ├── AdminRegisterActivity.java
+│       │   │               │   │   ├── AdminSettingsActivity.java
+│       │   │               │   │   ├── ManageDiseaseInfoActivity.java
+│       │   │               │   │   ├── ManageUsersActivity.java
+│       │   │               │   │   ├── ReportAnalyticsActivity.java
+│       │   │               │   │   └── SendAlertsActivity.java
+│       │   │               │   ├── advisor
+│       │   │               │   │   └── AdvisorConsultationActivity.java
+│       │   │               │   ├── auth
+│       │   │               │   │   ├── ForgotPasswordActivity.java
+│       │   │               │   │   ├── LauncherActivity.java
+│       │   │               │   │   ├── LoginActivity.java
+│       │   │               │   │   ├── LoginSelectionActivity.java
+│       │   │               │   │   ├── RegisterActivity.java
+│       │   │               │   │   ├── RegisterSelectionActivity.java
+│       │   │               │   │   └── UserTypeSelectionActivity.java
+│       │   │               │   ├── common
+│       │   │               │   │   ├── BaseChatActivity.java
+│       │   │               │   │   ├── ChatMessageAdapter.java
+│       │   │               │   │   ├── ConsultationActivity.java
+│       │   │               │   │   ├── ConsultationsAdapter.java
+│       │   │               │   │   ├── DashboardActivity.java
+│       │   │               │   │   ├── DashboardManagerActivity.java
+│       │   │               │   │   ├── DiseaseInfoActivity.java
+│       │   │               │   │   ├── HistoryActivity.java
+│       │   │               │   │   ├── LanguageSettingsActivity.java
+│       │   │               │   │   ├── NotificationItem.java
+│       │   │               │   │   ├── NotificationsActivity.java
+│       │   │               │   │   ├── NotificationsAdapter.java
+│       │   │               │   │   ├── PrivacySettingsActivity.java
+│       │   │               │   │   ├── ProfileActivity.java
+│       │   │               │   │   ├── ProfileSetupActivity.java
+│       │   │               │   │   ├── ReminderActivity.java
+│       │   │               │   │   ├── ReportData.java
+│       │   │               │   │   ├── ReportDetailsActivity.java
+│       │   │               │   │   ├── SetRemindersActivity.java
+│       │   │               │   │   ├── SettingsActivity.java
+│       │   │               │   │   ├── SubmitReportActivity.java
+│       │   │               │   │   ├── SymptomTrackerActivity.java
+│       │   │               │   │   └── VaccinationReminderActivity.java
+│       │   │               │   └── farmer
+│       │   │               │       ├── FarmerAlertsActivity.java
+│       │   │               │       ├── FarmerAnalyticsActivity.java
+│       │   │               │       ├── FarmerConsultationActivity.java
+│       │   │               │       ├── FarmerConsultationsActivity.java
+│       │   │               │       ├── FarmerProfileEditActivity.java
+│       │   │               │       ├── FarmerReportsActivity.java
+│       │   │               │       ├── FarmerReportsAdapter.java
+│       │   │               │       ├── FarmerSettingsActivity.java
+│       │   │               │       ├── MainActivity.java
+│       │   │               │       ├── ReportSymptomsActivity.java
+│       │   │               │       └── RequestConsultationActivity.java
+│       │   │               └── utils
+│       │   │                   └── SharedPreferencesManager.java
+│       │   └── res
+│       │       ├── anim
+│       │       │   ├── slide_in_bottom.xml
+│       │       │   ├── slide_in_top.xml
+│       │       │   └── splash_logo_animation.xml
+│       │       ├── drawable
+│       │       │   ├── alert_bg_critical.xml
+│       │       │   ├── alert_bg_info.xml
+│       │       │   ├── app_logo.xml
+│       │       │   ├── badge_background.xml
+│       │       │   ├── bottom_nav_item_color.xml
+│       │       │   ├── button_normal.xml
+│       │       │   ├── button_selected.xml
+│       │       │   ├── circle_background.xml
+│       │       │   ├── date_range_background.xml
+│       │       │   ├── default_admin_profile.xml
+│       │       │   ├── default_profile.xml
+│       │       │   ├── gradient_admin_header_bg.xml
+│       │       │   ├── gradient_analytics_header_bg.xml
+│       │       │   ├── gradient_background.xml
+│       │       │   ├── gradient_header_bg.xml
+│       │       │   ├── ic_activity.xml
+│       │       │   ├── ic_add.xml
+│       │       │   ├── ic_admin.xml
+│       │       │   ├── ic_alarm.xml
+│       │       │   ├── ic_alert.xml
+│       │       │   ├── ic_analytics.xml
+│       │       │   ├── ic_app_logo.xml
+│       │       │   ├── ic_arrow_forward.xml
+│       │       │   ├── ic_assessment_24dp.xml
+│       │       │   ├── ic_back.xml
+│       │       │   ├── ic_bird.xml
+│       │       │   ├── ic_book.xml
+│       │       │   ├── ic_calendar_today_24dp.xml
+│       │       │   ├── ic_chart.xml
+│       │       │   ├── ic_check.xml
+│       │       │   ├── ic_chicken.xml
+│       │       │   ├── ic_close.xml
+│       │       │   ├── ic_compare.xml
+│       │       │   ├── ic_consultations.xml
+│       │       │   ├── ic_consultation.xml
+│       │       │   ├── ic_dashboard.xml
+│       │       │   ├── ic_delete.xml
+│       │       │   ├── ic_done_all.xml
+│       │       │   ├── ic_edit.xml
+│       │       │   ├── ic_email.xml
+│       │       │   ├── ic_expand_more.xml
+│       │       │   ├── ic_facebook.xml
+│       │       │   ├── ic_farmers.xml
+│       │       │   ├── ic_farm.xml
+│       │       │   ├── ic_file_download_24dp.xml
+│       │       │   ├── ic_flash.xml
+│       │       │   ├── ic_google.xml
+│       │       │   ├── ic_health_monitor.xml
+│       │       │   ├── ic_help.xml
+│       │       │   ├── ic_history.xml
+│       │       │   ├── ic_home.xml
+│       │       │   ├── ic_info.xml
+│       │       │   ├── ic_language.xml
+│       │       │   ├── ic_launcher_background.xml
+│       │       │   ├── ic_launcher_foreground.xml
+│       │       │   ├── ic_location.xml
+│       │       │   ├── ic_lock.xml
+│       │       │   ├── ic_login.xml
+│       │       │   ├── ic_logout.xml
+│       │       │   ├── ic_map.xml
+│       │       │   ├── ic_medical.xml
+│       │       │   ├── ic_message.xml
+│       │       │   ├── ic_notifications.xml
+│       │       │   ├── icon_causes.xml
+│       │       │   ├── icon_prevention.xml
+│       │       │   ├── icon_symptoms.xml
+│       │       │   ├── icon_treatment.xml
+│       │       │   ├── ic_person.xml
+│       │       │   ├── ic_pet.xml
+│       │       │   ├── ic_phone.xml
+│       │       │   ├── ic_plus.xml
+│       │       │   ├── ic_privacy.xml
+│       │       │   ├── ic_profile_placeholder.xml
+│       │       │   ├── ic_profile.xml
+│       │       │   ├── ic_register.xml
+│       │       │   ├── ic_reminder.xml
+│       │       │   ├── ic_report_add.xml
+│       │       │   ├── ic_report_empty.xml
+│       │       │   ├── ic_reports.xml
+│       │       │   ├── ic_report.xml
+│       │       │   ├── ic_save.xml
+│       │       │   ├── ic_settings.xml
+│       │       │   ├── ic_track.xml
+│       │       │   ├── ic_trending_up.xml
+│       │       │   ├── ic_user_circle.xml
+│       │       │   ├── ic_user.xml
+│       │       │   ├── ic_vaccine.xml
+│       │       │   ├── ic_veterenian.xml
+│       │       │   ├── ic_warning.xml
+│       │       │   ├── info_background.xml
+│       │       │   ├── my_message_background.xml
+│       │       │   ├── notification_badge_bg.xml
+│       │       │   ├── other_message_background.xml
+│       │       │   ├── received_message_background.xml
+│       │       │   ├── rounded_button.xml
+│       │       │   ├── sent_message_background.xml
+│       │       │   ├── spinner_background.xml
+│       │       │   ├── splash_background.xml
+│       │       │   ├── stat_bg_blue.xml
+│       │       │   ├── stat_bg_green.xml
+│       │       │   ├── stat_bg_orange.xml
+│       │       │   ├── stat_item_background.xml
+│       │       │   ├── status_background.xml
+│       │       │   ├── status_indicator_bg.xml
+│       │       │   ├── system_message_background.xml
+│       │       │   ├── tvnotificationsdescription.xml
+│       │       │   └── unread_indicator.xml
+│       │       ├── layout
+│       │       │   ├── activity_admin_consultation.xml
+│       │       │   ├── activity_admin_login.xml
+│       │       │   ├── activity_admin_main.xml
+│       │       │   ├── activity_admin_navigation_analytics.xml
+│       │       │   ├── activity_admin_register.xml
+│       │       │   ├── activity_advisor_consultation.xml
+│       │       │   ├── activity_chat.xml
+│       │       │   ├── activity_consultation.xml
+│       │       │   ├── activity_dashboard.xml
+│       │       │   ├── activity_disease_info.xml
+│       │       │   ├── activity_farmer_consultations.xml
+│       │       │   ├── activity_farmer_consultation.xml
+│       │       │   ├── activity_farmer_reports.xml
+│       │       │   ├── activity_forgot_password.xml
+│       │       │   ├── activity_history.xml
+│       │       │   ├── activity_language_settings.xml
+│       │       │   ├── activity_launcher.xml
+│       │       │   ├── activity_login_selection.xml
+│       │       │   ├── activity_login.xml
+│       │       │   ├── activity_main.xml
+│       │       │   ├── activity_notifications.xml
+│       │       │   ├── activity_privacy_settings.xml
+│       │       │   ├── activity_profile_edit.xml
+│       │       │   ├── activity_profile_setup.xml
+│       │       │   ├── activity_profile.xml
+│       │       │   ├── activity_register_selection.xml
+│       │       │   ├── activity_register.xml
+│       │       │   ├── activity_reminder.xml
+│       │       │   ├── activity_report_analytics.xml
+│       │       │   ├── activity_report_details.xml
+│       │       │   ├── activity_report_symptoms.xml
+│       │       │   ├── activity_request_consultation.xml
+│       │       │   ├── activity_set_reminders.xml
+│       │       │   ├── activity_settings.xml
+│       │       │   ├── activity_submit_report.xml
+│       │       │   ├── activity_symptom_tracker.xml
+│       │       │   ├── activity_symptom_tracking.xml
+│       │       │   ├── activity_user_type_selection.xml
+│       │       │   ├── activity_vaccination_reminder.xml
+│       │       │   ├── activity_vet_consultation.xml
+│       │       │   ├── activity_view_reports.xml
+│       │       │   ├── activity_webview_auth.xml
+│       │       │   ├── dialog_add_reminder.xml
+│       │       │   ├── item_consultation.xml
+│       │       │   ├── item_farmer_report.xml
+│       │       │   ├── item_history.xml
+│       │       │   ├── item_my_message.xml
+│       │       │   ├── item_notification.xml
+│       │       │   ├── item_other_message.xml
+│       │       │   ├── item_received_message.xml
+│       │       │   ├── item_report_card.xml
+│       │       │   ├── item_sent_message.xml
+│       │       │   └── item_system_message.xml
+│       │       ├── menu
+│       │       │   ├── admin_bottom_nav_menu.xml
+│       │       │   ├── analytics_bottom_nav_menu.xml
+│       │       │   ├── bottom_navigation_farmer.xml
+│       │       │   ├── bottom_navigation_menu.xml
+│       │       │   ├── bottom_nav_menu.xml
+│       │       │   ├── dashboard_menu.xml
+│       │       │   └── farmer_bottom_navigation.xml
+│       │       ├── mipmap-anydpi-v26
+│       │       ├── mipmap-hdpi
+│       │       │   ├── ic_launcher.png
+│       │       │   └── ic_launcher_round.webp
+│       │       ├── mipmap-mdpi
+│       │       │   ├── ic_launcher.png
+│       │       │   └── ic_launcher_round.webp
+│       │       ├── mipmap-xhdpi
+│       │       │   ├── ic_launcher.png
+│       │       │   └── ic_launcher_round.webp
+│       │       ├── mipmap-xxhdpi
+│       │       │   ├── ic_launcher.png
+│       │       │   └── ic_launcher_round.webp
+│       │       ├── mipmap-xxxhdpi
+│       │       │   ├── ic_launcher.png
+│       │       │   └── ic_launcher_round.webp
+│       │       ├── navigation
+│       │       │   └── admin_nav_graph.xml
+│       │       ├── values
+│       │       │   ├── colors.xml
+│       │       │   ├── consultation_strings.xml
+│       │       │   ├── ids.xml
+│       │       │   ├── strings.xml
+│       │       │   └── styles.xml
+│       │       ├── values-night
+│       │       │   ├── ids.xml
+│       │       │   └── themes.xml
+│       │       └── xml
+│       │           ├── backup_rules.xml
+│       │           └── data_extraction_rules.xml
+│       └── test
+│           └── java
+│               └── com
+│                   └── example
+│                       └── fowltyphoidmonitor
+│                           └── ExampleUnitTest.java
+├── APP_TESTING_GUIDE.md
+├── build.gradle
+├── build_log.txt
+├── CHAT_INTEGRATION_GUIDE.md
+├── CONSULTATION_RESTRUCTURING_GUIDE.md
+├── diagnose_supabase.sh
+├── FARMER_INTERFACE_ANALYSIS.md
+├── FARMER_INTERFACE_VERIFICATION_COMPLETE.md
+├── FARMER_QUICK_ACTION_FIXES.md
+├── FARMER_REPORT_VET_INTEGRATION.md
+├── filetree.txt
+├── fix_auth_callbacks.sh
+├── fix_profile_issues.sh
+├── gradle
+│   ├── libs.versions.toml
+│   └── wrapper
+│       ├── gradle-wrapper.jar
+│       └── gradle-wrapper.properties
+├── gradle.properties
+├── gradlew
+├── gradlew.bat
+├── init_rls.sql
+├── init_tables.sql
+├── KISWAHILI_UI_TRANSLATION.md
+├── KUKU_ASSISTANT_ARCHITECTURE.md
+├── KUKU_ASSISTANT_COMPREHENSIVE_GUIDE.md
+├── KUKU_CONSULTATION_REFACTOR_COMPLETE.md
+├── local.properties
+├── LOGIN_FLOW_FIXED.md
+├── MWONGOZO_WA_KUJARIBU_PROGRAMU.md
+├── PROFILE_FIXES_SUMMARY.md
+├── settings.gradle
+├── supabase
+│   ├── config.toml
+│   └── migrations
+│       ├── 20250628154137_initial_schema.sql
+│       ├── 20250628154204_initial_schema.sql
+│       ├── 20250704001_kuku_assistant_schema.sql
+│       └── 20250704002_user_type_fix.sql
+├── supabase_immediate_fix.sql
+├── SUPABASE_SETUP_GUIDE.md
+├── test_app.sh
+└── WASIFU_NAVIGATION_FIX.md
+
+54 directories, 326 files

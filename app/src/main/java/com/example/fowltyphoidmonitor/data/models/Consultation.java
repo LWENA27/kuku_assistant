@@ -1,4 +1,4 @@
-package com.example.fowltyphoidmonitor.models;
+package com.example.fowltyphoidmonitor.data.models;
 import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 
@@ -68,4 +68,19 @@ public class Consultation {
 
     public String getPriority() { return priority; }
     public void setPriority(String priority) { this.priority = priority; }
+
+    // Add getId method for compatibility - returns consultationId
+    public Integer getId() { 
+        return consultationId; 
+    }
+    
+    // Overload setFarmerId method to accept a String parameter
+    public void setFarmerId(String farmerIdStr) {
+        try {
+            this.farmerId = Integer.parseInt(farmerIdStr);
+        } catch (NumberFormatException e) {
+            // Handle the case where the ID isn't a valid integer
+            this.farmerId = null;
+        }
+    }
 }

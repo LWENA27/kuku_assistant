@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.example.fowltyphoidmonitor.models.Farmer;
-import com.example.fowltyphoidmonitor.models.Vet;
+import com.example.fowltyphoidmonitor.data.models.Farmer;
+import com.example.fowltyphoidmonitor.data.models.Vet;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;

@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.fowltyphoidmonitor.R;
-import com.example.fowltyphoidmonitor.ui.admin.AdminLoginActivity;
 import com.example.fowltyphoidmonitor.ui.auth.LoginActivity;
 import com.google.android.material.button.MaterialButton;
 
@@ -31,7 +30,7 @@ public class RequestConsultationActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "FowlTyphoidMonitorPrefs";
     private static final String KEY_USERNAME = "username";
     private static final String KEY_USER_TYPE = "userType";
-    private static final String USER_TYPE_VET = "vet";
+    // Removed: Only 'admin' and 'farmer' supported
     private static final String USER_TYPE_FARMER = "farmer";
     private static final String TAG = "RequestConsultationActivity";
 
@@ -395,12 +394,8 @@ public class RequestConsultationActivity extends AppCompatActivity {
     }
 
     private void redirectToLogin() {
-        Intent intent;
-        if (USER_TYPE_VET.equals(currentUserType)) {
-            intent = new Intent(RequestConsultationActivity.this, AdminLoginActivity.class);
-        } else {
-            intent = new Intent(RequestConsultationActivity.this, LoginActivity.class);
-        }
+        // Only admin and farmer supported
+        Intent intent = new Intent(RequestConsultationActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();

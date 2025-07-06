@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Other consultation strings -->
+    <string name="send_message">Tuma</string>
+    <string name="typing_indicator">Anaandika...</string>
+    <string name="view_profile">Angalia Wasifu</string>
+    <string name="error_sending_message">Ujumbe haujatumwa: %1$s</string>
+    <string name="error_loading_messages">Imeshindikana kupata meseji: %1$s</string>
+</resources>

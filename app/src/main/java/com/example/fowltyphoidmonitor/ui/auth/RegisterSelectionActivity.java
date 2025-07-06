@@ -12,7 +12,7 @@ import androidx.cardview.widget.CardView;
 
 import com.example.fowltyphoidmonitor.services.auth.AuthManager;
 import com.example.fowltyphoidmonitor.R;
-import com.example.fowltyphoidmonitor.ui.admin.AdminRegisterActivity;
+import com.example.fowltyphoidmonitor.ui.vet.AdminRegisterActivity;
 import com.example.fowltyphoidmonitor.ui.farmer.MainActivity;
 import com.example.fowltyphoidmonitor.utils.SharedPreferencesManager;
 import com.google.android.material.button.MaterialButton;

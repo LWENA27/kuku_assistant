@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,14 +15,14 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.fowltyphoidmonitor.ui.auth.LoginActivity;
 import com.example.fowltyphoidmonitor.R;
+import com.example.fowltyphoidmonitor.ui.vet.AdminConsultationActivity;
+import com.example.fowltyphoidmonitor.ui.common.ConsultationActivity;
+import com.example.fowltyphoidmonitor.ui.auth.LoginActivity;
 import com.example.fowltyphoidmonitor.ui.common.ConsultationsAdapter;
 import com.example.fowltyphoidmonitor.ui.farmer.RequestConsultationActivity;
-import com.example.fowltyphoidmonitor.ui.vet.ConsultationDetailsActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.example.fowltyphoidmonitor.ui.common.ConsultationActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,7 +45,8 @@ public class FarmerConsultationsActivity extends AppCompatActivity {
     // UI Views
     private Toolbar toolbar;
     private ImageButton btnBack;
-    private TextView txtTitle, txtUserInfo, txtEmptyState;
+    private TextView txtTitle, txtUserInfo;
+    private LinearLayout emptyStateLayout;
     private RecyclerView recyclerViewConsultations;
     private FloatingActionButton fabNewConsultation;
     private MaterialButton btnRefresh;
@@ -94,7 +96,7 @@ public class FarmerConsultationsActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         txtTitle = findViewById(R.id.txtTitle);
         txtUserInfo = findViewById(R.id.txtUserInfo);
-        txtEmptyState = findViewById(R.id.txtEmptyState);
+        emptyStateLayout = findViewById(R.id.emptyStateLayout);
         recyclerViewConsultations = findViewById(R.id.recyclerViewConsultations);
         fabNewConsultation = findViewById(R.id.fabNewConsultation);
         btnRefresh = findViewById(R.id.btnRefresh);
@@ -195,29 +197,31 @@ public class FarmerConsultationsActivity extends AppCompatActivity {
                 prefs.getString(prefix + "requestedBy", ""),
                 prefs.getString(prefix + "userType", ""),
                 prefs.getLong(prefix + "timestamp", 0),
-                prefs.getString(prefix + "status", "PENDING"),
-                prefs.getString(prefix + "vetResponse", ""),
-                prefs.getString(prefix + "assignedVet", "")
+                prefs.getString(prefix + "status", "PENDING")
+                // REMOVED: vetResponse and assignedVet parameters - no longer supported
         );
     }
 
     private void updateUI() {
         if (consultationList.isEmpty()) {
             recyclerViewConsultations.setVisibility(View.GONE);
-            txtEmptyState.setVisibility(View.VISIBLE);
+            emptyStateLayout.setVisibility(View.VISIBLE);
         } else {
             recyclerViewConsultations.setVisibility(View.VISIBLE);
-            txtEmptyState.setVisibility(View.GONE);
+            emptyStateLayout.setVisibility(View.GONE);
         }
 
         adapter.notifyDataSetChanged();
     }
 
     private void onConsultationItemClick(ConsultationItem consultation) {
-        // Open consultation details
-        Intent intent = new Intent(this, ConsultationDetailsActivity.class);
-        intent.putExtra("CONSULTATION_ID", consultation.consultationId);
+        // Open the new farmer-specific consultation activity
+        Intent intent = new Intent(this, FarmerConsultationActivity.class);
+        intent.putExtra("consultation_id", consultation.consultationId);
+        intent.putExtra("consultation_title", "Mazungumzo: " + consultation.patientName);
         startActivity(intent);
+        
+        Log.d(TAG, "Opening consultation: " + consultation.consultationId);
     }
 
     private void openNewConsultationForm() {
@@ -278,14 +282,13 @@ public class FarmerConsultationsActivity extends AppCompatActivity {
         public final String userType;
         public final long timestamp;
         public final String status;
-        public final String vetResponse;
-        public final String assignedVet;
+        // Removed vetResponse and assignedVet fields
 
         public ConsultationItem(String consultationId, String patientName, String phoneNumber,
                                 String email, String consultationType, String urgencyLevel,
                                 String preferredDate, String preferredTime, String symptoms,
                                 String additionalNotes, String requestedBy, String userType,
-                                long timestamp, String status, String vetResponse, String assignedVet) {
+                                long timestamp, String status) {
             this.consultationId = consultationId;
             this.patientName = patientName;
             this.phoneNumber = phoneNumber;
@@ -300,8 +303,6 @@ public class FarmerConsultationsActivity extends AppCompatActivity {
             this.userType = userType;
             this.timestamp = timestamp;
             this.status = status;
-            this.vetResponse = vetResponse;
-            this.assignedVet = assignedVet;
         }
 
         public String getFormattedDate() {

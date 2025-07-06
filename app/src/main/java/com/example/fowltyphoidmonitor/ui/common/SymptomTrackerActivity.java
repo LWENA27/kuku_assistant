@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.fowltyphoidmonitor.R;
-import com.example.fowltyphoidmonitor.ui.admin.AdminMainActivity;
+import com.example.fowltyphoidmonitor.ui.vet.AdminMainActivity;
 import com.example.fowltyphoidmonitor.ui.farmer.MainActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;

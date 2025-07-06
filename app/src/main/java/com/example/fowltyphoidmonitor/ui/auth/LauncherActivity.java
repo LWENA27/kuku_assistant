@@ -16,12 +16,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.fowltyphoidmonitor.services.auth.AuthManager;
 import com.example.fowltyphoidmonitor.R;
 import com.example.fowltyphoidmonitor.data.requests.User;
-import com.example.fowltyphoidmonitor.ui.admin.AdminMainActivity;
+import com.example.fowltyphoidmonitor.ui.vet.AdminMainActivity;
 import com.example.fowltyphoidmonitor.ui.common.DashboardActivity;
 import com.example.fowltyphoidmonitor.ui.common.ProfileSetupActivity;
 import com.example.fowltyphoidmonitor.ui.farmer.FarmerProfileEditActivity;
 import com.example.fowltyphoidmonitor.ui.farmer.MainActivity;
-import com.example.fowltyphoidmonitor.ui.vet.VetConsultationActivity;
 import com.example.fowltyphoidmonitor.utils.SharedPreferencesManager;
 
 import java.text.SimpleDateFormat;
@@ -34,11 +33,11 @@ import java.util.TimeZone;
  *
  * Handles routing users to appropriate activities based on:
  * - Authentication status
- * - User type (Admin, Vet or Farmer)
+ * - User type (Admin or Farmer only - vet type removed)
  * - First-time app launch
  *
  * @author LWENA27
- * @updated 2025-06-17
+ * @updated 2025-07-03
  */
 public class LauncherActivity extends AppCompatActivity {
 
@@ -48,9 +47,8 @@ public class LauncherActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "FowlTyphoidMonitorPrefs";
     private static final String KEY_FIRST_LAUNCH = "isFirstLaunch";
 
-    // User role constants - now fully aligned with AuthManager
+    // User role constants - only admin and farmer supported
     private static final String USER_TYPE_ADMIN = "admin";
-    private static final String USER_TYPE_VET = "vet";
     private static final String USER_TYPE_FARMER = "farmer";
 
     // Splash screen delay
@@ -128,7 +126,6 @@ public class LauncherActivity extends AppCompatActivity {
             String userId = authManager.getUserId();
             String userType = authManager.getUserType();
             boolean isAdmin = authManager.isAdmin();
-            boolean isVet = authManager.isVet();
             boolean isFarmer = authManager.isFarmer();
 
             // Get user and extract metadata
@@ -143,7 +140,6 @@ public class LauncherActivity extends AppCompatActivity {
                     ", UserType=" + userType +
                     ", UserId=" + userId +
                     ", IsAdmin=" + isAdmin +
-                    ", IsVet=" + isVet +
                     ", IsFarmer=" + isFarmer +
                     ", ProfileComplete=" + isProfileComplete +
                     ", Metadata=" + metadataInfo);
@@ -274,7 +270,7 @@ public class LauncherActivity extends AppCompatActivity {
 
     /**
      * Route user to appropriate activity based on authentication and user type
-     * Enhanced to properly check user roles and handle routing with resilience
+     * Updated to only support admin and farmer user types
      */
     private void routeUser() {
         try {
@@ -313,9 +309,8 @@ public class LauncherActivity extends AppCompatActivity {
             // Double-check user state after token refresh
             logUserState();
 
-            // Get user role information
+            // Get user role information - only check admin and farmer
             boolean isAdmin = authManager.isAdmin();
-            boolean isVet = authManager.isVet();
             boolean isFarmer = authManager.isFarmer();
             String userType = authManager.getUserType();
 
@@ -323,7 +318,6 @@ public class LauncherActivity extends AppCompatActivity {
                     "LoggedIn: " + isLoggedIn +
                     ", Type: " + userType +
                     ", Admin: " + isAdmin +
-                    ", Vet: " + isVet +
                     ", Farmer: " + isFarmer);
 
             // If user type is not clearly determined, check from metadata directly
@@ -332,37 +326,27 @@ public class LauncherActivity extends AppCompatActivity {
                 if (user != null) {
                     userType = user.getUserType();
 
-                    // Update flags based on user type
-                    isVet = USER_TYPE_VET.equalsIgnoreCase(userType);
+                    // Update flags based on user type - only admin and farmer supported
                     isFarmer = USER_TYPE_FARMER.equalsIgnoreCase(userType);
                     isAdmin = USER_TYPE_ADMIN.equalsIgnoreCase(userType);
 
                     Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - User type from metadata: " +
-                            userType + " (Admin=" + isAdmin + ", Vet=" + isVet + ", Farmer=" + isFarmer + ")");
+                            userType + " (Admin=" + isAdmin + ", Farmer=" + isFarmer + ")");
                 }
             }
 
-            // Check if profile is complete
-            boolean isProfileComplete = authManager.isProfileComplete();
+            // Skip profile completion check for existing users
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Skipping profile completion check for existing user");
 
-            if (!isProfileComplete) {
-                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - User profile is incomplete, routing to profile setup");
-                navigateToProfileSetup(userType);
-                return;
-            }
-
-            // Profile is complete, route to appropriate main activity
+            // Route user directly to appropriate main activity
             updateLoadingMessage("Unaingia...");
 
-            // Direct user to the correct interface with explicit type checking
+            // Direct user to the correct interface - only admin or farmer
             if (isAdmin || USER_TYPE_ADMIN.equalsIgnoreCase(userType)) {
                 Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Routing admin user to admin interface");
                 navigateToAdminInterface();
-            } else if (isVet || USER_TYPE_VET.equalsIgnoreCase(userType)) {
-                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Routing vet user to vet interface");
-                navigateToVetInterface();
             } else {
-                // Default to farmer interface
+                // Default to farmer interface for all non-admin users
                 Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Routing user to farmer interface");
                 navigateToFarmerInterface();
             }
@@ -379,58 +363,54 @@ public class LauncherActivity extends AppCompatActivity {
     }
 
     /**
-     * Navigate to profile setup based on user type
+     * Navigate to profile setup based on user type - only admin and farmer supported
      */
     private void navigateToProfileSetup(String userType) {
         try {
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Navigating to profile setup for user type: " + userType);
+
             // Determine appropriate profile setup activity based on user type
             Intent intent;
 
-            // Check for specific profile setup activities first
-            if (USER_TYPE_VET.equalsIgnoreCase(userType) || authManager.isVet()) {
+            if (USER_TYPE_ADMIN.equalsIgnoreCase(userType) || authManager.isAdmin() || authManager.isVet()) {
+                // For admin/vet/doctor users, use AdminProfileEditActivity
                 try {
-                    Class<?> vetProfileClass = Class.forName(
-                            "com.example.fowltyphoidmonitor.screens.VetProfileEditActivity");
-                    intent = new Intent(this, vetProfileClass);
-                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Using VetProfileEditActivity");
-                } catch (ClassNotFoundException e) {
-                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - VetProfileEditActivity not found, using generic ProfileSetupActivity");
-                    intent = new Intent(this, ProfileSetupActivity.class);
-                }
-            } else if (USER_TYPE_ADMIN.equalsIgnoreCase(userType) || authManager.isAdmin()) {
-                try {
-                    Class<?> adminProfileClass = Class.forName(
-                            "com.example.fowltyphoidmonitor.screens.AdminProfileEditActivity");
-                    intent = new Intent(this, adminProfileClass);
-                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Using AdminProfileEditActivity");
-                } catch (ClassNotFoundException e) {
-                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - AdminProfileEditActivity not found, using generic ProfileSetupActivity");
-                    intent = new Intent(this, ProfileSetupActivity.class);
-                }
-            } else if (USER_TYPE_FARMER.equalsIgnoreCase(userType) || authManager.isFarmer()) {
-                try {
-                    intent = new Intent(this, FarmerProfileEditActivity.class);
-                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Using FarmerProfileEditActivity");
+                    intent = new Intent(this, com.example.fowltyphoidmonitor.ui.vet.AdminProfileEditActivity.class);
+                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Using AdminProfileEditActivity for admin/vet user");
                 } catch (Exception e) {
-                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - FarmerProfileEditActivity not available, using generic ProfileSetupActivity");
+                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - AdminProfileEditActivity failed, trying ProfileSetupActivity with admin flag");
                     intent = new Intent(this, ProfileSetupActivity.class);
+                    intent.putExtra("isAdmin", true);
+                    intent.putExtra("isVet", true);
                 }
             } else {
-                // Generic profile setup
-                intent = new Intent(this, ProfileSetupActivity.class);
-                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Using generic ProfileSetupActivity for unknown user type");
+                // Default to farmer profile setup for farmer users
+                try {
+                    intent = new Intent(this, FarmerProfileEditActivity.class);
+                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Using FarmerProfileEditActivity for farmer user");
+                } catch (Exception e) {
+                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - FarmerProfileEditActivity failed, using generic ProfileSetupActivity");
+                    intent = new Intent(this, ProfileSetupActivity.class);
+                    intent.putExtra("isFarmer", true);
+                }
             }
 
-            // Add user type to intent
+            // Add comprehensive user type information to intent
             intent.putExtra("USER_TYPE", userType);
             intent.putExtra("isNewUser", true);
+            intent.putExtra("isAdmin", authManager.isAdmin());
+            intent.putExtra("isVet", authManager.isVet());
+            intent.putExtra("isFarmer", authManager.isFarmer());
+            intent.putExtra("userEmail", authManager.getUserEmail());
+            intent.putExtra("userId", authManager.getUserId());
 
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
-            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Navigated to profile setup for user type: " + userType);
+
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Successfully navigated to profile setup for user type: " + userType);
         } catch (Exception e) {
-            Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error navigating to profile setup: " + e.getMessage());
+            Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error navigating to profile setup: " + e.getMessage(), e);
             // Fallback to login selection
             safeNavigateToLoginSelection();
         }
@@ -548,32 +528,12 @@ public class LauncherActivity extends AppCompatActivity {
     }
 
     /**
-     * Navigate to admin interface with resilient fallback options
-     */
-    private void navigateToAdminInterface() {
-        try {
-            // First try AdminMainActivity
-            Intent adminIntent = new Intent(LauncherActivity.this, AdminMainActivity.class);
-            adminIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(adminIntent);
-            finish();
-            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Successfully navigated to AdminMainActivity");
-        } catch (Exception e) {
-            Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error navigating to AdminMainActivity: " + e.getMessage());
-
-            // Try fallback admin activities through dynamic class loading
-            tryFallbackAdminActivities();
-        }
-    }
-
-    /**
      * Try various fallback admin activities through dynamic class loading
      */
     private void tryFallbackAdminActivities() {
         // List of possible admin activity class names
         String[] adminActivityClasses = {
                 "com.example.fowltyphoidmonitor.screens.AdminDashboardActivity",
-                "com.example.fowltyphoidmonitor.screens.VetMainActivity",
                 "com.example.fowltyphoidmonitor.screens.DashboardActivity"
         };
 
@@ -606,59 +566,45 @@ public class LauncherActivity extends AppCompatActivity {
     }
 
     /**
-     * Navigate to vet interface with resilient fallback options
+     * Navigate to admin interface with resilient fallback options
      */
-    private void navigateToVetInterface() {
+    private void navigateToAdminInterface() {
         try {
-            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Attempting to navigate vet user to appropriate interface");
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Attempting to navigate admin user to appropriate interface");
 
-            // Try AdminMainActivity first (vets use the same interface as admins)
+            // Try AdminMainActivity first
             try {
-                Intent vetIntent = new Intent(LauncherActivity.this, AdminMainActivity.class);
-                vetIntent.putExtra("USER_TYPE", USER_TYPE_VET);
-                vetIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(vetIntent);
+                Intent adminIntent = new Intent(LauncherActivity.this, AdminMainActivity.class);
+                adminIntent.putExtra("USER_TYPE", USER_TYPE_ADMIN);
+                adminIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(adminIntent);
                 finish();
-                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Successfully navigated to AdminMainActivity for vet");
+                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Successfully navigated to AdminMainActivity");
                 return;
             } catch (Exception e) {
-                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - AdminMainActivity not found, trying VetConsultationActivity");
+                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - AdminMainActivity not found, trying DashboardActivity");
             }
 
-            // Try VetConsultationActivity as secondary option
+            // Try DashboardActivity with admin type as secondary option
             try {
-                Intent vetIntent = new Intent(LauncherActivity.this, VetConsultationActivity.class);
-                vetIntent.putExtra("USER_TYPE", USER_TYPE_VET);
-                vetIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(vetIntent);
+                Intent adminIntent = new Intent(LauncherActivity.this, DashboardActivity.class);
+                adminIntent.putExtra("USER_TYPE", USER_TYPE_ADMIN);
+                adminIntent.putExtra("IS_ADMIN", true);
+                adminIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(adminIntent);
                 finish();
-                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Successfully navigated to VetConsultationActivity");
+                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Successfully navigated to admin dashboard");
                 return;
             } catch (Exception e) {
-                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - VetConsultationActivity not found, trying DashboardActivity");
+                Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - DashboardActivity failed, using fallback activities");
             }
 
-            // Try DashboardActivity with vet type as tertiary option
-            try {
-                Intent vetIntent = new Intent(LauncherActivity.this, DashboardActivity.class);
-                vetIntent.putExtra("USER_TYPE", USER_TYPE_VET);
-                vetIntent.putExtra("IS_VET", true);
-                vetIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(vetIntent);
-                finish();
-                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Successfully navigated to vet dashboard");
-                return;
-            } catch (Exception e) {
-                Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - DashboardActivity failed, using login selection fallback");
-            }
-
-            // Final fallback: go back to login selection instead of wrong interface
-            Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - All vet interface options failed, returning to login selection");
-            safeNavigateToLoginSelection();
+            // Try other fallback activities
+            tryFallbackAdminActivities();
 
         } catch (Exception e) {
-            Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error navigating to vet interface: " + e.getMessage());
-            // Ultimate fallback: go to login selection instead of wrong interface
+            Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error navigating to admin interface: " + e.getMessage());
+            // Ultimate fallback: go to login selection
             safeNavigateToLoginSelection();
         }
     }
@@ -724,14 +670,13 @@ public class LauncherActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - LauncherActivity paused");
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - LauncherActivity resumed");
+        // Optional: refresh user state when activity resumes
+        try {
+            logUserState();
+        } catch (Exception e) {
+            Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error in onResume: " + e.getMessage());
+        }
     }
 }

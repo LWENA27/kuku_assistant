@@ -1,4 +1,4 @@
-package com.example.fowltyphoidmonitor.models;
+package com.example.fowltyphoidmonitor.data.models;
 import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 

@@ -6,13 +6,16 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
+import android.Manifest;
 import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.fowltyphoidmonitor.services.auth.UserManager;
-import com.example.fowltyphoidmonitor.ui.admin.AdminMainActivity;
+import com.example.fowltyphoidmonitor.ui.vet.AdminMainActivity;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
@@ -695,7 +698,17 @@ public class AlertManager {
                         .bigText(alert.message));
             }
 
-            notificationManager.notify(alert.id.hashCode(), builder.build());
+            // Check for notification permission (Android 13+)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    notificationManager.notify(alert.id.hashCode(), builder.build());
+                } else {
+                    Log.e(TAG, "Notification permission not granted");
+                }
+            } else {
+                notificationManager.notify(alert.id.hashCode(), builder.build());
+            }
 
         } catch (Exception e) {
             Log.e(TAG, "Error sending notification: " + e.getMessage());

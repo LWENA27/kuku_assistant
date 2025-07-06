@@ -6,17 +6,17 @@
         android:title="Nyumbani" />
     
     <item
-        android:id="@+id/navigation_reports"
+        android:id="@+id/navigation_report"
         android:icon="@drawable/ic_reports"
         android:title="Ripoti" />
-    
-    <item
-        android:id="@+id/navigation_health"
-        android:icon="@drawable/ic_health_monitor"
-        android:title="Afya" />
     
     <item
         android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_profile"
         android:title="Wasifu" />
+    
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="Mipangilio" />
 </menu>

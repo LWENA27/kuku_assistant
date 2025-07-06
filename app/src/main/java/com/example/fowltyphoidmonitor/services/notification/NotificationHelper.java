@@ -12,7 +12,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.fowltyphoidmonitor.R;
-import com.example.fowltyphoidmonitor.ui.admin.AdminMainActivity;
+import com.example.fowltyphoidmonitor.ui.vet.AdminMainActivity;
 import com.example.fowltyphoidmonitor.ui.farmer.MainActivity;
 
 public class NotificationHelper {

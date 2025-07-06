@@ -256,6 +256,7 @@
                         android:layout_marginBottom="16dp" />
 
                     <LinearLayout
+                        android:id="@+id/llQuickActions"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -484,6 +485,28 @@
                             app:iconGravity="start"
                             app:iconPadding="16dp"
                             app:iconTint="@color/info_color"
+                            app:cornerRadius="12dp"
+                            app:strokeColor="@color/divider_color"
+                            app:strokeWidth="1dp"
+                            android:layout_marginBottom="12dp"
+                            android:gravity="start|center_vertical"
+                            android:paddingStart="20dp"
+                            android:paddingEnd="20dp" />
+
+                        <!-- Logout -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnLogout"
+                            android:layout_width="match_parent"
+                            android:layout_height="60dp"
+                            android:text="Toka"
+                            android:textColor="@color/error_color"
+                            android:textSize="16sp"
+                            android:textAllCaps="false"
+                            app:backgroundTint="@color/surface_color"
+                            app:icon="@drawable/ic_logout"
+                            app:iconGravity="start"
+                            app:iconPadding="16dp"
+                            app:iconTint="@color/error_color"
                             app:cornerRadius="12dp"
                             app:strokeColor="@color/divider_color"
                             app:strokeWidth="1dp"

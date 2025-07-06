@@ -1,5 +1,7 @@
 package com.example.fowltyphoidmonitor.ui.farmer;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +11,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.AsyncTask;
+import org.json.JSONObject;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +30,10 @@ public class ReportSymptomsActivity extends AppCompatActivity implements BottomN
     Button submitSymptoms, btnContactVet;
     TextView suggestionOutput;
     BottomNavigationView bottomNavigationView;
+
+    // Supabase REST endpoint and anon key (replace with your actual values)
+    private static final String SUPABASE_URL = "https://YOUR_SUPABASE_PROJECT_ID.supabase.co/rest/v1/problems";
+    private static final String SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +56,18 @@ public class ReportSymptomsActivity extends AppCompatActivity implements BottomN
             boolean hasFever = fever.isChecked();
             boolean hasDiarrhea = diarrhea.isChecked();
             boolean hasLossAppetite = lossAppetite.isChecked();
+            boolean hasDecreasedEggProduction = false;
+            CheckBox cb = findViewById(R.id.decreasedEggProduction);
+            if (cb != null) hasDecreasedEggProduction = cb.isChecked();
 
+            StringBuilder symptoms = new StringBuilder();
+            if (hasFever) symptoms.append("Homa Kali, ");
+            if (hasDiarrhea) symptoms.append("Kuhara ya Manjano, ");
+            if (hasLossAppetite) symptoms.append("Kukosa Hamu ya Kula, ");
+            if (hasDecreasedEggProduction) symptoms.append("Kupungua kwa Mayai, ");
+            if (symptoms.length() > 2) symptoms.setLength(symptoms.length() - 2); // remove last comma
+
+            // Show local suggestion as before
             if (hasFever && hasLossAppetite) {
                 suggestionOutput.setText("Inawezekana ni Typhoid ya Kuku. Tafadhali wasiliana na daktari wa mifugo na watenge kuku walioathirika.");
             } else if (hasDiarrhea) {
@@ -53,18 +75,71 @@ public class ReportSymptomsActivity extends AppCompatActivity implements BottomN
             } else {
                 suggestionOutput.setText("Hakuna dalili kubwa. Kuku wanaonekana kuwa na afya njema.");
             }
+
+            // Submit to Supabase
+            if (symptoms.length() > 0) {
+                submitProblemToSupabase(symptoms.toString());
+            } else {
+                Toast.makeText(this, "Tafadhali chagua angalau dalili moja.", Toast.LENGTH_SHORT).show();
+            }
         });
 
         btnContactVet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // You can implement contact functionality here
-                // For example, open dialer with a vet's number or open contacts
+                // Open vet dialer or replace with chat if needed
                 Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:+255742694916")); // Replace with actual vet number
+                intent.setData(Uri.parse("tel:+255742694916")); // Replace with actual vet number or chat
                 startActivity(intent);
             }
         });
+    }
+
+    private void submitProblemToSupabase(String symptoms) {
+        // You may want to get farmer_id from AuthManager or SharedPreferences
+        String farmerId = "farmer_" + System.currentTimeMillis(); // Replace with real user id
+        new SubmitProblemTask().execute(farmerId, symptoms);
+    }
+
+    private class SubmitProblemTask extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... params) {
+            try {
+                URL url = new URL(SUPABASE_URL);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("apikey", SUPABASE_ANON_KEY);
+                conn.setRequestProperty("Authorization", "Bearer " + SUPABASE_ANON_KEY);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setDoOutput(true);
+
+                JSONObject json = new JSONObject();
+                json.put("farmer_id", params[0]);
+                json.put("symptoms", params[1]);
+                json.put("status", "open");
+
+                OutputStream os = conn.getOutputStream();
+                os.write(json.toString().getBytes());
+                os.flush();
+                os.close();
+
+                int responseCode = conn.getResponseCode();
+                conn.disconnect();
+                return responseCode == 201 || responseCode == 200;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (success) {
+                Toast.makeText(ReportSymptomsActivity.this, "Tatizo limewasilishwa kwa daktari.", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(ReportSymptomsActivity.this, "Imeshindikana kutuma tatizo. Tafadhali jaribu tena.", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     @Override

@@ -9,85 +9,104 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 
 import com.example.fowltyphoidmonitor.R;
-import com.example.fowltyphoidmonitor.ui.vet.VetConsultationActivity;
+import com.example.fowltyphoidmonitor.data.models.ConsultationMessage;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Custom adapter for displaying chat messages with different layouts based on message type
+ * Updated to work with ConsultationMessage objects for Supabase integration
  */
-public class ChatMessageAdapter extends ArrayAdapter<VetConsultationActivity.ChatMessage> {
+public class ChatMessageAdapter extends ArrayAdapter<ConsultationMessage> {
+
+    private static final int VIEW_TYPE_MY_MESSAGE = 0;
+    private static final int VIEW_TYPE_OTHER_MESSAGE = 1;
+    private static final int VIEW_TYPE_COUNT = 2;
 
     private Context context;
+    private String currentUserId;
 
-    public ChatMessageAdapter(Context context, ArrayList<VetConsultationActivity.ChatMessage> messages) {
+    public ChatMessageAdapter(Context context, ArrayList<ConsultationMessage> messages, String currentUserId) {
         super(context, 0, messages);
         this.context = context;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        VetConsultationActivity.ChatMessage message = getItem(position);
-
-        // Determine which layout to use based on message type and sender
-        int layoutResource;
-        if (message.getType() == VetConsultationActivity.ChatMessage.MessageType.SYSTEM) {
-            layoutResource = R.layout.item_system_message;
-        } else if (message.isFromCurrentUser()) {
-            layoutResource = R.layout.item_sent_message;
-        } else {
-            layoutResource = R.layout.item_received_message;
-        }
-
-        // Inflate the appropriate layout
-        if (convertView == null || getItemViewType(position) != getViewTypeForLayout(layoutResource)) {
-            convertView = LayoutInflater.from(getContext()).inflate(layoutResource, parent, false);
-        }
-
-        // Set the message content
-        TextView messageTextView = convertView.findViewById(R.id.messageTextView);
-        TextView senderTextView = convertView.findViewById(R.id.senderTextView);
-        TextView timeTextView = convertView.findViewById(R.id.timeTextView);
-
-        // Set message text
-        messageTextView.setText(message.getMessage());
-
-        // Set sender name if it's a non-system message
-        if (message.getType() != VetConsultationActivity.ChatMessage.MessageType.SYSTEM) {
-            senderTextView.setText(message.getSender());
-        }
-
-        // Set timestamp
-        timeTextView.setText(message.getFormattedTime());
-
-        return convertView;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        VetConsultationActivity.ChatMessage message = getItem(position);
-
-        if (message.getType() == VetConsultationActivity.ChatMessage.MessageType.SYSTEM) {
-            return 0;
-        } else if (message.isFromCurrentUser()) {
-            return 1;
-        } else {
-            return 2;
-        }
+        this.currentUserId = currentUserId;
     }
 
     @Override
     public int getViewTypeCount() {
-        return 3; // System, sent, and received messages
+        return VIEW_TYPE_COUNT;
     }
 
-    private int getViewTypeForLayout(int layoutResource) {
-        if (layoutResource == R.layout.item_system_message) {
-            return 0;
-        } else if (layoutResource == R.layout.item_sent_message) {
-            return 1;
+    @Override
+    public int getItemViewType(int position) {
+        ConsultationMessage message = getItem(position);
+        if (message.getSenderId().equals(currentUserId)) {
+            return VIEW_TYPE_MY_MESSAGE;
         } else {
-            return 2;
+            return VIEW_TYPE_OTHER_MESSAGE;
+        }
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ConsultationMessage message = getItem(position);
+        int viewType = getItemViewType(position);
+
+        if (convertView == null) {
+            int layoutId = (viewType == VIEW_TYPE_MY_MESSAGE)
+                    ? R.layout.item_my_message
+                    : R.layout.item_other_message;
+
+            convertView = LayoutInflater.from(context).inflate(layoutId, parent, false);
+        }
+
+        TextView messageTextView = convertView.findViewById(R.id.txtMessage);
+        TextView timestampView = convertView.findViewById(R.id.txtTimestamp);
+        TextView senderView = convertView.findViewById(R.id.txtSender);
+
+        // Set message content
+        messageTextView.setText(message.getMessage());
+
+        // Format and set timestamp
+        String timestamp = formatTimestamp(message.getCreatedAt());
+        timestampView.setText(timestamp);
+
+        // Set sender name based on sender type
+        String senderName = getSenderDisplayName(message);
+        if (senderView != null) { // Only for other messages
+            senderView.setText(senderName);
+
+            // Style based on sender type
+            if ("vet".equals(message.getSenderType())) {
+                senderView.setTextColor(ContextCompat.getColor(context, android.R.color.holo_blue_dark));
+            } else {
+                senderView.setTextColor(ContextCompat.getColor(context, android.R.color.holo_green_dark));
+            }
+        }
+
+        return convertView;
+    }
+
+    private String formatTimestamp(Date timestamp) {
+        if (timestamp == null) {
+            return "";
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault());
+        return sdf.format(timestamp);
+    }
+
+    private String getSenderDisplayName(ConsultationMessage message) {
+        String senderType = message.getSenderType();
+        if ("vet".equals(senderType)) {
+            return "Mshauri";
+        } else if ("farmer".equals(senderType)) {
+            return "Mfugaji";
+        } else {
+            return "Unknown";
         }
     }
 }

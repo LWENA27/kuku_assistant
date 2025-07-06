@@ -1,4 +1,4 @@
-package com.example.fowltyphoidmonitor.models;
+package com.example.fowltyphoidmonitor.data.models;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -100,6 +100,15 @@ public class Vet {
 
     public Integer getExperienceYears() { return experienceYears; }
     public void setExperienceYears(Integer experienceYears) { this.experienceYears = experienceYears; }
+
+    // Add this method to fix AuthManager references
+    public String getName() {
+        return fullName;
+    }
+
+    public void setName(String name) {
+        this.fullName = name;
+    }
 
     // For convenience with text fields
     public String getExperience() {

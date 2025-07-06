@@ -14,7 +14,7 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 
 import com.example.fowltyphoidmonitor.R;
-import com.example.fowltyphoidmonitor.ui.admin.AdminMainActivity;
+import com.example.fowltyphoidmonitor.ui.vet.AdminMainActivity;
 import com.example.fowltyphoidmonitor.ui.farmer.MainActivity;
 
 public class ReminderReceiver extends BroadcastReceiver {

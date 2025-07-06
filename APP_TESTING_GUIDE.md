@@ -1,123 +1,193 @@
-# 📱 App Testing Instructions
+# Kuku Assistant App Testing Guide
 
-## Before Testing - Important!
+This guide will walk you through testing all key features of the Kuku Assistant application after installation, with special focus on the recently restructured chat/consultation functionality.
 
-⚠️ **FIRST**: Make sure you've applied the database fix!
+## Installation Instructions
 
-1. Go to your Supabase dashboard
-2. Open SQL Editor  
-3. Run the script from `database_fix.sql`
-4. Verify it completed successfully
+### 1. Build and Install the App
 
-## Building and Installing the App
+First, let's build and install the app on your device or emulator:
 
-### Option 1: Using Android Studio (Recommended)
 ```bash
-# Open terminal in project root
-./gradlew clean
+# Make sure gradlew is executable
+chmod +x gradlew
+
+# Build debug APK
 ./gradlew assembleDebug
 
-# The APK will be at:
-# app/build/outputs/apk/debug/app-debug.apk
+# Install on connected device/emulator
+./gradlew installDebug
 ```
 
-### Option 2: Using Command Line
-```bash
-# Build the app
-./gradlew clean assembleDebug
+Alternatively, you can use the VS Code tasks:
+1. Run "Android: Make gradlew executable" task
+2. Run "Android: Build Debug" task
+3. Run "Android: Install Debug" task
 
-# Install on connected device
-adb install app/build/outputs/apk/debug/app-debug.apk
+### 2. Connect to Supabase Backend
 
-# Or install and launch
-adb install -r app/build/outputs/apk/debug/app-debug.apk
-adb shell am start -n com.example.fowltyphoidmonitor/.ui.auth.LoginActivity
-```
+The app uses Supabase for backend services. Make sure your device has internet connectivity to connect to the Supabase instance.
 
-### Option 3: Direct Installation (if APK exists)
-```bash
-# Check for existing APK
-find . -name "*.apk" -type f
+## Testing Key Features
 
-# Install if found
-adb install -r path/to/app-debug.apk
-```
+### A. Authentication & User Management
 
-## 🧪 Testing the Vet Registration Fix
+#### 1. Registration
+- Open the app and navigate to the registration screen
+- Test creating a new account with valid credentials
+- Verify validation for:
+  - Empty fields
+  - Invalid email format
+  - Password complexity requirements
+  - Duplicate accounts
 
-### Test Steps:
+#### 2. Login
+- Test login with valid credentials
+- Test login with invalid credentials
+- Test "Remember Me" functionality
+- Test "Forgot Password" flow
+- Verify proper error messages
 
-1. **Launch the app**
-2. **Go to registration** → Select "Veterinarian"  
-3. **Fill in the form**:
-   - Name: "Dr. Test Vet"
-   - Email: "test@vet.com" 
-   - Phone: "+254700000000"
-   - Specialty: "Magonjwa ya kuku"
-   - **Location: "Nairobi"** ← This should now work!
-   - Experience: "5"
-4. **Submit the form**
-5. **Check results**:
-   - ✅ **SUCCESS**: Profile created, navigates to main app
-   - ❌ **FAILURE**: Still shows location column error
+#### 3. User Profile
+- View and edit profile information
+- Upload/change profile photo
+- Update contact information
+- Verify changes persist after logout/login
 
-### Expected Results After Database Fix:
+### B. Dashboard Navigation
 
-| Test | Before Fix | After Fix |
-|------|------------|-----------|
-| Vet Registration | ❌ "location column" error | ✅ Success |
-| Location Field | ❌ Causes crash | ✅ Saves properly |
-| Profile Creation | ❌ Fails | ✅ Complete profile |
+- Test main navigation menu
+- Verify proper role-based access (farmer vs advisor views)
+- Test quick action buttons
+- Verify proper loading indicators
 
-## 🐛 If Testing Fails:
+### C. Farmer-Specific Features
 
-### 1. Check Database Fix Applied
-Run in Supabase SQL Editor:
-```sql
-SELECT column_name FROM information_schema.columns 
-WHERE table_name = 'vets' AND column_name = 'location';
-```
-Should return: `location`
+#### 1. Farm Management
+- Add/edit farm details
+- View farm summary
+- Record flock information
+- Test data validation
 
-### 2. Check App Logs
-```bash
-# View real-time logs
-adb logcat | grep -i "fowltyphoid\|vet\|location"
+#### 2. Health Monitoring
+- Record health observations
+- View health history
+- Test symptom tracking
 
-# Or filter for errors
-adb logcat | grep -E "(ERROR|FATAL)"
-```
+#### 3. Production Records
+- Add production data
+- View production history
+- Test data visualization
 
-### 3. Common Issues:
-- **Database not updated**: Re-run `database_fix.sql`
-- **App cache**: Clear app data or reinstall
-- **Network issues**: Check internet connection
-- **API keys**: Verify Supabase configuration
+### D. Chat/Consultation Features (Recently Restructured)
 
-## 📊 Testing Checklist:
+#### 1. Farmer Side Testing
 
-- [ ] Database fix applied successfully
-- [ ] App builds without errors  
-- [ ] App installs on device
-- [ ] Can navigate to vet registration
-- [ ] Location field accepts input
-- [ ] Form submits without "location column" error
-- [ ] Profile is created successfully
-- [ ] Can view created profile
+**Starting a New Consultation:**
+- From the farmer dashboard, navigate to consultations
+- Create a new consultation
+- Verify consultation ID is generated
+- Verify UI elements display correctly (message input, send button)
 
-## 🎉 Success Indicators:
+**Sending Messages:**
+- Type and send a message
+- Verify message appears in the chat
+- Verify correct user prefix ("Mfugaji: ")
+- Verify message persists if you exit and return
 
-✅ No "location column" errors in logs  
-✅ Vet profile created in database  
-✅ App navigates to main interface  
-✅ Location data saved and displayed  
+**Viewing Existing Consultations:**
+- Return to consultations list
+- Verify your new consultation appears
+- Open an existing consultation
+- Verify message history loads correctly
+- Test sorting and filtering (if applicable)
 
-## 📞 If You Need Help:
+**Offline Testing:**
+- Turn off internet connection
+- Try sending a message
+- Verify appropriate error handling
+- Verify message is saved locally
+- Restore internet connection
+- Verify message syncs to Supabase
 
-1. Share the logcat output showing any errors
-2. Confirm if database fix was applied
-3. Check if other vet registrations work
-4. Verify Supabase connection is working
+#### 2. Advisor Side Testing
+
+**Viewing Available Consultations:**
+- Log in as an advisor
+- Navigate to consultations list
+- Verify all assigned consultations are visible
+
+**Responding to Consultations:**
+- Open an existing consultation
+- Read farmer messages
+- Reply to the consultation
+- Verify your message appears with "Mshauri: " prefix
+- Verify messages are saved to Supabase
+
+**Consultation Management:**
+- Mark consultations as resolved (if applicable)
+- Filter consultations by status
+- Search for specific consultations
+
+#### 3. Error Handling
+
+- Test with poor network connectivity
+- Force close and reopen during active chat
+- Test with very long messages
+- Test with special characters
+- Test back navigation
+
+#### 4. Performance Testing
+
+- Test with large message history
+- Monitor app responsiveness
+- Check memory usage
+- Verify polling doesn't drain battery
+
+### E. Advisor-Specific Features
+
+- Test disease diagnosis tools
+- Test treatment recommendation features
+- Test analytics dashboard
+
+### F. Settings & Preferences
+
+- Test language switching
+- Test notification preferences
+- Test data usage settings
+
+## Reporting Issues
+
+If you encounter any issues during testing, please document:
+
+1. **Feature being tested:** (e.g., "Farmer Consultation Chat")
+2. **Steps to reproduce:** (e.g., "1. Log in as farmer, 2. Open existing consultation...")
+3. **Expected behavior:** (e.g., "Message should appear in chat")
+4. **Actual behavior:** (e.g., "App crashed with NullPointerException")
+5. **Device information:** (Model, Android version, etc.)
+6. **Screenshots:** (If applicable)
+
+Report issues through the project's issue tracking system.
+
+## Advanced Testing (for Developers)
+
+### API Integration Tests
+
+- Use the `diagnose_supabase.sh` script to test Supabase connectivity
+- Verify proper error handling when backend is unavailable
+- Test rate limiting handling
+
+### Authentication Security
+
+- Test token expiration handling
+- Test session persistence
+- Test proper logout
+
+### Data Synchronization
+
+- Test sync behavior after network interruptions
+- Verify conflict resolution
 
 ---
-**Remember**: The location column error should be completely resolved after applying the database fix!
+
+Happy testing! If you need assistance, please contact the development team.

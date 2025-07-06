@@ -47,6 +47,15 @@
     <string name="location_sharing">Location Sharing</string>
     <string name="location_sharing_description">Share farm location for regional outbreak monitoring and alerts</string>
 
+    <!-- Consultation -->
+    <string name="consultation_farmer_title">Ushauri wa Mtaalamu</string>
+    <string name="consultation_advisor_title">Ushauri kwa Mfugaji</string>
+    <string name="message_hint">Andika ujumbe...</string>
+    <string name="send_button">Tuma</string>
+    <string name="typing_indicator_farmer">Mshauri anaandika...</string>
+    <string name="typing_indicator_advisor">Mfugaji anaandika...</string>
+    <string name="view_farmer_profile">Taarifa za Mfugaji</string>
+
     <!-- Notifications -->
     <string name="notifications">Notifications</string>
     <string name="notifications_description">Receive alerts about potential fowl typhoid outbreaks in your area</string>
@@ -59,7 +68,7 @@
     <string name="welcome_first_time">Karibu! Inaandaa kwa mara ya kwanza...</string>
     <string name="error_occurred">Hitilafu imetokea. Inakuelekeza upya...</string>
 
-    Dashboard -->
+    <!-- Dashboard -->
     <string name="dashboard">Dashibodi</string>
     <string name="reports">Ripoti</string>
     <string name="consultations">Ushauri</string>
@@ -87,4 +96,19 @@
     <string name="authentication" />
     <string name="cancel" />
     <string name="title_activity_vet_profile_edit" />
+
+    <!-- Registration strings -->
+    <string name="hint_phone_number">Namba ya simu</string>
+    <string name="hint_password">Nenosiri</string>
+    <string name="hint_confirm_password">Thibitisha nenosiri</string>
+    <string name="btn_register">Jisajili</string>
+    <string name="btn_already_have_account">Una akaunti tayari? Ingia</string>
+    <string name="register_farmer_subtitle">Jisajili kama Mfugaji</string>
+    <string name="register_admin_subtitle">Jisajili kama Mtaalamu</string>
+    <string name="registration_error">Imeshindikana kujisajili. Tafadhali jaribu tena</string>
+    <string name="error_display_name_required">Jina linahitajika</string>
+    <string name="error_invalid_email">Barua pepe sio sahihi</string>
+    <string name="error_phone_required">Namba ya simu inahitajika</string>
+    <string name="error_password_length">Nenosiri linahitaji herufi 8 au zaidi</string>
+    <string name="error_passwords_dont_match">Manenosiri hayalingani</string>
 </resources>

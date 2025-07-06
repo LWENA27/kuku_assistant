@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.fowltyphoidmonitor">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Permissions -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
@@ -9,96 +9,124 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.FowlTyphoidMonitor">
+        android:theme="@style/Theme.FowlTyphoidMonitor"
+        tools:targetApi="31">
 
-        <!-- LAUNCHER ACTIVITY - Changed to launch LauncherActivity instead of MainActivity -->
+        <!-- Activities with screen support -->
         <activity
-            android:name=".ui.auth.LauncherActivity"
-            android:theme="@style/Theme.FowlTyphoidMonitor.Splash"
-            android:exported="true">
+            android:name=".ui.auth.LoginActivity"
+            android:exported="true"
+            android:theme="@style/Theme.FowlTyphoidMonitor"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|keyboardHidden|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- Farmer Activities -->
-        <activity android:name=".ui.farmer.MainActivity" android:exported="false" />
-        <activity android:name=".ui.farmer.FarmerProfileEditActivity" android:exported="false" />
-        <activity android:name=".ui.farmer.FarmerConsultationsActivity" android:exported="false" />
-        <activity android:name=".ui.farmer.FarmerReportsActivity" android:exported="false" />
-        <activity android:name=".ui.farmer.FarmerAlertsActivity" android:exported="false" />
-        <activity android:name=".ui.farmer.FarmerAnalyticsActivity" android:exported="false" />
-        <activity android:name=".ui.farmer.FarmerSettingsActivity" android:exported="false" />
-        <activity android:name=".ui.farmer.ReportSymptomsActivity" android:exported="false" />
-        <activity android:name=".ui.farmer.RequestConsultationActivity" android:exported="false" />
-
-        <!-- Vet Activities -->
-        <activity android:name=".ui.vet.VetConsultationActivity" android:exported="false" />
-        <activity android:name=".ui.vet.ViewReportsActivity" android:exported="false" />
-        <activity android:name=".ui.vet.ConsultationDetailsActivity" android:exported="false" />
         <activity
-            android:name=".ui.vet.VetProfileEditActivity"
-            android:label="@string/title_activity_vet_profile_edit"
-            android:windowSoftInputMode="adjustResize" />
+            android:name=".ui.auth.RegisterSelectionActivity"
+            android:exported="false"
+            android:theme="@style/Theme.FowlTyphoidMonitor"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:parentActivityName=".ui.auth.LoginActivity" />
 
-        <!-- Admin Activities -->
-        <activity android:name=".ui.admin.AdminLoginActivity" android:exported="false" />
-        <activity android:name=".ui.admin.AdminRegisterActivity" android:exported="false" />
-        <activity android:name=".ui.admin.AdminMainActivity" android:exported="false" />
-        <activity android:name=".ui.admin.AdminProfileEditActivity" android:exported="false" />
-        <activity android:name=".ui.admin.AdminConsultationsActivity" android:exported="false" />
-        <activity android:name=".ui.admin.AdminSettingsActivity" android:exported="false" />
-        <activity android:name=".ui.admin.ManageUsersActivity" android:exported="false" />
-        <activity android:name=".ui.admin.SendAlertsActivity" android:exported="false" />
-        <activity android:name=".ui.admin.ReportAnalyticsActivity" android:exported="false" />
-        <activity android:name=".ui.admin.ManageDiseaseInfoActivity" android:exported="false" />
+        <activity
+            android:name=".ui.auth.RegisterActivity"
+            android:exported="false"
+            android:theme="@style/Theme.FowlTyphoidMonitor"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:parentActivityName=".ui.auth.RegisterSelectionActivity" />
 
-        <!-- Auth Activities -->
-        <activity android:name=".ui.auth.LoginActivity" android:exported="false" />
-        <activity android:name=".ui.auth.LoginSelectionActivity" android:exported="false" />
-        <activity android:name=".ui.auth.RegisterActivity" android:exported="false" />
-        <activity android:name=".ui.auth.RegisterSelectionActivity" android:exported="false" />
-        <activity android:name=".ui.auth.UserTypeSelectionActivity" android:exported="false" />
-        <activity android:name=".ui.auth.ForgotPasswordActivity" android:exported="false" />
-        <activity android:name=".ui.auth.WebViewAuthActivity" android:exported="false" />
+        <!-- Farmer Activities -->
+        <activity
+            android:name=".ui.farmer.MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.FowlTyphoidMonitor" />
+        <activity
+            android:name=".ui.farmer.FarmerReportsActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.farmer.MainActivity" />
+        <activity
+            android:name=".ui.farmer.FarmerConsultationsActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.farmer.MainActivity" />
+        <activity
+            android:name=".ui.farmer.RequestConsultationActivity"
+            android:exported="false"
+            android:label="Omba Ushauri"
+            android:parentActivityName=".ui.farmer.FarmerConsultationsActivity" />
+        <activity
+            android:name=".ui.farmer.FarmerConsultationActivity"
+            android:exported="false"
+            android:label="Ushauri wa Mtaalamu"
+            android:parentActivityName=".ui.farmer.MainActivity" />
+        <activity
+            android:name=".ui.farmer.ReportSymptomsActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.farmer.MainActivity" />
 
-        <!-- Common UI Activities -->
-        <activity android:name=".ui.common.ProfileActivity" android:exported="false" />
-        <activity android:name=".ui.common.ProfileSetupActivity" android:exported="false" />
-        <activity android:name=".ui.common.DashboardActivity" android:exported="false" />
-        <activity android:name=".ui.common.DashboardManagerActivity" android:exported="false" />
-        <activity android:name=".ui.common.SettingsActivity" android:exported="false" />
-        <activity android:name=".ui.common.DiseaseInfoActivity" android:exported="false" />
-        <activity android:name=".ui.common.HistoryActivity" android:exported="false" />
-        <activity android:name=".ui.common.NotificationsActivity" android:exported="false" />
-        <activity android:name=".ui.common.ReminderActivity" android:exported="false" />
-        <activity android:name=".ui.common.SetRemindersActivity" android:exported="false" />
-        <activity android:name=".ui.common.SubmitReportActivity" android:exported="false" />
-        <activity android:name=".ui.common.SymptomTrackerActivity" android:exported="false" />
-        <activity android:name=".ui.common.VaccinationReminderActivity" android:exported="false" />
-        <activity android:name=".ui.common.ConsultationActivity" android:exported="false" />
-        <activity android:name=".ui.common.ReportDetailsActivity" android:exported="false" />
-        <activity android:name=".ui.common.LanguageSettingsActivity" android:exported="false" />
-        <activity android:name=".ui.common.PrivacySettingsActivity" android:exported="false" />
+        <!-- Admin/Advisor Activities -->
+        <activity
+            android:name=".ui.admin.AdminMainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.FowlTyphoidMonitor" />
+        <activity
+            android:name=".ui.advisor.AdvisorConsultationActivity"
+            android:exported="false"
+            android:label="Ushauri kwa Mfugaji"
+            android:parentActivityName=".ui.admin.AdminMainActivity" />
+            
+        <!-- Legacy activity, to be deprecated -->
+        <activity
+            android:name=".ui.admin.AdminConsultationActivity"
+            android:exported="false"
+            android:label="Mazungumzo na Daktari"
+            android:parentActivityName=".ui.farmer.MainActivity" />
 
-        <!-- Broadcast Receiver -->
-        <receiver
-            android:name=".services.reminders.ReminderReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
+        <!-- Common Activities -->
+        <activity
+            android:name=".ui.common.DiseaseInfoActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.farmer.MainActivity" />
+        <activity
+            android:name=".ui.common.SymptomTrackerActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.farmer.MainActivity" />
+        <activity
+            android:name=".ui.common.ReminderActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.farmer.MainActivity" />
+        <activity
+            android:name=".ui.common.SettingsActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.farmer.MainActivity" />
+        <activity
+            android:name=".ui.common.ProfileActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.farmer.MainActivity" />
+        <activity
+            android:name=".ui.farmer.FarmerProfileEditActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.common.ProfileActivity" />
+        <activity
+            android:name=".ui.common.HistoryActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.common.ProfileActivity" />
 
     </application>
+
 </manifest>

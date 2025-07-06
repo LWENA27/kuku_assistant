@@ -11,8 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.fowltyphoidmonitor.R;
-import com.example.fowltyphoidmonitor.ui.admin.AdminLoginActivity;
-import com.example.fowltyphoidmonitor.ui.admin.AdminMainActivity;
+import com.example.fowltyphoidmonitor.ui.vet.AdminMainActivity;
 import com.example.fowltyphoidmonitor.ui.farmer.MainActivity;
 
 public class UserTypeSelectionActivity extends AppCompatActivity {
@@ -98,7 +97,7 @@ public class UserTypeSelectionActivity extends AppCompatActivity {
         if (btnVetLogin != null) {
             btnVetLogin.setOnClickListener(v -> {
                 Log.d(TAG, "Vet login button clicked");
-                navigateToVetLogin();
+                navigateToAdminLogin();
             });
         }
     }
@@ -164,16 +163,16 @@ public class UserTypeSelectionActivity extends AppCompatActivity {
         }
     }
 
-    private void navigateToVetLogin() {
+    private void navigateToAdminLogin() {
         try {
-            Log.d(TAG, "Navigating to vet login...");
-            Intent intent = new Intent(UserTypeSelectionActivity.this, AdminLoginActivity.class);
+            Intent intent = new Intent(UserTypeSelectionActivity.this, LoginActivity.class);
+            intent.putExtra("userType", "vet");
+            intent.putExtra("fromSelection", true);
             startActivity(intent);
-            Log.d(TAG, "Successfully navigated to AdminLoginActivity");
-            // Don't finish this activity so user can go back to selection
+            Log.d(TAG, "Successfully navigated to LoginActivity for vet");
         } catch (Exception e) {
-            Log.e(TAG, "Error navigating to AdminLoginActivity: " + e.getMessage());
-            Toast.makeText(this, "AdminLoginActivity not found. Please check if it exists.", Toast.LENGTH_LONG).show();
+            Log.e(TAG, "Error navigating to LoginActivity for vet: " + e.getMessage());
+            Toast.makeText(this, "Login screen not found. Please check if it exists.", Toast.LENGTH_LONG).show();
         }
     }
 

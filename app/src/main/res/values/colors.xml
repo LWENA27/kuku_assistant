@@ -59,4 +59,12 @@
     <color name="error_light">#FFEBEE</color>
     <color name="info_light">#E3F2FD</color>
 
+    <!-- Chat Message Colors - Added for AdminConsultationActivity -->
+    <color name="sent_message_bg">#E3F2FD</color>
+    <color name="received_message_bg">#F5F5F5</color>
+
+    <!-- Additional common colors -->
+    <color name="light_gray">#F0F0F0</color>
+    <color name="black">#000000</color>
+
 </resources>
