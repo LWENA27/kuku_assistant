@@ -459,15 +459,13 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
     }
 
     private void displayFarmerData(Farmer farmer) {
-        // Set user information
+        // Set user information - only show actual farmer data, no fallbacks to mock data
         if (txtUsername != null) {
             String displayName = farmer.getFullName();
             if (displayName == null || displayName.isEmpty()) {
-                // Fallback to AuthManager or SharedPreferences
                 displayName = authManager.getDisplayName();
                 if (displayName == null || displayName.isEmpty()) {
-                    SharedPreferences prefs = getSharedPreferences("FowlTyphoidMonitorPrefs", MODE_PRIVATE);
-                    displayName = prefs.getString("username", "User");
+                    displayName = "Mfugaji"; // Generic farmer title if no name available
                 }
             }
             txtUsername.setText(displayName);
@@ -476,36 +474,22 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
         if (txtLocation != null) {
             String location = farmer.getFarmLocation();
             if (location == null || location.isEmpty()) {
-                // Fallback to SharedPreferences
-                SharedPreferences prefs = getSharedPreferences("FowlTyphoidMonitorPrefs", MODE_PRIVATE);
-                location = prefs.getString("location", "");
+                location = "Haijawekwa"; // Not set
             }
-            txtLocation.setText("Eneo: " + (location.isEmpty() ? "Haijawekwa" : location));
+            txtLocation.setText("Eneo: " + location);
         }
 
         if (txtFarmSize != null || txtTotalChickens != null) {
-            // Try different methods to get farm size
+            // Only show real farm data, no mock numbers
             String farmSizeStr = null;
 
-            // Try getBirdCount() first (most likely to have data)
-            if (farmer.getBirdCount() != null) {
+            if (farmer.getBirdCount() != null && farmer.getBirdCount() > 0) {
                 farmSizeStr = String.valueOf(farmer.getBirdCount());
-            }
-            // Try getFarmSize() as fallback
-            else if (farmer.getFarmSize() != null) {
+            } else if (farmer.getFarmSize() != null && !farmer.getFarmSize().isEmpty() && !farmer.getFarmSize().equals("0")) {
                 farmSizeStr = farmer.getFarmSize();
             }
-            // Fallback to SharedPreferences
-            else {
-                SharedPreferences prefs = getSharedPreferences("FowlTyphoidMonitorPrefs", MODE_PRIVATE);
-                int farmSize = prefs.getInt("farmSize", 0);
-                if (farmSize > 0) {
-                    farmSizeStr = String.valueOf(farmSize);
-                }
-            }
 
-            // Set the values
-            String displayText = farmSizeStr != null && !farmSizeStr.equals("0") ? farmSizeStr : "Haijawekwa";
+            String displayText = farmSizeStr != null ? farmSizeStr : "Haijawekwa";
 
             if (txtFarmSize != null) {
                 txtFarmSize.setText("Idadi ya kuku: " + displayText);
@@ -515,15 +499,17 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
                 txtTotalChickens.setText(displayText);
             }
         }
+
+        Log.d(TAG, "✅ Displayed real farmer data for: " + farmer.getFullName());
     }
 
     /**
-     * Creates a Farmer object from profile data returned by AuthManager
+     * Creates a Farmer object from profile data returned by AuthManager - uses only real data
      */
     private Farmer createFarmerFromProfile(Map<String, Object> profile) {
         Farmer farmer = new Farmer();
         
-        // Set basic user information
+        // Set basic user information from authenticated profile only
         if (profile.get("user_id") != null) {
             farmer.setUserId((String) profile.get("user_id"));
         }
@@ -537,23 +523,27 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
             farmer.setPhoneNumber((String) profile.get("phone"));
         }
         
-        // Try to get farm-specific data from SharedPreferences as fallback
-        SharedPreferences prefs = getSharedPreferences("FowlTyphoidMonitorPrefs", MODE_PRIVATE);
-        String location = prefs.getString("location", "");
-        String farmSize = prefs.getString("farm_size", "");
-        String birdCount = prefs.getString("bird_count", "");
-        
-        farmer.setFarmLocation(location);
-        farmer.setFarmSize(farmSize);
-        if (!birdCount.isEmpty()) {
+        // Set farm-specific data from profile (real data from database)
+        if (profile.get("farm_location") != null) {
+            farmer.setFarmLocation((String) profile.get("farm_location"));
+        }
+        if (profile.get("farm_size") != null) {
+            farmer.setFarmSize((String) profile.get("farm_size"));
+        }
+        if (profile.get("bird_count") != null) {
             try {
-                farmer.setBirdCount(Integer.parseInt(birdCount));
+                Object birdCountObj = profile.get("bird_count");
+                if (birdCountObj instanceof Integer) {
+                    farmer.setBirdCount((Integer) birdCountObj);
+                } else if (birdCountObj instanceof String) {
+                    farmer.setBirdCount(Integer.parseInt((String) birdCountObj));
+                }
             } catch (NumberFormatException e) {
-                Log.w(TAG, "Invalid bird count format: " + birdCount);
+                Log.w(TAG, "Invalid bird count format: " + profile.get("bird_count"));
             }
         }
         
-        Log.d(TAG, "📝 Created Farmer object from profile: " + farmer.getFullName());
+        Log.d(TAG, "📝 Created Farmer object from real profile data: " + farmer.getFullName());
         return farmer;
     }
 

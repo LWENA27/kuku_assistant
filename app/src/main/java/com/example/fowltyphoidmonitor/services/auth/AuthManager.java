@@ -820,6 +820,23 @@ public class AuthManager {
         void onError(String message);
     }
 
+    /**
+     * Callback interface for dashboard statistics loading
+     */
+    public interface StatsCallback {
+        /**
+         * Called when dashboard statistics are successfully loaded
+         * @param stats Map containing dashboard statistics
+         */
+        void onStatsLoaded(Map<String, Object> stats);
+
+        /**
+         * Called when an error occurs loading statistics
+         * @param error The error message
+         */
+        void onError(String error);
+    }
+
     public void signUpWithEmail(String email, String password, Map<String, Object> metadata, AuthCallback callback) {
         // Implementation
         SignUpRequest request = new SignUpRequest(email, password, metadata);
@@ -970,4 +987,64 @@ public class AuthManager {
     /**
      * Enhanced session validation that checks all required components
      */
+    public boolean validateSession() {
+        boolean valid = isSessionValid();
+
+        if (!valid) {
+            Log.w(TAG, "Session is not valid, performing logout");
+            logout();
+        }
+
+        return valid;
+    }
+
+    /**
+     * Load dashboard statistics for vet/admin users - returns real data from database
+     * @param callback Callback to handle the result
+     */
+    public void loadDashboardStats(StatsCallback callback) {
+        if (!isLoggedIn() || !isVet()) {
+            callback.onError("User not authorized to view dashboard statistics");
+            return;
+        }
+
+        Log.d(TAG, "Loading dashboard statistics from database...");
+
+        // Use API service to get real statistics from database
+        try {
+            Call<Map<String, Object>> call = apiService.getDashboardStats(getAccessToken());
+            call.enqueue(new Callback<Map<String, Object>>() {
+                @Override
+                public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        Map<String, Object> stats = response.body();
+                        Log.d(TAG, "✅ Dashboard statistics loaded successfully");
+                        callback.onStatsLoaded(stats);
+                    } else {
+                        Log.e(TAG, "Failed to load dashboard stats: " + response.code());
+                        // Return empty stats instead of mock data
+                        Map<String, Object> emptyStats = new HashMap<>();
+                        emptyStats.put("total_farmers", 0);
+                        emptyStats.put("active_reports", 0);
+                        emptyStats.put("pending_consultations", 0);
+                        callback.onStatsLoaded(emptyStats);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                    Log.e(TAG, "Error loading dashboard stats: " + t.getMessage());
+                    // Return empty stats instead of mock data
+                    Map<String, Object> emptyStats = new HashMap<>();
+                    emptyStats.put("total_farmers", 0);
+                    emptyStats.put("active_reports", 0);
+                    emptyStats.put("pending_consultations", 0);
+                    callback.onStatsLoaded(emptyStats);
+                }
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "Exception loading dashboard stats: " + e.getMessage());
+            callback.onError("Failed to load dashboard statistics");
+        }
+    }
 }

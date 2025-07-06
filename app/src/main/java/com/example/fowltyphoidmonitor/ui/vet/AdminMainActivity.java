@@ -16,6 +16,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.fowltyphoidmonitor.data.models.Vet;
+import com.example.fowltyphoidmonitor.services.auth.AuthManager;
 import com.example.fowltyphoidmonitor.ui.vet.AdminProfileEditActivity;
 import com.example.fowltyphoidmonitor.ui.vet.AdminSettingsActivity;
 import com.example.fowltyphoidmonitor.ui.farmer.FarmerAlertsActivity;
@@ -35,6 +37,8 @@ import com.example.fowltyphoidmonitor.ui.vet.AdminConsultationActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import java.util.Map;
 
 public class AdminMainActivity extends AppCompatActivity {
 
@@ -420,110 +424,173 @@ public class AdminMainActivity extends AppCompatActivity {
 
     // Data Loading Methods
     private void loadUserData() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        setLoading(true);
 
-        String userName, specialization, location;
+        authManager.loadUserProfile(new AuthManager.ProfileCallback() {
+            @Override
+            public void onProfileLoaded(Map<String, Object> profile) {
+                setLoading(false);
+                if (profile != null) {
+                    String userType = (String) profile.get("userType");
+                    Log.d(TAG, "📝 Profile loaded - userType: '" + userType + "'");
 
-        if (isAdminOrVet()) {
-            // Get admin/vet data
-            userName = prefs.getString("adminName", "Daktari");
-            specialization = prefs.getString("specialization", "Daktari wa Mifugo");
-            location = prefs.getString("adminLocation", "Unknown");
-        } else {
-            // Get farmer data
-            userName = prefs.getString("farmerName", "Mfugaji");
-            specialization = prefs.getString("farmType", "Mfugaji wa Kuku");
-            location = prefs.getString("farmerLocation", "Unknown");
+                    if ("vet".equals(userType) || "admin".equals(userType)) {
+                        // Create a Vet object from the profile data
+                        Vet vet = createVetFromProfile(profile);
+                        displayVetData(vet);
+                    } else {
+                        Log.e(TAG, "❌ Unexpected user type in vet activity: " + userType);
+                        Toast.makeText(AdminMainActivity.this, "You need a vet/admin account to access this area", Toast.LENGTH_SHORT).show();
+                        userLogout();
+                    }
+                } else {
+                    Log.e(TAG, "❌ Profile is null");
+                    Toast.makeText(AdminMainActivity.this, "Error loading profile", Toast.LENGTH_SHORT).show();
+                    userLogout();
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                setLoading(false);
+                Log.e(TAG, "Error loading profile: " + error);
+                Toast.makeText(AdminMainActivity.this, "Error loading your profile", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void displayVetData(Vet vet) {
+        // Set user information - only show actual vet data, no fallbacks to mock data
+        if (txtAdminName != null) {
+            String displayName = vet.getFullName();
+            if (displayName == null || displayName.isEmpty()) {
+                displayName = authManager.getDisplayName();
+                if (displayName == null || displayName.isEmpty()) {
+                    displayName = "Daktari"; // Generic vet title if no name available
+                }
+            }
+            txtAdminName.setText(displayName);
         }
 
-        // If name is empty, try to use username as fallback
-        if (userName.isEmpty() || userName.equals("Daktari") || userName.equals("Mfugaji")) {
-            String username = prefs.getString(KEY_USERNAME, "");
-            if (!username.isEmpty()) {
-                userName = username;
-                // Save it for future use
-                String nameKey = isAdminOrVet() ? "adminName" : "farmerName";
-                prefs.edit().putString(nameKey, username).apply();
+        if (txtSpecialization != null) {
+            String specialization = vet.getSpecialization();
+            if (specialization == null || specialization.isEmpty()) {
+                specialization = "Daktari wa Mifugo"; // Default specialization
+            }
+            txtSpecialization.setText(specialization);
+        }
+
+        if (txtLocation != null) {
+            String location = vet.getLocation();
+            if (location == null || location.isEmpty()) {
+                location = "Haijawekwa"; // Not set
+            }
+            txtLocation.setText("Eneo: " + location);
+        }
+
+        Log.d(TAG, "✅ Displayed real vet data for: " + vet.getFullName());
+    }
+
+    /**
+     * Creates a Vet object from profile data returned by AuthManager - uses only real data
+     */
+    private Vet createVetFromProfile(Map<String, Object> profile) {
+        Vet vet = new Vet();
+
+        // Set basic user information from authenticated profile only
+        if (profile.get("user_id") != null) {
+            vet.setUserId((String) profile.get("user_id"));
+        }
+        if (profile.get("email") != null) {
+            vet.setEmail((String) profile.get("email"));
+        }
+        if (profile.get("display_name") != null) {
+            vet.setFullName((String) profile.get("display_name"));
+        }
+        if (profile.get("phone") != null) {
+            vet.setPhoneNumber((String) profile.get("phone"));
+        }
+
+        // Set vet-specific data from profile (real data from database)
+        if (profile.get("specialization") != null) {
+            vet.setSpecialization((String) profile.get("specialization"));
+        }
+        if (profile.get("location") != null) {
+            vet.setLocation((String) profile.get("location"));
+        }
+        if (profile.get("license_number") != null) {
+            vet.setLicenseNumber((String) profile.get("license_number"));
+        }
+        if (profile.get("years_experience") != null) {
+            try {
+                Object experienceObj = profile.get("years_experience");
+                if (experienceObj instanceof Integer) {
+                    vet.setYearsExperience((Integer) experienceObj);
+                } else if (experienceObj instanceof String) {
+                    vet.setYearsExperience(Integer.parseInt((String) experienceObj));
+                }
+            } catch (NumberFormatException e) {
+                Log.w(TAG, "Invalid years experience format: " + profile.get("years_experience"));
             }
         }
 
-        setUserData(userName, specialization, location);
-
-        Log.d(TAG, "Loaded user data - Name: " + userName +
-                ", Specialization: " + specialization + ", Location: " + location);
-    }
-
-    private void setUserData(String userName, String specialization, String location) {
-        if (txtAdminName != null) txtAdminName.setText(userName);
-        if (txtSpecialization != null) txtSpecialization.setText(specialization);
-        if (txtLocation != null) txtLocation.setText("Eneo: " + location);
+        Log.d(TAG, "📝 Created Vet object from real profile data: " + vet.getFullName());
+        return vet;
     }
 
     private void loadDashboardStats() {
-        // Load dashboard statistics for admin/vet
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        // Load real dashboard statistics from database/API - no more mock data
+        setLoading(true);
 
-        // Get base values and add some variation for real-time feel
-        int baseFarmers = prefs.getInt("baseTotalFarmers", 125);
-        int baseReports = prefs.getInt("baseActiveReports", 8);
-        int baseConsultations = prefs.getInt("basePendingConsultations", 3);
+        authManager.loadDashboardStats(new AuthManager.StatsCallback() {
+            @Override
+            public void onStatsLoaded(Map<String, Object> stats) {
+                setLoading(false);
 
-        // Add slight variations to simulate real-time updates
-        int totalFarmers = baseFarmers + (int)(Math.random() * 5);
-        int activeReports = Math.max(0, baseReports + (int)(Math.random() * 6) - 2);
-        int pendingConsultations = Math.max(0, baseConsultations + (int)(Math.random() * 4) - 1);
+                // Display real statistics from database
+                int totalFarmers = getStatValue(stats, "total_farmers", 0);
+                int activeReports = getStatValue(stats, "active_reports", 0);
+                int pendingConsultations = getStatValue(stats, "pending_consultations", 0);
 
-        // Update the display
-        if (txtTotalFarmers != null) txtTotalFarmers.setText(String.valueOf(totalFarmers));
-        if (txtActiveReports != null) txtActiveReports.setText(String.valueOf(activeReports));
-        if (txtPendingConsultations != null) txtPendingConsultations.setText(String.valueOf(pendingConsultations));
+                // Update the display with real data
+                if (txtTotalFarmers != null) txtTotalFarmers.setText(String.valueOf(totalFarmers));
+                if (txtActiveReports != null) txtActiveReports.setText(String.valueOf(activeReports));
+                if (txtPendingConsultations != null) txtPendingConsultations.setText(String.valueOf(pendingConsultations));
 
-        // Update last refresh time
-        updateLastUpdatedTime();
+                // Update last refresh time
+                updateLastUpdatedTime();
 
-        // Save current values for consistency
-        prefs.edit()
-                .putInt("currentTotalFarmers", totalFarmers)
-                .putInt("currentActiveReports", activeReports)
-                .putInt("currentPendingConsultations", pendingConsultations)
-                .apply();
+                Log.d(TAG, "✅ Real dashboard stats loaded - Farmers: " + totalFarmers +
+                        ", Reports: " + activeReports + ", Consultations: " + pendingConsultations);
+            }
 
-        Log.d(TAG, "Dashboard stats updated - Farmers: " + totalFarmers +
-                ", Reports: " + activeReports + ", Consultations: " + pendingConsultations);
+            @Override
+            public void onError(String error) {
+                setLoading(false);
+                Log.e(TAG, "Error loading dashboard stats: " + error);
+
+                // Show zeros instead of mock data when there's an error
+                if (txtTotalFarmers != null) txtTotalFarmers.setText("0");
+                if (txtActiveReports != null) txtActiveReports.setText("0");
+                if (txtPendingConsultations != null) txtPendingConsultations.setText("0");
+
+                Toast.makeText(AdminMainActivity.this, "Error loading dashboard statistics", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void loadFarmerDashboard() {
-        // Load farmer-specific dashboard data
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-
-        // Get farmer-specific statistics
-        int myReports = prefs.getInt("farmerTotalReports", 0);
-        int pendingConsultations = prefs.getInt("farmerPendingConsultations", 0);
-        int receivedAlerts = prefs.getInt("farmerReceivedAlerts", 2);
-
-        // Update farmer dashboard display
-        if (txtTotalFarmers != null) {
-            txtTotalFarmers.setText(String.valueOf(myReports));
-            // Change label to reflect farmer context
-            TextView lblTotalFarmers = findViewById(R.id.lblTotalFarmers);
-            if (lblTotalFarmers != null) lblTotalFarmers.setText("Ripoti Zangu");
+    private int getStatValue(Map<String, Object> stats, String key, int defaultValue) {
+        try {
+            Object value = stats.get(key);
+            if (value instanceof Integer) {
+                return (Integer) value;
+            } else if (value instanceof String) {
+                return Integer.parseInt((String) value);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Error parsing stat value for " + key + ": " + e.getMessage());
         }
-
-        if (txtActiveReports != null) {
-            txtActiveReports.setText(String.valueOf(receivedAlerts));
-            TextView lblActiveReports = findViewById(R.id.lblActiveReports);
-            if (lblActiveReports != null) lblActiveReports.setText("Arifa Zilizopokelewa");
-        }
-
-        if (txtPendingConsultations != null) {
-            txtPendingConsultations.setText(String.valueOf(pendingConsultations));
-        }
-
-        // Update last refresh time
-        updateLastUpdatedTime();
-
-        Log.d(TAG, "Farmer dashboard updated - My Reports: " + myReports +
-                ", Received Alerts: " + receivedAlerts + ", Pending Consultations: " + pendingConsultations);
+        return defaultValue;
     }
 
     // View Initialization Methods
@@ -826,5 +893,41 @@ public class AdminMainActivity extends AppCompatActivity {
             Toast.makeText(this, "Kitu kimekosa: " + activityName, Toast.LENGTH_SHORT).show();
         }
     }
-}
 
+    private void loadFarmerDashboard() {
+        // Load real farmer-specific dashboard data - no mock data
+        setLoading(true);
+
+        authManager.loadUserProfile(new AuthManager.ProfileCallback() {
+            @Override
+            public void onProfileLoaded(Map<String, Object> profile) {
+                setLoading(false);
+
+                if (profile != null && "farmer".equals(profile.get("userType"))) {
+                    // Display real farmer statistics only - no vet data visible
+                    Log.d(TAG, "✅ Farmer dashboard data loaded");
+                } else {
+                    Log.e(TAG, "Invalid profile data for farmer dashboard");
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                setLoading(false);
+                Log.e(TAG, "Error loading farmer dashboard: " + error);
+                Toast.makeText(AdminMainActivity.this, "Error loading dashboard", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // Utility Methods
+    private void setLoading(boolean isLoading) {
+        // Show/hide loading indicator
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(isLoading);
+        }
+
+        // You can add additional loading UI here if needed
+        Log.d(TAG, "Loading state: " + isLoading);
+    }
+}
