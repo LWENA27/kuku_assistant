@@ -94,4 +94,8 @@ public interface ApiService {
 
     @PATCH("symptom_reports")
     Call<Void> updateSymptomReport(@Query("id") String id, @Body Map<String, Object> updates);
+
+    // Dashboard statistics endpoint
+    @GET("dashboard_stats")
+    Call<Map<String, Object>> getDashboardStats(@retrofit2.http.Header("Authorization") String authHeader);
 }

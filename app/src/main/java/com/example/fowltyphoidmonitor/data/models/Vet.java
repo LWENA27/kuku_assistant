@@ -131,6 +131,9 @@ public class Vet {
     public Integer getYearsOfExperience() { return experienceYears; }
     public void setYearsOfExperience(Integer yearsOfExperience) { this.experienceYears = yearsOfExperience; }
 
+    // Additional backward compatibility method needed by AdminMainActivity
+    public void setYearsExperience(Integer yearsExperience) { this.experienceYears = yearsExperience; }
+
     public Boolean getIsAvailable() { return isAvailable; }
     public void setIsAvailable(Boolean isAvailable) { this.isAvailable = isAvailable; }
 

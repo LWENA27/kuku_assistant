@@ -1012,7 +1012,8 @@ public class AuthManager {
 
         // Use API service to get real statistics from database
         try {
-            Call<Map<String, Object>> call = apiService.getDashboardStats(getAccessToken());
+            String authHeader = "Bearer " + getAccessToken();
+            Call<Map<String, Object>> call = apiService.getDashboardStats(authHeader);
             call.enqueue(new Callback<Map<String, Object>>() {
                 @Override
                 public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
