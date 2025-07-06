@@ -43,10 +43,11 @@ public class RegisterActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_WEB_AUTH = 1001;
 
     // User role constants - UNIFIED SYSTEM: admin, vet, doctor are all the same
+    // User type constants - internal app format (normalized values only)
     private static final String USER_TYPE_FARMER = "farmer";
     private static final String USER_TYPE_VET = "vet";  // Primary unified role for all medical professionals
-    private static final String USER_TYPE_ADMIN = "vet"; // Admin maps to vet
-    private static final String USER_TYPE_DOCTOR = "vet"; // Doctor maps to vet
+    private static final String USER_TYPE_ADMIN = "vet"; // Internal: admin maps to vet
+    private static final String USER_TYPE_DOCTOR = "vet"; // Internal: doctor maps to vet
 
     // UI elements
     private ImageButton btnRegisterBack;
@@ -99,7 +100,7 @@ public class RegisterActivity extends AppCompatActivity {
         // Get user type from intent
         userType = getIntent().getStringExtra("userType");
         if (userType == null) {
-            userType = getIntent().getStringExtra("user_type");
+            userType = getIntent().getStringExtra("userType"); // Changed to camelCase for consistency
         }
         if (userType == null) {
             userType = USER_TYPE_FARMER; // Default to farmer
@@ -180,6 +181,7 @@ public class RegisterActivity extends AppCompatActivity {
         Map<String, Object> metadata = new HashMap<>();
         metadata.put("display_name", displayName);
         metadata.put("phone_number", phoneNumber);
+        // API requires "user_type" key format
         metadata.put("user_type", userType);
         metadata.put("email_verified", false);
         metadata.put("phone_verified", false);
@@ -189,6 +191,11 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onSuccess(AuthResponse response) {
                 Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Registration successful");
+                
+                // Ensure user type is saved immediately after registration
+                authManager.setUserType(userType);
+                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - User type set to: " + userType);
+                
                 setLoadingState(false);
                 navigateToProfileSetup();
             }

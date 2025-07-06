@@ -59,6 +59,7 @@ public class ReminderActivity extends AppCompatActivity {
 
         // Create test metadata
         Map<String, Object> metadata = new HashMap<>();
+        // API requires "user_type" key format for compatibility
         metadata.put("user_type", "farmer");
         metadata.put("display_name", testName);
 

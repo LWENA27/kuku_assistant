@@ -105,8 +105,8 @@ public class AuthResponse {
     }
 
     /**
-     * Get user type from the response
-     * @return User type (ROLE_FARMER, ROLE_VET, ROLE_ADMIN) or null if not found
+     * Get user type from the response - normalized to internal format
+     * @return User type (ROLE_FARMER, ROLE_VET) - admin mapped to vet internally
      */
     public String getUserType() {
         if (user != null) {
@@ -134,7 +134,7 @@ public class AuthResponse {
     }
 
     /**
-     * Check if the user is an admin
+     * Check if the user is an admin (mapped to vet internally)
      * @return true if the user type is "admin" or email is an admin email
      */
     public boolean isAdmin() {
@@ -277,7 +277,7 @@ public class AuthResponse {
         public void setUserId(String userId) { this.id = userId; }
 
         /**
-         * Get the user type from user metadata
+         * Get the user type from user metadata (API format: user_type)
          */
         public String getUserType() {
             if (userMetadata != null && userMetadata.containsKey("user_type")) {

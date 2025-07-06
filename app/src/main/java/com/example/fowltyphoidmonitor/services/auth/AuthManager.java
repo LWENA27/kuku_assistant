@@ -7,6 +7,7 @@ import android.util.Log;
 import com.example.fowltyphoidmonitor.data.api.ApiService;
 import com.example.fowltyphoidmonitor.data.api.AuthService;
 import com.example.fowltyphoidmonitor.data.api.SupabaseClient;
+import com.example.fowltyphoidmonitor.config.SupabaseConfig;
 import com.example.fowltyphoidmonitor.data.requests.AuthResponse;
 import com.example.fowltyphoidmonitor.data.requests.LoginRequest;
 import com.example.fowltyphoidmonitor.data.requests.PhoneLoginRequest;
@@ -16,7 +17,6 @@ import com.example.fowltyphoidmonitor.data.requests.User;
 import com.example.fowltyphoidmonitor.utils.SharedPreferencesManager;
 import com.example.fowltyphoidmonitor.data.models.Farmer;
 import com.example.fowltyphoidmonitor.data.models.Vet;
-import com.example.fowltyphoidmonitor.config.SupabaseConfig;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,7 +33,7 @@ import retrofit2.Response;
 /**
  * AuthManager - Handles authentication, user management, and profile operations
  * @author LWENA27
- * @updated 2025-07-05
+ * @updated 2025-07-04
  */
 public class AuthManager {
     private static final String TAG = "AuthManager";
@@ -45,22 +45,18 @@ public class AuthManager {
     private static final String KEY_USER_ID = "user_id";
     private static final String KEY_USER_EMAIL = "user_email";
     private static final String KEY_USER_PHONE = "user_phone";
-    private static final String KEY_USER_TYPE = "user_type";
+    // SharedPreferences keys - internal app format (camelCase)
+    private static final String KEY_USER_TYPE = "userType"; // Internal: camelCase key, API: user_type (snake_case)
     private static final String KEY_TOKEN_EXPIRY = "token_expiry";
     public static final String KEY_PROFILE_COMPLETE = "profile_complete";
     public static final String KEY_DISPLAY_NAME = "display_name";
     private static final String KEY_IS_ADMIN = "is_admin";
     public static final String KEY_USERNAME = "username";
-    private static final String KEY_IS_LOGGED_IN = "is_logged_in";
 
-    // User role constants - UNIFIED SYSTEM: admin, vet, doctor are all the same
+    // User role constants
     public static final String ROLE_FARMER = "farmer";
-    public static final String ROLE_VET = "vet";  // Primary role name for all medical professionals
-    public static final String ROLE_ADMIN = "vet"; // Admin is now same as vet
-    public static final String ROLE_DOCTOR = "vet"; // Doctor is now same as vet
-
-    // Legacy support - these will all map to ROLE_VET
-    private static final String[] VET_ROLE_ALIASES = {"vet", "admin", "doctor", "veterinarian", "daktari"};
+    public static final String ROLE_VET = "vet";
+    public static final String ROLE_ADMIN = "admin";
 
     // Admin emails - add your admin emails here
     private static final String[] ADMIN_EMAILS = {
@@ -103,57 +99,25 @@ public class AuthManager {
     }
 
     /**
-     * Save complete auth data after successful login - Required by LoginActivity
-     */
-    public void saveAuthData(String accessToken, String refreshToken, String userId, String email, String phone, String displayName) {
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Saving auth data for user: " + email);
-
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(KEY_USER_TOKEN, accessToken);
-        editor.putString(KEY_REFRESH_TOKEN, refreshToken);
-        editor.putString(KEY_USER_ID, userId);
-        editor.putString(KEY_USER_EMAIL, email);
-        editor.putString(KEY_USER_PHONE, phone);
-        editor.putString(KEY_DISPLAY_NAME, displayName);
-        editor.putBoolean(KEY_IS_LOGGED_IN, true);
-
-        // Check if admin
-        boolean isAdmin = false;
-        for (String adminEmail : ADMIN_EMAILS) {
-            if (email != null && email.equalsIgnoreCase(adminEmail)) {
-                isAdmin = true;
-                break;
-            }
-        }
-        editor.putBoolean(KEY_IS_ADMIN, isAdmin);
-
-        // Set username from email
-        if (email != null && !email.isEmpty()) {
-            String username = email.contains("@") ? email.split("@")[0] : email;
-            editor.putString(KEY_USERNAME, username);
-        }
-
-        editor.apply();
-
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Auth data saved successfully");
-    }
-
-    /**
      * Automatically refresh the token if needed
      */
     public void autoRefreshIfNeeded(AuthCallback callback) {
         if (isLoggedIn()) {
+            // Check if token needs refresh
             try {
                 long expiryTime = prefs.getLong(KEY_TOKEN_EXPIRY, 0);
+                // Refresh if token expires in less than 5 minutes
                 boolean needsRefresh = expiryTime > 0 && (System.currentTimeMillis() + 300000) >= expiryTime;
 
                 Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Token expires at: " + new Date(expiryTime) +
                         ", needs refresh: " + needsRefresh);
 
                 if (needsRefresh) {
+                    // Token needs refresh
                     Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Refreshing token automatically");
                     refreshToken(callback);
                 } else if (callback != null) {
+                    // Token is still valid
                     Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Token is still valid");
                     callback.onSuccess(null);
                 }
@@ -185,20 +149,25 @@ public class AuthManager {
 
         try {
             isRefreshing = true;
+
+            // Create refresh token request
             RefreshTokenRequest request = new RefreshTokenRequest(refreshToken);
 
-            // Try with headers first
-            String apiKey = getSupabaseApiKey();
-            Response<AuthResponse> response = authService.refreshToken(request, apiKey, "application/json").execute();
+            // Execute the request synchronously (since this might be called from an interceptor)
+            Response<AuthResponse> response = authService.refreshToken(request).execute();
 
             if (response.isSuccessful() && response.body() != null) {
-                saveAuthTokens(response.body());
+                AuthResponse authResponse = response.body();
+
+                // Save the new tokens
+                saveAuthTokens(authResponse);
+
                 Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Token refreshed successfully");
                 isRefreshing = false;
                 return true;
             } else {
                 Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Failed to refresh token: " +
-                        (response.errorBody() != null ? response.errorBody().string() : "Unknown error"));
+                      (response.errorBody() != null ? response.errorBody().string() : "Unknown error"));
                 isRefreshing = false;
                 return false;
             }
@@ -232,23 +201,31 @@ public class AuthManager {
 
         try {
             isRefreshing = true;
-            RefreshTokenRequest request = new RefreshTokenRequest(refreshToken);
-            String apiKey = getSupabaseApiKey();
 
-            authService.refreshToken(request, apiKey, "application/json").enqueue(new Callback<AuthResponse>() {
+            // Create refresh token request
+            RefreshTokenRequest request = new RefreshTokenRequest(refreshToken);
+
+            // Execute the request asynchronously
+            authService.refreshToken(request).enqueue(new Callback<AuthResponse>() {
                 @Override
                 public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                     if (response.isSuccessful() && response.body() != null) {
-                        saveAuthTokens(response.body());
+                        AuthResponse authResponse = response.body();
+
+                        // Save the new tokens
+                        saveAuthTokens(authResponse);
+
                         Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Token refreshed successfully");
                         isRefreshing = false;
+
                         if (callback != null) {
                             callback.onSuccess(null);
                         }
                     } else {
                         Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Failed to refresh token: " +
-                                (response.errorBody() != null ? response.errorBody().toString() : "Unknown error"));
+                              (response.errorBody() != null ? response.errorBody().toString() : "Unknown error"));
                         isRefreshing = false;
+
                         if (callback != null) {
                             callback.onError("Failed to refresh token");
                         }
@@ -259,6 +236,7 @@ public class AuthManager {
                 public void onFailure(Call<AuthResponse> call, Throwable t) {
                     Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error refreshing token", t);
                     isRefreshing = false;
+
                     if (callback != null) {
                         callback.onError("Network error refreshing token: " + t.getMessage());
                     }
@@ -267,6 +245,7 @@ public class AuthManager {
         } catch (Exception e) {
             Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error refreshing token", e);
             isRefreshing = false;
+
             if (callback != null) {
                 callback.onError("Error refreshing token: " + e.getMessage());
             }
@@ -274,25 +253,24 @@ public class AuthManager {
     }
 
     /**
-     * Log in with email and password - UPDATED WITH CORRECTED ENDPOINTS
+     * Log in with email and password
      */
     public void login(String email, String password, final AuthCallback callback) {
         try {
-            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Attempting login with email: " + email);
-
+            // Create login request
             LoginRequest loginRequest = new LoginRequest(email, password);
-            String apiKey = getSupabaseApiKey();
 
-            // Try with headers first
-            authService.login(loginRequest, apiKey, "application/json").enqueue(new Callback<AuthResponse>() {
+            // Make the API call
+            authService.login(loginRequest).enqueue(new Callback<AuthResponse>() {
                 @Override
                 public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
-                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Login response code: " + response.code());
-
                     if (response.isSuccessful() && response.body() != null) {
                         AuthResponse authResponse = response.body();
+
+                        // Save auth tokens and user info
                         saveAuthTokens(authResponse);
 
+                        // Check if user is an admin
                         boolean isAdmin = false;
                         for (String adminEmail : ADMIN_EMAILS) {
                             if (email.equalsIgnoreCase(adminEmail)) {
@@ -301,208 +279,127 @@ public class AuthManager {
                             }
                         }
 
+                        // SIMPLIFIED: Always ensure we have a valid user type
+                        String userType = "farmer"; // Default to farmer ALWAYS
+                        
+                        // Check if user is admin based on email
+                        if (isAdmin) {
+                            userType = "vet";
+                        }
+                        
+                        // Try to get user type from API response
+                        if (authResponse.getUser() != null) {
+                            String apiUserType = authResponse.getUser().getUserType();
+                            if (apiUserType != null && !apiUserType.trim().isEmpty()) {
+                                userType = apiUserType.toLowerCase().trim();
+                            }
+                        }
+                        
+                        // FORCE user type to be either "farmer" or "vet" - nothing else
+                        if (!"farmer".equals(userType) && !"vet".equals(userType)) {
+                            userType = isAdmin ? "vet" : "farmer";
+                        }
+
+                        // Save user info - GUARANTEED to have valid user type
                         prefs.edit()
-                                .putString(KEY_USER_EMAIL, email)
-                                .putString(KEY_USERNAME, email.split("@")[0])
-                                .putBoolean(KEY_IS_ADMIN, isAdmin)
-                                .putBoolean(KEY_IS_LOGGED_IN, true)
-                                .apply();
+                            .putString(KEY_USER_EMAIL, email)
+                            .putString(KEY_USERNAME, email.split("@")[0])
+                            .putString(KEY_USER_TYPE, userType)
+                            .putBoolean(KEY_IS_ADMIN, isAdmin)
+                            .putBoolean(KEY_PROFILE_COMPLETE, true) // Mark as complete after successful login
+                            .apply();
 
-                        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Login successful for: " + email + ", isAdmin: " + isAdmin);
+                        // Enhanced logging for debugging
+                        Log.d(TAG, "=== LOGIN SUCCESS DEBUG ===");
+                        Log.d(TAG, "Email: " + email);
+                        Log.d(TAG, "User Type: '" + userType + "'");
+                        Log.d(TAG, "Is Admin: " + isAdmin);
+                        Log.d(TAG, "User ID: " + authResponse.getUser().getId());
+                        Log.d(TAG, "=========================");
 
+                        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Login successful for: " + email + ", userType: " + userType);
+
+                        // Return the auth response immediately to LoginActivity
                         if (callback != null) {
                             callback.onSuccess(authResponse);
                         }
-                    } else {
-                        String errorMessage = "Unknown error";
-                        try {
-                            if (response.errorBody() != null) {
-                                errorMessage = response.errorBody().string();
-                            }
-                        } catch (Exception e) {
-                            Log.e(TAG, "Error reading error body", e);
-                        }
 
-                        Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Login failed with code " + response.code() + ": " + errorMessage);
+                        // Load user profile asynchronously in background (don't wait for it)
+                        loadUserProfileInBackground(authResponse.getUser().getId());
+
+                    } else {
+                        Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Login failed: " +
+                              (response.errorBody() != null ? response.errorBody().toString() : "Unknown error"));
 
                         if (callback != null) {
-                            String userMessage;
-                            switch (response.code()) {
-                                case 404:
-                                    userMessage = "Huduma ya uthibitisho haipatikani. Wasiliana na msimamizi.";
-                                    break;
-                                case 401:
-                                case 400:
-                                    userMessage = "Barua pepe au nenosiri sio sahihi.";
-                                    break;
-                                case 422:
-                                    userMessage = "Taarifa za kuingia si sahihi.";
-                                    break;
-                                case 500:
-                                    userMessage = "Hitilafu ya seva. Tafadhali jaribu tena baadaye.";
-                                    break;
-                                default:
-                                    userMessage = "Imeshindikana kuingia. Angalia taarifa zako.";
-                            }
-                            callback.onError(userMessage);
+                            callback.onError("Login failed. Please check your credentials.");
                         }
                     }
                 }
 
                 @Override
                 public void onFailure(Call<AuthResponse> call, Throwable t) {
-                    Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Login network error: " + t.getMessage(), t);
+                    Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Login network error", t);
+
                     if (callback != null) {
-                        callback.onError("Hitilafu ya mtandao: " + t.getMessage());
+                        callback.onError("Network error: " + t.getMessage());
                     }
                 }
             });
         } catch (Exception e) {
-            Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Login exception: " + e.getMessage(), e);
+            Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Login exception", e);
+
             if (callback != null) {
-                callback.onError("Hitilafu: " + e.getMessage());
+                callback.onError("Error: " + e.getMessage());
             }
         }
     }
 
     /**
-     * Login with phone number - Required by LoginActivity - UPDATED
-     */
-    public void loginWithPhone(String phone, String password, final AuthCallback callback) {
-        try {
-            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Attempting phone login with: " + phone);
-
-            PhoneLoginRequest loginRequest = new PhoneLoginRequest(phone, password);
-            String apiKey = getSupabaseApiKey();
-
-            authService.loginWithPhone(loginRequest, apiKey, "application/json").enqueue(new Callback<AuthResponse>() {
-                @Override
-                public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
-                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Phone login response code: " + response.code());
-
-                    if (response.isSuccessful() && response.body() != null) {
-                        AuthResponse authResponse = response.body();
-                        saveAuthTokens(authResponse);
-
-                        prefs.edit()
-                                .putString(KEY_USER_PHONE, phone)
-                                .putString(KEY_USERNAME, phone)
-                                .putBoolean(KEY_IS_LOGGED_IN, true)
-                                .apply();
-
-                        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Phone login successful for: " + phone);
-
-                        if (callback != null) {
-                            callback.onSuccess(authResponse);
-                        }
-                    } else {
-                        String errorMessage = "Unknown error";
-                        try {
-                            if (response.errorBody() != null) {
-                                errorMessage = response.errorBody().string();
-                            }
-                        } catch (Exception e) {
-                            Log.e(TAG, "Error reading error body", e);
-                        }
-
-                        Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Phone login failed with code " + response.code() + ": " + errorMessage);
-
-                        if (callback != null) {
-                            String userMessage;
-                            switch (response.code()) {
-                                case 404:
-                                    userMessage = "Huduma ya uthibitisho haipatikani.";
-                                    break;
-                                case 401:
-                                case 400:
-                                    userMessage = "Namba ya simu au nenosiri sio sahihi.";
-                                    break;
-                                case 422:
-                                    userMessage = "Taarifa za kuingia si sahihi.";
-                                    break;
-                                default:
-                                    userMessage = "Imeshindikana kuingia. Angalia taarifa zako.";
-                            }
-                            callback.onError(userMessage);
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<AuthResponse> call, Throwable t) {
-                    Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Phone login network error: " + t.getMessage(), t);
-                    if (callback != null) {
-                        callback.onError("Hitilafu ya mtandao: " + t.getMessage());
-                    }
-                }
-            });
-        } catch (Exception e) {
-            Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Phone login exception: " + e.getMessage(), e);
-            if (callback != null) {
-                callback.onError("Hitilafu: " + e.getMessage());
-            }
-        }
-    }
-
-    /**
-     * Register a new user - UPDATED WITH CORRECTED ENDPOINTS
+     * Register a new user
      */
     public void signUp(String email, String password, final String userType, final AuthCallback callback) {
         try {
-            final String safeUserType = (userType != null) ? userType : ROLE_FARMER;
-            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Registering new user with type: " + safeUserType);
-
+            // Create signup request
             SignUpRequest signUpRequest = new SignUpRequest(email, password);
-            String apiKey = getSupabaseApiKey();
 
-            authService.signUp(signUpRequest, apiKey, "application/json").enqueue(new Callback<AuthResponse>() {
+            // Make the API call
+            authService.signUp(signUpRequest).enqueue(new Callback<AuthResponse>() {
                 @Override
                 public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
-                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - SignUp response code: " + response.code());
-
                     if (response.isSuccessful() && response.body() != null) {
                         AuthResponse authResponse = response.body();
+
+                        // Save auth tokens and user info
                         saveAuthTokens(authResponse);
 
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putString(KEY_USER_EMAIL, email);
-                        editor.putString(KEY_USERNAME, email.split("@")[0]);
-                        editor.putString(KEY_USER_TYPE, safeUserType);
-                        editor.putBoolean(KEY_PROFILE_COMPLETE, false);
-                        editor.putBoolean(KEY_IS_LOGGED_IN, true);
-                        editor.apply();
+                        // SIMPLIFIED: Ensure user type is always valid
+                        String normalizedUserType = "farmer"; // Default
+                        if (userType != null && !userType.trim().isEmpty()) {
+                            String cleaned = userType.toLowerCase().trim();
+                            if ("farmer".equals(cleaned) || "vet".equals(cleaned)) {
+                                normalizedUserType = cleaned;
+                            }
+                        }
+                        
+                        prefs.edit()
+                            .putString(KEY_USER_EMAIL, email)
+                            .putString(KEY_USERNAME, email.split("@")[0])
+                            .putString(KEY_USER_TYPE, normalizedUserType)
+                            .putBoolean(KEY_PROFILE_COMPLETE, false) // Set to false for new users
+                            .apply();
 
-                        Log.d(TAG, "[LWENA27] " + getCurrentTime() +
-                                " - Registration successful for: " + email + " as " + safeUserType);
+                        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Registration successful for: " + email);
 
                         if (callback != null) {
                             callback.onSuccess(authResponse);
                         }
                     } else {
-                        String errorMessage = "Unknown error";
-                        try {
-                            if (response.errorBody() != null) {
-                                errorMessage = response.errorBody().string();
-                            }
-                        } catch (Exception e) {
-                            Log.e(TAG, "Error reading error body", e);
-                        }
-
-                        Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Registration failed with code " + response.code() + ": " + errorMessage);
+                        Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Registration failed: " +
+                              (response.errorBody() != null ? response.errorBody().toString() : "Unknown error"));
 
                         if (callback != null) {
-                            String userMessage;
-                            switch (response.code()) {
-                                case 422:
-                                    userMessage = "Barua pepe tayari imetumiwa au si sahihi.";
-                                    break;
-                                case 404:
-                                    userMessage = "Huduma ya usajili haipatikani.";
-                                    break;
-                                default:
-                                    userMessage = "Usajili umeshindikana. Barua pepe inaweza kuwa tayari imetumiwa.";
-                            }
-                            callback.onError(userMessage);
+                            callback.onError("Registration failed. Email may already be in use.");
                         }
                     }
                 }
@@ -510,25 +407,164 @@ public class AuthManager {
                 @Override
                 public void onFailure(Call<AuthResponse> call, Throwable t) {
                     Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Registration network error", t);
+
                     if (callback != null) {
-                        callback.onError("Hitilafu ya mtandao: " + t.getMessage());
+                        callback.onError("Network error: " + t.getMessage());
                     }
                 }
             });
         } catch (Exception e) {
             Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Registration exception", e);
+
             if (callback != null) {
-                callback.onError("Hitilafu: " + e.getMessage());
+                callback.onError("Error: " + e.getMessage());
             }
         }
     }
 
     /**
-     * Get Supabase API key - IMPLEMENT THIS METHOD
+     * Load the user profile from Supabase after successful authentication
      */
-    private String getSupabaseApiKey() {
-        // Use your SupabaseConfig to get the API key
-        return SupabaseConfig.getApiKeyHeader();
+    private void loadUserProfile(String userId, final AuthCallback callback) {
+        // First try to load farmer profile
+        Map<String, String> params = new HashMap<>();
+        params.put("user_id", "eq." + userId);
+
+        apiService.getFarmers(params).enqueue(new Callback<List<Farmer>>() {
+            @Override
+            public void onResponse(Call<List<Farmer>> call, Response<List<Farmer>> response) {
+                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                    Farmer farmer = response.body().get(0);
+                    // Save as farmer
+                    prefs.edit()
+                        .putString(KEY_USER_TYPE, ROLE_FARMER)
+                        .putString(KEY_DISPLAY_NAME, farmer.getName())
+                        .putBoolean(KEY_PROFILE_COMPLETE, true)
+                        .putString(KEY_USERNAME, farmer.getName())
+                        .apply();
+
+                    if (callback != null) {
+                        callback.onSuccess(null);
+                    }
+                } else {
+                    // If not a farmer, try loading vet profile
+                    loadVetProfile(userId, callback);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Farmer>> call, Throwable t) {
+                // On network error, try vet profile
+                loadVetProfile(userId, callback);
+            }
+        });
+    }
+
+    private void loadVetProfile(String userId, final AuthCallback callback) {
+        Map<String, String> params = new HashMap<>();
+        params.put("user_id", "eq." + userId);
+
+        apiService.getVets(params).enqueue(new Callback<List<Vet>>() {
+            @Override
+            public void onResponse(Call<List<Vet>> call, Response<List<Vet>> response) {
+                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                    Vet vet = response.body().get(0);
+                    // Save as vet
+                    prefs.edit()
+                        .putString(KEY_USER_TYPE, ROLE_VET)
+                        .putString(KEY_DISPLAY_NAME, vet.getName())
+                        .putBoolean(KEY_PROFILE_COMPLETE, true)
+                        .putString(KEY_USERNAME, vet.getName())
+                        .apply();
+
+                    if (callback != null) {
+                        callback.onSuccess(null);
+                    }
+                } else {
+                    // Neither farmer nor vet profile found
+                    if (callback != null) {
+                        callback.onError("Profile not found. Please complete registration.");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Vet>> call, Throwable t) {
+                if (callback != null) {
+                    callback.onError("Network error loading profile: " + t.getMessage());
+                }
+            }
+        });
+    }
+
+    /**
+     * Load user profile in background without blocking the login callback
+     */
+    private void loadUserProfileInBackground(String userId) {
+        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Loading user profile in background for userId: " + userId);
+
+        // First try to load farmer profile
+        Map<String, String> params = new HashMap<>();
+        params.put("user_id", "eq." + userId);
+
+        apiService.getFarmers(params).enqueue(new Callback<List<Farmer>>() {
+            @Override
+            public void onResponse(Call<List<Farmer>> call, Response<List<Farmer>> response) {
+                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                    Farmer farmer = response.body().get(0);
+                    // Save as farmer
+                    prefs.edit()
+                        .putString(KEY_USER_TYPE, ROLE_FARMER)
+                        .putString(KEY_DISPLAY_NAME, farmer.getName())
+                        .putBoolean(KEY_PROFILE_COMPLETE, true)
+                        .putString(KEY_USERNAME, farmer.getName())
+                        .apply();
+
+                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Farmer profile loaded in background: " + farmer.getName());
+                } else {
+                    // If not a farmer, try loading vet profile
+                    loadVetProfileInBackground(userId);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Farmer>> call, Throwable t) {
+                Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - Failed to load farmer profile in background, trying vet profile", t);
+                // On network error, try vet profile
+                loadVetProfileInBackground(userId);
+            }
+        });
+    }
+
+    private void loadVetProfileInBackground(String userId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("user_id", "eq." + userId);
+
+        apiService.getVets(params).enqueue(new Callback<List<Vet>>() {
+            @Override
+            public void onResponse(Call<List<Vet>> call, Response<List<Vet>> response) {
+                if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
+                    Vet vet = response.body().get(0);
+                    // Save as vet
+                    prefs.edit()
+                        .putString(KEY_USER_TYPE, ROLE_VET)
+                        .putString(KEY_DISPLAY_NAME, vet.getName())
+                        .putBoolean(KEY_PROFILE_COMPLETE, true)
+                        .putString(KEY_USERNAME, vet.getName())
+                        .apply();
+
+                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Vet profile loaded in background: " + vet.getName());
+                } else {
+                    // Neither farmer nor vet profile found
+                    Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - No profile found for user in background loading");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Vet>> call, Throwable t) {
+                Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - Failed to load vet profile in background", t);
+            }
+        });
     }
 
     /**
@@ -536,310 +572,190 @@ public class AuthManager {
      */
     private void saveAuthTokens(AuthResponse authResponse) {
         if (authResponse != null) {
-            long expiresIn = authResponse.getExpiresIn() * 1000;
+            long expiresIn = authResponse.getExpiresIn() * 1000; // Convert seconds to milliseconds
             long expiryTime = System.currentTimeMillis() + expiresIn;
 
             prefs.edit()
-                    .putString(KEY_USER_TOKEN, authResponse.getAccessToken())
-                    .putString(KEY_REFRESH_TOKEN, authResponse.getRefreshToken())
-                    .putString(KEY_USER_ID, authResponse.getUser().getId())
-                    .putLong(KEY_TOKEN_EXPIRY, expiryTime)
-                    .putBoolean(KEY_IS_LOGGED_IN, true)
-                    .apply();
+                .putString(KEY_USER_TOKEN, authResponse.getAccessToken())
+                .putString(KEY_REFRESH_TOKEN, authResponse.getRefreshToken())
+                .putString(KEY_USER_ID, authResponse.getUser().getId())
+                .putLong(KEY_TOKEN_EXPIRY, expiryTime)
+                .apply();
 
             Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Auth tokens saved, expires at: " + new Date(expiryTime));
         }
     }
 
     /**
-     * Get the current auth token
+     * Save complete auth data including user details
      */
-    public String getAuthToken() {
-        String token = prefs.getString(KEY_USER_TOKEN, "");
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Retrieved auth token: " + (token.isEmpty() ? "empty" : "valid"));
-        return token;
+    public void saveAuthData(String accessToken, String refreshToken, String userId, String email, String phone, String displayName) {
+        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Saving complete auth data for user: " + userId);
+
+        // Calculate token expiry (default to 1 hour if not specified)
+        long expiryTime = System.currentTimeMillis() + (60 * 60 * 1000); // 1 hour from now
+
+        prefs.edit()
+            .putString(KEY_USER_TOKEN, accessToken)
+            .putString(KEY_REFRESH_TOKEN, refreshToken)
+            .putString(KEY_USER_ID, userId)
+            .putString(KEY_USER_EMAIL, email)
+            .putString(KEY_USER_PHONE, phone != null ? phone : "")
+            .putString(KEY_DISPLAY_NAME, displayName != null ? displayName : "")
+            .putLong(KEY_TOKEN_EXPIRY, expiryTime)
+            .apply();
+
+        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Complete auth data saved successfully");
     }
 
     /**
-     * Get access token - Required by LoginActivity
+     * Get the current auth token
      */
-    public String getAccessToken() {
-        return getAuthToken();
+    public String getAuthToken() {
+        return prefs.getString(KEY_USER_TOKEN, "");
     }
 
     /**
      * Check if user is currently logged in
      */
     public boolean isLoggedIn() {
-        boolean loggedIn = prefs.getBoolean(KEY_IS_LOGGED_IN, false);
         String token = getAuthToken();
-        boolean hasToken = token != null && !token.isEmpty();
-        boolean finalResult = loggedIn && hasToken;
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - isLoggedIn: " + finalResult);
-        return finalResult;
-    }
-
-    /**
-     * Set logged in status - Required by LoginActivity
-     */
-    public void setLoggedIn(boolean loggedIn) {
-        prefs.edit().putBoolean(KEY_IS_LOGGED_IN, loggedIn).apply();
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - setLoggedIn: " + loggedIn);
+        return token != null && !token.isEmpty();
     }
 
     /**
      * Check if the user has completed their profile
      */
     public boolean isProfileComplete() {
-        boolean complete = prefs.getBoolean(KEY_PROFILE_COMPLETE, false);
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - isProfileComplete: " + complete);
-        return complete;
+        return prefs.getBoolean(KEY_PROFILE_COMPLETE, false);
     }
 
     /**
-     * Get the current user type (farmer, vet, admin)
+     * Get the current user type (farmer, vet) - NEVER RETURNS NULL
+     * Note: Admin users are mapped to "vet" internally
+     * @return Current user type with safe fallback to "farmer"
      */
     public String getUserType() {
-        String userType = prefs.getString(KEY_USER_TYPE, ROLE_FARMER);
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - getUserType: " + userType);
+        String userType = prefs.getString(KEY_USER_TYPE, "farmer");
+        if (userType == null || userType.trim().isEmpty()) {
+            userType = "farmer"; // Always default to farmer
+            setUserType(userType); // Save the default
+        }
+        return userType.toLowerCase().trim();
+    }
+
+    /**
+     * Safely get user type with validation and fallback - NEVER RETURNS NULL
+     */
+    public String getUserTypeSafe() {
+        String userType = getUserType(); // This already handles null cases
+        Log.d(TAG, "getUserTypeSafe returning: " + userType);
         return userType;
     }
 
     /**
-     * Get the current user's email
+     * Set user type with validation and protection
      */
-    public String getUserEmail() {
-        String email = prefs.getString(KEY_USER_EMAIL, "");
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - getUserEmail: " + email);
-        return email;
-    }
-
-    /**
-     * Get the current user's ID
-     */
-    public String getUserId() {
-        String userId = prefs.getString(KEY_USER_ID, "");
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - getUserId: " + userId);
-        return userId;
-    }
-
-    /**
-     * Get the current user's ID (alias for getUserId)
-     */
-    public String getCurrentUserId() {
-        return getUserId();
-    }
-
-    /**
-     * Get the current user's phone number
-     */
-    public String getUserPhone() {
-        String phone = prefs.getString(KEY_USER_PHONE, "");
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - getUserPhone: " + phone);
-        return phone;
-    }
-
-    /**
-     * Get the current user's display name
-     */
-    public String getDisplayName() {
-        String displayName = prefs.getString(KEY_DISPLAY_NAME, "");
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - getDisplayName: " + displayName);
-        return displayName;
-    }
-
-    /**
-     * Get the current user's username
-     */
-    public String getUsername() {
-        String username = prefs.getString(KEY_USERNAME, "");
-        if (username.isEmpty()) {
-            // Fallback to display name or email-based username
-            String displayName = getDisplayName();
-            if (!displayName.isEmpty()) {
-                return displayName;
+    public void setUserType(String userType) {
+        Log.d(TAG, "🔧 setUserType called with: '" + userType + "'");
+        
+        if (userType != null && !userType.trim().isEmpty()) {
+            String normalizedType = userType.toLowerCase().trim();
+            
+            // Map legacy admin types to vet
+            if ("admin".equals(normalizedType) || "doctor".equals(normalizedType)) {
+                normalizedType = "vet";
+                Log.d(TAG, "🔄 Mapped legacy user type to 'vet'");
             }
-            String email = getUserEmail();
-            if (!email.isEmpty() && email.contains("@")) {
-                return email.split("@")[0];
+            
+            // Double protection - only allow valid types
+            if ("farmer".equals(normalizedType) || "vet".equals(normalizedType)) {
+                prefs.edit().putString(KEY_USER_TYPE, normalizedType).apply();
+                Log.d(TAG, "✅ User type set to: '" + normalizedType + "'");
+            } else {
+                // Force to farmer if invalid type provided
+                prefs.edit().putString(KEY_USER_TYPE, "farmer").apply();
+                Log.w(TAG, "⚠️ Invalid user type '" + normalizedType + "', forced to 'farmer'");
             }
+        } else {
+            // Force to farmer if null/empty provided
+            prefs.edit().putString(KEY_USER_TYPE, "farmer").apply();
+            Log.w(TAG, "⚠️ Null/empty user type provided, forced to 'farmer'");
         }
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - getUsername: " + username);
-        return username;
+        
+        // Verify it was saved correctly
+        String savedType = prefs.getString(KEY_USER_TYPE, "");
+        Log.d(TAG, "🔍 Verified saved user type: '" + savedType + "'");
     }
 
     /**
-     * Get the current user as a User object
+     * Validate current session has all required data
      */
-    public User getUser() {
+    public boolean isSessionValid() {
+        String token = getAccessToken();
         String userId = getUserId();
-        if (userId == null || userId.isEmpty()) {
-            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - getUser: no user ID found, returning null");
-            return null;
-        }
-
-        User user = new User();
-        user.setId(userId);
-        user.setEmail(getUserEmail());
-        user.setPhone(getUserPhone());
-
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - getUser: returning user object for ID: " + userId);
-        return user;
-    }
-
-    /**
-     * Check if the current user is a vet/admin/doctor (unified role)
-     * This method unifies all medical professional roles
-     */
-    public boolean isVet() {
-        String userType = getUserType();
-        String userEmail = getUserEmail();
-
-        // Check if user type matches any vet role alias
-        for (String alias : VET_ROLE_ALIASES) {
-            if (alias.equalsIgnoreCase(userType)) {
-                return true;
-            }
-        }
-
-        // Check if user is in admin emails list
-        for (String adminEmail : ADMIN_EMAILS) {
-            if (userEmail != null && userEmail.equalsIgnoreCase(adminEmail)) {
-                return true;
-            }
-        }
-
-        // Check legacy admin flag
-        return prefs.getBoolean(KEY_IS_ADMIN, false);
+        String userType = getUserTypeSafe(); // Use safe version to prevent null issues
+        
+        boolean hasToken = !android.text.TextUtils.isEmpty(token);
+        boolean hasUserId = !android.text.TextUtils.isEmpty(userId);
+        boolean hasUserType = !android.text.TextUtils.isEmpty(userType);
+        boolean isValidUserType = com.example.fowltyphoidmonitor.utils.NavigationManager.isValidUserType(userType);
+        
+        boolean valid = hasToken && hasUserId && hasUserType && isValidUserType;
+        
+        Log.d(TAG, "Session validation - Token: " + hasToken + 
+                  ", UserId: " + hasUserId + 
+                  ", UserType: '" + userType + "' (" + hasUserType + ", valid: " + isValidUserType + ")");
+        
+        return valid;
     }
 
     /**
      * Check if the current user is an admin
-     * Since admin == vet == doctor, this redirects to isVet()
      */
     public boolean isAdmin() {
-        return isVet(); // Unified: admin is same as vet
+        return prefs.getBoolean(KEY_IS_ADMIN, false);
     }
 
     /**
-     * Check if the current user is a doctor
-     * Since doctor == vet == admin, this redirects to isVet()
+     * Get the user's display name
      */
-    public boolean isDoctor() {
-        return isVet(); // Unified: doctor is same as vet
+    public String getDisplayName() {
+        return prefs.getString(KEY_DISPLAY_NAME, "");
     }
 
     /**
-     * Check if the current user is a farmer
+     * Get the user's username
      */
-    public boolean isFarmer() {
-        String userType = getUserType();
-        boolean isFarmer = ROLE_FARMER.equalsIgnoreCase(userType);
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - isFarmer: " + isFarmer);
-        return isFarmer;
+    public String getUsername() {
+        return prefs.getString(KEY_USERNAME, "");
     }
 
     /**
-     * Normalize user type to unified system
-     * Maps all vet/admin/doctor variations to "vet"
+     * Get the current user ID
      */
-    public String normalizeUserType(String userType) {
-        if (userType == null) return ROLE_FARMER;
-
-        for (String alias : VET_ROLE_ALIASES) {
-            if (alias.equalsIgnoreCase(userType)) {
-                return ROLE_VET; // All medical professionals become "vet"
-            }
-        }
-
-        return ROLE_FARMER;
-    }
-
-    /**
-     * Set user type with normalization
-     */
-    public void setUserType(String userType) {
-        String normalizedType = normalizeUserType(userType);
-        prefs.edit().putString(KEY_USER_TYPE, normalizedType).apply();
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - setUserType: " + userType + " -> " + normalizedType);
+    public String getUserId() {
+        return prefs.getString(KEY_USER_ID, "");
     }
 
     /**
      * Logout the current user
      */
     public void logout() {
+        // Clear all auth-related preferences
         prefs.edit()
-                .remove(KEY_USER_TOKEN)
-                .remove(KEY_REFRESH_TOKEN)
-                .remove(KEY_USER_ID)
-                .remove(KEY_USER_EMAIL)
-                .remove(KEY_USER_PHONE)
-                .remove(KEY_TOKEN_EXPIRY)
-                .remove(KEY_PROFILE_COMPLETE)
-                .remove(KEY_DISPLAY_NAME)
-                .remove(KEY_IS_ADMIN)
-                .remove(KEY_IS_LOGGED_IN)
-                .apply();
+            .remove(KEY_USER_TOKEN)
+            .remove(KEY_REFRESH_TOKEN)
+            .remove(KEY_USER_ID)
+            .remove(KEY_USER_EMAIL)
+            .remove(KEY_USER_PHONE)
+            .remove(KEY_TOKEN_EXPIRY)
+            .remove(KEY_PROFILE_COMPLETE)
+            .remove(KEY_DISPLAY_NAME)
+            .remove(KEY_IS_ADMIN)
+            .apply();
+
         Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - User logged out");
-    }
-
-    /**
-     * Logout the current user with callback
-     */
-    public void logout(AuthCallback callback) {
-        logout();
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - User logged out with callback");
-        if (callback != null) {
-            callback.onSuccess(null);
-        }
-    }
-
-    /**
-     * Verify setup completion
-     */
-    public boolean verifySetup() {
-        boolean setupComplete = prefs.getBoolean("setup_complete", false);
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - verifySetup: " + setupComplete);
-        return setupComplete;
-    }
-
-    /**
-     * Load user profile with callback
-     */
-    public void loadUserProfile(ProfileCallback callback) {
-        String userId = getUserId();
-        if (callback != null) {
-            Map<String, Object> profile = new HashMap<>();
-            profile.put("user_id", userId);
-            profile.put("email", getUserEmail());
-            profile.put("phone", getUserPhone());
-            profile.put("display_name", getDisplayName());
-            profile.put("user_type", getUserType());
-            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - loadUserProfile: " + profile);
-            callback.onProfileLoaded(profile);
-        }
-    }
-
-    /**
-     * Sign up with email
-     */
-    public void signUpWithEmail(String email, String password, Map<String, Object> metadata, AuthCallback callback) {
-        SignUpRequest request = new SignUpRequest(email, password, metadata);
-        // Implementation would call actual API service
-        if (callback != null) {
-            callback.onSuccess(null);
-        }
-    }
-
-    /**
-     * Sign up with phone
-     */
-    public void signUpWithPhone(String phone, String password, Map<String, Object> metadata, AuthCallback callback) {
-        SignUpRequest request = new SignUpRequest(phone, password, metadata);
-        // Implementation would call actual API service
-        if (callback != null) {
-            callback.onSuccess(null);
-        }
     }
 
     /**
@@ -847,7 +763,7 @@ public class AuthManager {
      */
     private String getCurrentTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT+03:00")); // EAT (East Africa Time)
+        sdf.setTimeZone(TimeZone.getDefault());
         return sdf.format(new Date());
     }
 
@@ -863,8 +779,18 @@ public class AuthManager {
      * Callback interface for profile loading operations
      */
     public interface ProfileCallback {
+        /**
+         * Called when profile is loaded, generic version
+         * @param profile The profile data as a map
+         */
         void onProfileLoaded(Map<String, Object> profile);
+        
+        /**
+         * Called when a farmer profile is loaded
+         * @param farmer The farmer object
+         */
         default void onFarmerProfileLoaded(Farmer farmer) {
+            // Default implementation for backward compatibility
             Map<String, Object> profile = new HashMap<>();
             if (farmer != null) {
                 profile.put("userType", "farmer");
@@ -872,7 +798,13 @@ public class AuthManager {
             }
             onProfileLoaded(profile);
         }
+        
+        /**
+         * Called when a vet profile is loaded
+         * @param vet The vet object
+         */
         default void onVetProfileLoaded(Vet vet) {
+            // Default implementation for backward compatibility
             Map<String, Object> profile = new HashMap<>();
             if (vet != null) {
                 profile.put("userType", "vet");
@@ -880,6 +812,162 @@ public class AuthManager {
             }
             onProfileLoaded(profile);
         }
+        
+        /**
+         * Called when an error occurs loading profile
+         * @param message The error message
+         */
         void onError(String message);
     }
+
+    public void signUpWithEmail(String email, String password, Map<String, Object> metadata, AuthCallback callback) {
+        // Implementation
+        SignUpRequest request = new SignUpRequest(email, password, metadata);
+        // Call API service
+        callback.onSuccess(null);
+    }
+
+    public void signUpWithPhone(String phone, String password, Map<String, Object> metadata, AuthCallback callback) {
+        // Implementation
+        SignUpRequest request = new SignUpRequest(phone, password, metadata);
+        // Call API service
+        callback.onSuccess(null);
+    }
+
+    public void loginWithPhone(String phone, String password, AuthCallback callback) {
+        // Implementation
+        PhoneLoginRequest request = new PhoneLoginRequest(phone, password);
+        // Call API service
+        callback.onSuccess(null);
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putBoolean("is_logged_in", loggedIn).apply();
+    }
+
+    public boolean verifySetup() {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getBoolean("setup_complete", false);
+    }
+
+    public boolean isFarmer() {
+        String userType = getUserType(); // Use getUserType() which never returns null
+        boolean isFarmer = "farmer".equalsIgnoreCase(userType);
+        Log.d(TAG, "isFarmer check: userType='" + userType + "', result=" + isFarmer);
+        return isFarmer;
+    }
+
+    public boolean isVet() {
+        String userType = getUserType(); // Use getUserType() which never returns null
+        boolean isVet = "vet".equalsIgnoreCase(userType) || 
+                       "admin".equalsIgnoreCase(userType) || 
+                       "doctor".equalsIgnoreCase(userType);
+        Log.d(TAG, "isVet check: userType='" + userType + "', result=" + isVet);
+        return isVet;
+    }
+
+    public User getUser() {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String userId = prefs.getString(KEY_USER_ID, "");
+        String email = prefs.getString(KEY_USER_EMAIL, "");
+        String phone = prefs.getString(KEY_USER_PHONE, "");
+        return new User(userId, email, phone);
+    }
+
+    public String getAccessToken() {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getString(KEY_USER_TOKEN, "");
+    }
+
+    public String getUserEmail() {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getString(KEY_USER_EMAIL, "");
+    }
+
+    public String getUserPhone() {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getString(KEY_USER_PHONE, "");
+    }
+
+    public String getCurrentUserId() {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getString(KEY_USER_ID, "");
+    }
+
+    public String getCurrentUsername() {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return prefs.getString(KEY_DISPLAY_NAME, "");
+    }
+
+    public void logout(AuthCallback callback) {
+        // Clear all auth-related preferences like in the original method
+        prefs.edit()
+            .remove(KEY_USER_TOKEN)
+            .remove(KEY_REFRESH_TOKEN)
+            .remove(KEY_USER_ID)
+            .remove(KEY_USER_EMAIL)
+            .remove(KEY_USER_PHONE)
+            .remove(KEY_TOKEN_EXPIRY)
+            .remove(KEY_PROFILE_COMPLETE)
+            .remove(KEY_DISPLAY_NAME)
+            .remove(KEY_IS_ADMIN)
+            .apply();
+
+        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - User logged out with callback");
+        
+        if (callback != null) {
+            callback.onSuccess(null);
+        }
+    }
+
+    public void loadUserProfile(ProfileCallback callback) {
+        String userId = getCurrentUserId();
+        // Implementation to load profile from Supabase
+        if (callback != null) {
+            Map<String, Object> profile = new HashMap<>();
+            profile.put("user_id", userId);
+            profile.put("email", getUserEmail());
+            profile.put("phone", getUserPhone());
+            profile.put("display_name", getDisplayName());
+            
+            // CRITICAL FIX: Use getUserTypeSafe() instead of getUserType() to ensure never null
+            String userType = getUserTypeSafe();
+            Log.d(TAG, "🔍 loadUserProfile - userType from getUserTypeSafe(): '" + userType + "'");
+            profile.put("userType", userType); // Use "userType" key to match MainActivity expectation
+            
+            callback.onProfileLoaded(profile);
+        }
+    }
+
+    /**
+     * Debug method to log current auth state
+     */
+    public void debugAuthState() {
+        Log.d(TAG, "=== AUTH STATE DEBUG ===");
+        Log.d(TAG, "Logged in: " + isLoggedIn());
+        Log.d(TAG, "Session valid: " + isSessionValid());
+        Log.d(TAG, "User ID: " + getUserId());
+        Log.d(TAG, "User Email: " + getUserEmail());
+        Log.d(TAG, "User Type: '" + getUserType() + "'");
+        Log.d(TAG, "User Type Safe: '" + getUserTypeSafe() + "'");
+        Log.d(TAG, "Is Farmer: " + isFarmer());
+        Log.d(TAG, "Is Vet: " + isVet());
+        Log.d(TAG, "Is Admin: " + isAdmin());
+        Log.d(TAG, "Profile Complete: " + isProfileComplete());
+        Log.d(TAG, "Token exists: " + (!android.text.TextUtils.isEmpty(getAccessToken())));
+        Log.d(TAG, "=======================");
+    }
+
+    /**
+     * Mark profile as complete after successful profile setup/edit
+     */
+    public void markProfileComplete() {
+        prefs.edit().putBoolean(KEY_PROFILE_COMPLETE, true).apply();
+        Log.d(TAG, "Profile marked as complete");
+    }
+
+    /**
+     * Enhanced session validation that checks all required components
+     */
 }

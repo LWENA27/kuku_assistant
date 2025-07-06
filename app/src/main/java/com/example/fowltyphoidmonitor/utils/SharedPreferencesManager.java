@@ -16,7 +16,8 @@ import java.util.TimeZone;
 public class SharedPreferencesManager {
 
     // Authentication keys
-    private static final String KEY_USER_TYPE = "user_type";
+    // User type key - internal app format (camelCase)
+    private static final String KEY_USER_TYPE = "userType"; // Internal: camelCase key, API: user_type (snake_case)
     private static final String KEY_USER_ID = "user_id";
     private static final String KEY_USER_TOKEN = "user_token";
     private static final String KEY_USER_EMAIL = "user_email";

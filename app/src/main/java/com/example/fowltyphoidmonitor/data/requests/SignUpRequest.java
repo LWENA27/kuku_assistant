@@ -8,6 +8,10 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * SignUpRequest - Handles user registration requests to API
+ * Note: API uses "user_type" (snake_case) format, internal app uses "userType" (camelCase)
+ */
 public class SignUpRequest {
     @SerializedName("email")
     private String email;
@@ -42,6 +46,7 @@ public class SignUpRequest {
         this.password = password;
         this.data = new HashMap<>();
         this.userMetadata = new HashMap<>();
+        // API requires "user_type" key format
         this.data.put("user_type", userType);
         this.userMetadata.put("user_type", userType);
     }

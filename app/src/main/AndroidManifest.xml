@@ -22,18 +22,36 @@
         android:theme="@style/Theme.FowlTyphoidMonitor"
         tools:targetApi="31">
 
+
         <!-- Activities with screen support -->
+
+        <!-- LauncherActivity - Main entry point for user routing -->
         <activity
-            android:name=".ui.auth.LoginActivity"
+            android:name=".ui.auth.LauncherActivity"
             android:exported="true"
             android:theme="@style/Theme.FowlTyphoidMonitor"
-            android:windowSoftInputMode="adjustResize"
             android:configChanges="orientation|keyboardHidden|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Login Selection Activity -->
+        <activity
+            android:name=".ui.auth.LoginSelectionActivity"
+            android:exported="false"
+            android:theme="@style/Theme.FowlTyphoidMonitor"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:parentActivityName=".ui.auth.LauncherActivity" />
+
+        <activity
+            android:name=".ui.auth.LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.FowlTyphoidMonitor"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:parentActivityName=".ui.auth.LoginSelectionActivity" />
 
         <activity
             android:name=".ui.auth.RegisterSelectionActivity"
@@ -81,14 +99,14 @@
 
         <!-- Admin/Advisor Activities -->
         <activity
-            android:name=".ui.admin.AdminMainActivity"
+            android:name=".ui.vet.AdminMainActivity"
             android:exported="false"
             android:theme="@style/Theme.FowlTyphoidMonitor" />
         <activity
             android:name=".ui.advisor.AdvisorConsultationActivity"
             android:exported="false"
             android:label="Ushauri kwa Mfugaji"
-            android:parentActivityName=".ui.admin.AdminMainActivity" />
+            android:parentActivityName=".ui.vet.AdminMainActivity" />
             
         <!-- Legacy activity, to be deprecated -->
         <activity
@@ -96,6 +114,32 @@
             android:exported="false"
             android:label="Mazungumzo na Daktari"
             android:parentActivityName=".ui.farmer.MainActivity" />
+
+        <!-- Vet Consultation System Activities -->
+        <activity
+            android:name=".ui.vet.VetConsultationInboxActivity"
+            android:exported="false"
+            android:label="Mahojiano ya Wafugaji"
+            android:parentActivityName=".ui.vet.AdminMainActivity" />
+
+        <activity
+            android:name=".ui.vet.VetConsultationChatActivity"
+            android:exported="false"
+            android:label="Mazungumzo na Mfugaji"
+            android:parentActivityName=".ui.vet.VetConsultationInboxActivity" />
+
+        <activity
+            android:name=".ui.vet.VetBroadcastMessageActivity"
+            android:exported="false"
+            android:label="Tuma Ujumbe kwa Wafugaji"
+            android:parentActivityName=".ui.vet.VetConsultationInboxActivity" />
+
+        <!-- Admin/Vet Activities -->
+        <activity
+            android:name=".ui.vet.AdminConsultationsActivity"
+            android:exported="false"
+            android:label="Mahojiano ya Wafugaji"
+            android:parentActivityName=".ui.vet.AdminMainActivity" />
 
         <!-- Common Activities -->
         <activity
@@ -121,6 +165,11 @@
         <activity
             android:name=".ui.farmer.FarmerProfileEditActivity"
             android:exported="false"
+            android:parentActivityName=".ui.common.ProfileActivity" />
+        <activity
+            android:name=".ui.vet.AdminProfileEditActivity"
+            android:exported="false"
+            android:label="Hariri Taarifa"
             android:parentActivityName=".ui.common.ProfileActivity" />
         <activity
             android:name=".ui.common.HistoryActivity"

@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.fowltyphoidmonitor.R;
+import com.example.fowltyphoidmonitor.services.auth.AuthManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -33,11 +34,17 @@ public class AdminProfileEditActivity extends AppCompatActivity {
     private TextInputEditText etExperience;
     private MaterialButton btnSave;
     private ImageButton btnBackEdit;
+    
+    // Auth manager
+    private AuthManager authManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_edit);
+
+        // Initialize AuthManager
+        authManager = AuthManager.getInstance(this);
 
         // Initialize views
         initViews();
@@ -50,18 +57,53 @@ public class AdminProfileEditActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        // Fixed to match the IDs in your layout file
-        etUsername = findViewById(R.id.etUsername);
+        Log.d(TAG, "Initializing views...");
+        
+        // Fixed to match the IDs in the activity_profile_edit.xml layout file
+        etUsername = findViewById(R.id.etFullName);  // Using etFullName for username
+        Log.d(TAG, "etUsername (etFullName) found: " + (etUsername != null));
+        
         etLocation = findViewById(R.id.etLocation);
+        Log.d(TAG, "etLocation found: " + (etLocation != null));
+        
         etFarmSize = findViewById(R.id.etFarmSize);
+        Log.d(TAG, "etFarmSize found: " + (etFarmSize != null));
+        
         etFarmAddress = findViewById(R.id.etFarmAddress);
+        Log.d(TAG, "etFarmAddress found: " + (etFarmAddress != null));
+        
         etFarmType = findViewById(R.id.etFarmType);
+        Log.d(TAG, "etFarmType found: " + (etFarmType != null));
+        
         etExperience = findViewById(R.id.etExperience);
+        Log.d(TAG, "etExperience found: " + (etExperience != null));
+        
         btnSave = findViewById(R.id.btnSave);
+        Log.d(TAG, "btnSave found: " + (btnSave != null));
+        
         btnBackEdit = findViewById(R.id.btnBackEdit);
+        Log.d(TAG, "btnBackEdit found: " + (btnBackEdit != null));
+        
+        // Check if any critical views are null
+        if (etUsername == null || etLocation == null || etFarmSize == null || btnSave == null) {
+            Log.e(TAG, "❌ CRITICAL: Some views are null! Cannot proceed.");
+            Toast.makeText(this, "Hitilafu katika kuanzisha interface", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+        
+        Log.d(TAG, "✅ All views initialized successfully");
     }
 
     private void loadProfileData() {
+        Log.d(TAG, "Loading profile data...");
+        
+        // Null check before loading data
+        if (etUsername == null || etLocation == null || etFarmSize == null) {
+            Log.e(TAG, "❌ Cannot load profile data - views are null");
+            return;
+        }
+        
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
         String username = prefs.getString("username", "John Lyalanga");
@@ -71,24 +113,32 @@ public class AdminProfileEditActivity extends AppCompatActivity {
         String farmType = prefs.getString("farmType", "");
         int experience = prefs.getInt("experience", 0);
 
-        // Set data to EditTexts
-        etUsername.setText(username);
-        etLocation.setText(location);
-        etFarmSize.setText(String.valueOf(farmSize));
+        // Set data to EditTexts with null checks
+        if (etUsername != null) {
+            etUsername.setText(username);
+        }
+        
+        if (etLocation != null) {
+            etLocation.setText(location);
+        }
+        
+        if (etFarmSize != null) {
+            etFarmSize.setText(String.valueOf(farmSize));
+        }
 
-        if (!farmAddress.isEmpty()) {
+        if (etFarmAddress != null && !farmAddress.isEmpty()) {
             etFarmAddress.setText(farmAddress);
         }
 
-        if (!farmType.isEmpty()) {
+        if (etFarmType != null && !farmType.isEmpty()) {
             etFarmType.setText(farmType);
         }
 
-        if (experience > 0) {
+        if (etExperience != null && experience > 0) {
             etExperience.setText(String.valueOf(experience));
         }
 
-        Log.d(TAG, "Loaded data - Username: " + username + ", Location: " + location + ", Farm Size: " + farmSize);
+        Log.d(TAG, "✅ Profile data loaded - Username: " + username + ", Location: " + location + ", Farm Size: " + farmSize);
     }
 
     private void setupClickListeners() {
@@ -108,6 +158,15 @@ public class AdminProfileEditActivity extends AppCompatActivity {
     }
 
     private void saveProfileData() {
+        // PROTECTION: Check user type BEFORE saving
+        String userType = authManager.getUserType();
+        Log.d(TAG, "🔍 BEFORE ADMIN PROFILE SAVE - User type: '" + userType + "'");
+        
+        if (userType == null || userType.trim().isEmpty()) {
+            Log.e(TAG, "❌ USER TYPE NULL BEFORE ADMIN SAVE! Fixing it now...");
+            authManager.setUserType("vet"); // Force it to vet for admin users
+        }
+        
         String username = etUsername.getText().toString().trim();
         String location = etLocation.getText().toString().trim();
         String farmSizeStr = etFarmSize.getText().toString().trim();
@@ -182,6 +241,18 @@ public class AdminProfileEditActivity extends AppCompatActivity {
         boolean saved = editor.commit();
 
         if (saved) {
+            // PROTECTION: Ensure user type is still valid after save
+            String userTypeAfter = authManager.getUserType();
+            Log.d(TAG, "🔍 AFTER ADMIN PROFILE SAVE - User type: '" + userTypeAfter + "'");
+            
+            if (userTypeAfter == null || userTypeAfter.trim().isEmpty()) {
+                Log.e(TAG, "❌ USER TYPE NULL AFTER ADMIN SAVE! Fixing it now...");
+                authManager.setUserType("vet"); // Force it to vet for admin users
+            }
+            
+            // Mark profile as complete
+            authManager.markProfileComplete();
+            
             Log.d(TAG, "Profile saved successfully - Username: " + username +
                     ", Location: " + location + ", Farm Size: " + farmSize);
 

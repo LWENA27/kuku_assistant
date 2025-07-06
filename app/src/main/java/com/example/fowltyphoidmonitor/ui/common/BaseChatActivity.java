@@ -18,6 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.fowltyphoidmonitor.R;
 import com.example.fowltyphoidmonitor.data.models.ConsultationMessage;
+import com.example.fowltyphoidmonitor.services.NetworkConnectivityService;
+import com.example.fowltyphoidmonitor.services.OfflineMessageQueue;
 import com.example.fowltyphoidmonitor.services.SupabaseChatService;
 import com.example.fowltyphoidmonitor.services.auth.AuthManager;
 import com.example.fowltyphoidmonitor.ui.auth.LoginActivity;
@@ -28,7 +30,7 @@ import java.util.UUID;
 
 /**
  * Base abstract class for chat functionality shared between farmer and advisor interfaces
- * Updated with Supabase integration for persistent messaging
+ * Updated with Supabase integration for persistent messaging and offline support
  */
 public abstract class BaseChatActivity extends AppCompatActivity {
     private static final String TAG = "BaseChatActivity";
@@ -50,6 +52,10 @@ public abstract class BaseChatActivity extends AppCompatActivity {
     private Handler messagePollingHandler;
     private Runnable messagePollingRunnable;
     
+    // Offline support
+    protected NetworkConnectivityService networkService;
+    protected OfflineMessageQueue offlineQueue;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,8 +73,10 @@ public abstract class BaseChatActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(title);
         }
 
-        // Initialize Supabase chat service
+        // Initialize services
         chatService = SupabaseChatService.getInstance(this);
+        networkService = new NetworkConnectivityService(this);
+        offlineQueue = OfflineMessageQueue.getInstance(this);
 
         // Initialize chat adapter
         messages = new ArrayList<>();
@@ -80,6 +88,9 @@ public abstract class BaseChatActivity extends AppCompatActivity {
 
         // Configure send button
         setupSendButton();
+
+        // Start network monitoring
+        networkService.startMonitoring();
 
         // Load initial messages
         loadMessages();
@@ -135,6 +146,26 @@ public abstract class BaseChatActivity extends AppCompatActivity {
         // Disable button to prevent multiple sends
         sendButton.setEnabled(false);
 
+        // Check network connectivity
+        if (!networkService.isConnected()) {
+            // Queue message for offline sending
+            offlineQueue.queueMessage(consultationId, messageText, currentUserId, currentRole);
+
+            runOnUiThread(() -> {
+                // Clear input field
+                messageEditText.setText("");
+
+                // Re-enable send button
+                sendButton.setEnabled(true);
+
+                // Show offline message
+                Toast.makeText(BaseChatActivity.this,
+                        "Message queued - will send when online",
+                        Toast.LENGTH_SHORT).show();
+            });
+            return;
+        }
+
         // Send message through Supabase
         chatService.sendMessage(consultationId, messageText, new SupabaseChatService.ChatCallback() {
             @Override
@@ -154,13 +185,19 @@ public abstract class BaseChatActivity extends AppCompatActivity {
             @Override
             public void onError(String errorMessage) {
                 runOnUiThread(() -> {
-                    // Show error message
-                    Toast.makeText(BaseChatActivity.this,
-                            "Failed to send message: " + errorMessage,
-                            Toast.LENGTH_SHORT).show();
+                    // Queue message for offline sending as fallback
+                    offlineQueue.queueMessage(consultationId, messageText, currentUserId, currentRole);
+
+                    // Clear input field
+                    messageEditText.setText("");
 
                     // Re-enable send button
                     sendButton.setEnabled(true);
+
+                    // Show error message with offline fallback info
+                    Toast.makeText(BaseChatActivity.this,
+                            "Message queued - will retry when connection improves",
+                            Toast.LENGTH_SHORT).show();
                 });
             }
         });
@@ -250,4 +287,19 @@ public abstract class BaseChatActivity extends AppCompatActivity {
      * Abstract method that must be implemented by child classes to handle send errors
      */
     protected abstract void handleSendError(String error);
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Stop network monitoring
+        if (networkService != null) {
+            networkService.stopMonitoring();
+        }
+
+        // Stop message polling
+        if (messagePollingHandler != null && messagePollingRunnable != null) {
+            messagePollingHandler.removeCallbacks(messagePollingRunnable);
+        }
+    }
 }

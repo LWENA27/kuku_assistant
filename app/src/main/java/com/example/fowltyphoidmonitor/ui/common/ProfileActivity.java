@@ -27,10 +27,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ProfileActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "FowlTyphoidMonitorPrefs";
+    // User type constants - internal app format (camelCase key, normalized values)
     private static final String KEY_USER_TYPE = "userType";
     private static final String USER_TYPE_FARMER = "farmer";
-    // Removed: Only 'admin' and 'farmer' supported
-    private static final String USER_TYPE_ADMIN = "admin";
+    // Note: Only 'farmer' and 'vet' supported internally
+    private static final String USER_TYPE_ADMIN = "vet";  // Internal: admin maps to vet for consistency
     private static final String TAG = "ProfileActivity";
 
     // Request code for profile editing

@@ -33,11 +33,11 @@ import java.util.TimeZone;
  *
  * Handles routing users to appropriate activities based on:
  * - Authentication status
- * - User type (Admin or Farmer only - vet type removed)
+ * - User type (Vet or Farmer only - unified system)
  * - First-time app launch
  *
  * @author LWENA27
- * @updated 2025-07-03
+ * @updated 2025-07-06
  */
 public class LauncherActivity extends AppCompatActivity {
 
@@ -47,9 +47,12 @@ public class LauncherActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "FowlTyphoidMonitorPrefs";
     private static final String KEY_FIRST_LAUNCH = "isFirstLaunch";
 
-    // User role constants - only admin and farmer supported
-    private static final String USER_TYPE_ADMIN = "admin";
+    // User role constants - unified system using "vet" for all medical professionals
+    private static final String USER_TYPE_VET = "vet";
     private static final String USER_TYPE_FARMER = "farmer";
+
+    // Internal mapping: admin users are treated as vet users
+    private static final String USER_TYPE_ADMIN = USER_TYPE_VET; // Internal: admin maps to vet
 
     // Splash screen delay
     private static final int SPLASH_DELAY = 2000; // 2 seconds
@@ -124,7 +127,7 @@ public class LauncherActivity extends AppCompatActivity {
             boolean isLoggedIn = authManager.isLoggedIn();
             boolean isProfileComplete = authManager.isProfileComplete();
             String userId = authManager.getUserId();
-            String userType = authManager.getUserType();
+            String userType = authManager.getUserTypeSafe();
             boolean isAdmin = authManager.isAdmin();
             boolean isFarmer = authManager.isFarmer();
 
@@ -295,6 +298,19 @@ public class LauncherActivity extends AppCompatActivity {
                 return;
             }
 
+            // Additional session validation
+            if (!authManager.isSessionValid()) {
+                Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - Session invalid despite being logged in, clearing session");
+                authManager.debugAuthState(); // Log detailed state for debugging
+                authManager.logout();
+                if (completionListener != null) {
+                    completionListener.onLauncherCompleted(USER_TYPE_FARMER, false);
+                } else {
+                    safeNavigateToLoginSelection();
+                }
+                return;
+            }
+
             // User is logged in, determine which interface to show
             updateLoadingMessage("Inatambua hali ya mtumiaji...");
 
@@ -312,7 +328,7 @@ public class LauncherActivity extends AppCompatActivity {
             // Get user role information - only check admin and farmer
             boolean isAdmin = authManager.isAdmin();
             boolean isFarmer = authManager.isFarmer();
-            String userType = authManager.getUserType();
+            String userType = authManager.getUserTypeSafe();
 
             Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - User role detection - " +
                     "LoggedIn: " + isLoggedIn +
@@ -341,14 +357,24 @@ public class LauncherActivity extends AppCompatActivity {
             // Route user directly to appropriate main activity
             updateLoadingMessage("Unaingia...");
 
-            // Direct user to the correct interface - only admin or farmer
-            if (isAdmin || USER_TYPE_ADMIN.equalsIgnoreCase(userType)) {
-                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Routing admin user to admin interface");
-                navigateToAdminInterface();
-            } else {
-                // Default to farmer interface for all non-admin users
-                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Routing user to farmer interface");
-                navigateToFarmerInterface();
+            // Use NavigationManager for centralized routing
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Using NavigationManager to route user with type: " + userType);
+            
+            try {
+                com.example.fowltyphoidmonitor.utils.NavigationManager.navigateToUserInterface(this, true);
+                finish();
+            } catch (Exception navError) {
+                Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - NavigationManager failed, using fallback", navError);
+                
+                // Fallback to manual routing
+                if (isAdmin || USER_TYPE_ADMIN.equalsIgnoreCase(userType) || "vet".equalsIgnoreCase(userType)) {
+                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Fallback: Routing vet/admin user to admin interface");
+                    navigateToAdminInterface();
+                } else {
+                    // Default to farmer interface for all non-admin users
+                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Fallback: Routing user to farmer interface");
+                    navigateToFarmerInterface();
+                }
             }
 
         } catch (Exception e) {
@@ -396,7 +422,7 @@ public class LauncherActivity extends AppCompatActivity {
             }
 
             // Add comprehensive user type information to intent
-            intent.putExtra("USER_TYPE", userType);
+            intent.putExtra("userType", userType); // Changed: Use camelCase for consistency
             intent.putExtra("isNewUser", true);
             intent.putExtra("isAdmin", authManager.isAdmin());
             intent.putExtra("isVet", authManager.isVet());
@@ -460,15 +486,11 @@ public class LauncherActivity extends AppCompatActivity {
 
             // Pass user information to LoginSelectionActivity
             boolean isLoggedIn = authManager.isLoggedIn();
-            String userType = authManager.getUserType();
+            String userType = authManager.getUserTypeSafe();
             boolean isAdmin = authManager.isAdmin();
 
-            if (userType == null || userType.isEmpty()) {
-                userType = prefManager.getUserType();
-                if (userType == null || userType.isEmpty()) {
-                    userType = USER_TYPE_FARMER;
-                }
-            }
+            // getUserTypeSafe() already handles null/empty cases with fallback to "farmer"
+            // No additional fallback needed
 
             loginSelectionIntent.putExtra("isLoggedIn", isLoggedIn);
             loginSelectionIntent.putExtra("userType", userType);
@@ -541,7 +563,7 @@ public class LauncherActivity extends AppCompatActivity {
             try {
                 Class<?> activityClass = Class.forName(className);
                 Intent intent = new Intent(LauncherActivity.this, activityClass);
-                intent.putExtra("USER_TYPE", USER_TYPE_ADMIN);
+                intent.putExtra("userType", USER_TYPE_ADMIN); // Changed: Use camelCase for consistency
                 intent.putExtra("IS_ADMIN", true);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
@@ -575,7 +597,7 @@ public class LauncherActivity extends AppCompatActivity {
             // Try AdminMainActivity first
             try {
                 Intent adminIntent = new Intent(LauncherActivity.this, AdminMainActivity.class);
-                adminIntent.putExtra("USER_TYPE", USER_TYPE_ADMIN);
+                adminIntent.putExtra("userType", USER_TYPE_ADMIN); // Changed: Use camelCase for consistency
                 adminIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(adminIntent);
                 finish();
@@ -588,7 +610,7 @@ public class LauncherActivity extends AppCompatActivity {
             // Try DashboardActivity with admin type as secondary option
             try {
                 Intent adminIntent = new Intent(LauncherActivity.this, DashboardActivity.class);
-                adminIntent.putExtra("USER_TYPE", USER_TYPE_ADMIN);
+                adminIntent.putExtra("userType", USER_TYPE_ADMIN); // Changed: Use camelCase for consistency
                 adminIntent.putExtra("IS_ADMIN", true);
                 adminIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(adminIntent);
@@ -615,7 +637,7 @@ public class LauncherActivity extends AppCompatActivity {
     private void navigateToFarmerInterface() {
         try {
             Intent farmerIntent = new Intent(LauncherActivity.this, MainActivity.class);
-            farmerIntent.putExtra("USER_TYPE", USER_TYPE_FARMER);
+            farmerIntent.putExtra("userType", USER_TYPE_FARMER); // Changed: Use camelCase for consistency
             farmerIntent.putExtra("IS_FARMER", true);
             farmerIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(farmerIntent);
@@ -627,7 +649,7 @@ public class LauncherActivity extends AppCompatActivity {
             // Try fallback to DashboardActivity
             try {
                 Intent intent = new Intent(LauncherActivity.this, DashboardActivity.class);
-                intent.putExtra("USER_TYPE", USER_TYPE_FARMER);
+                intent.putExtra("userType", USER_TYPE_FARMER); // Changed: Use camelCase for consistency
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();

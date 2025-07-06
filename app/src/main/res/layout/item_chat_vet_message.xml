@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="start"
+    android:padding="8dp">
+
+    <!-- Vet Avatar -->
+    <ImageView
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/ic_vet_avatar"
+        android:background="@drawable/circle_vet"
+        android:padding="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_gravity="top" />
+
+    <!-- Message Content -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:maxWidth="280dp">
+
+        <!-- Sender Name -->
+        <TextView
+            android:id="@+id/txtSenderName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Daktari Mwangi"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/vet_name_color"
+            android:layout_marginBottom="4dp" />
+
+        <!-- Message Bubble -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_message_vet"
+            android:padding="12dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtMessageText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Asante kwa swali lako. Kwa dalili unazozielezea, inaweza kuwa ni ugonjwa wa fowl typhoid."
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:lineSpacingExtra="2dp" />
+
+            <!-- Time -->
+            <TextView
+                android:id="@+id/txtTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="14:35"
+                android:textSize="11sp"
+                android:textColor="@android:color/white"
+                android:alpha="0.8"
+                android:layout_gravity="end"
+                android:layout_marginTop="4dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Spacer to push message to left -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="0.3" />
+
+</LinearLayout>

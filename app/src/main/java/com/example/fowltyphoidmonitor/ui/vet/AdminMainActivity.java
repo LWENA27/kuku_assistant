@@ -67,11 +67,12 @@ public class AdminMainActivity extends AppCompatActivity {
     private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
     private static final String KEY_USERNAME = "username";
     private static final String KEY_PASSWORD = "password";
+    // User type constants - internal app format (camelCase key, normalized values)
     private static final String KEY_USER_TYPE = "userType";
     private static final String KEY_PROFILE_COMPLETE = "isProfileComplete";
     private static final String USER_TYPE_VET = "vet";
     private static final String USER_TYPE_FARMER = "farmer";
-    private static final String USER_TYPE_ADMIN = "admin";
+    private static final String USER_TYPE_ADMIN = "vet";  // Internal: admin maps to vet for consistency
     private static final String TAG = "AdminMainActivity";
 
     // Request codes
@@ -94,7 +95,7 @@ public class AdminMainActivity extends AppCompatActivity {
         // Check authentication using AuthManager instead of SharedPreferences
         authManager = com.example.fowltyphoidmonitor.services.auth.AuthManager.getInstance(this);
         boolean loggedIn = authManager.isLoggedIn();
-        String userType = authManager.getUserType();
+        String userType = authManager.getUserTypeSafe();
 
         Log.d(TAG, "[LWENA27] Authentication check - LoggedIn: " + loggedIn + ", UserType: " + userType);
         
@@ -163,24 +164,67 @@ public class AdminMainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // TEMPORARY: Disable authentication check in onResume to prevent redirect loop
-        // Check authentication when returning to this activity
-        // if (!isUserLoggedIn()) {
-        //     Log.d(TAG, "User not logged in (onResume), redirecting to login screen");
-        //     redirectToLogin();
-        //     return;
-        // }
-        Log.d(TAG, "[LWENA27] onResume - authentication check disabled for testing");
-
-        // Reload user data when returning from other activities
-        loadUserData();
-
-        if (isAdminOrVet()) {
-            loadDashboardStats();
-            startDashboardUpdates();
-        } else {
-            loadFarmerDashboard();
+        
+        // Check basic login status first
+        if (!authManager.isLoggedIn()) {
+            Log.w(TAG, "User not logged in, redirecting to login");
+            redirectToLogin();
+            return;
         }
+
+        // Check if user type is valid (to prevent "unexpected user type null")
+        String userType = authManager.getUserTypeSafe();
+        if (!com.example.fowltyphoidmonitor.utils.NavigationManager.isValidUserType(userType)) {
+            Log.w(TAG, "Invalid user type: " + userType + ", redirecting to login");
+            authManager.logout(); // Clear invalid session
+            redirectToLogin();
+            return;
+        }
+
+        // Ensure this is a vet/admin accessing vet interface
+        if (!authManager.isVet()) {
+            Log.w(TAG, "Non-vet user (" + userType + ") accessing vet interface, redirecting");
+            com.example.fowltyphoidmonitor.utils.NavigationManager.navigateToUserInterface(this, true);
+            finish();
+            return;
+        }
+
+        // Try to refresh token if needed, but don't fail if it doesn't work
+        authManager.autoRefreshIfNeeded(new com.example.fowltyphoidmonitor.services.auth.AuthManager.AuthCallback() {
+            @Override
+            public void onSuccess(com.example.fowltyphoidmonitor.data.requests.AuthResponse response) {
+                // Token is valid or refreshed, load user data
+                Log.d(TAG, "Token refresh successful, loading user data");
+                loadUserData();
+                if (isAdminOrVet()) {
+                    loadDashboardStats();
+                    startDashboardUpdates();
+                } else {
+                    loadFarmerDashboard();
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                // Token refresh failed, but don't redirect to login immediately
+                // Just log the error and continue - user might still be able to use the app
+                Log.w(TAG, "Token refresh failed: " + error + ", but continuing with existing session");
+                loadUserData(); // Try to load data anyway
+                if (isAdminOrVet()) {
+                    loadDashboardStats();
+                    startDashboardUpdates();
+                } else {
+                    loadFarmerDashboard();
+                }
+                
+                // Only redirect to login if the session is completely invalid
+                if (!authManager.isLoggedIn()) {
+                    Toast.makeText(AdminMainActivity.this, "Session expired. Please log in again.",
+                            Toast.LENGTH_SHORT).show();
+                    redirectToLogin();
+                }
+            }
+        });
 
         Log.d(TAG, "User data reloaded in onResume");
     }

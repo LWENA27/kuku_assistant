@@ -160,6 +160,10 @@ public class LoginActivity extends AppCompatActivity {
 
                     Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Saving auth data for userId: " + userId);
                     authManager.saveAuthData(accessToken, refreshToken, userId, email, phone, displayName);
+                    
+                    // Debug auth state after saving
+                    authManager.debugAuthState();
+                    
                     checkFarmerProfile(accessToken, userId, email);
                 } else {
                     Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Auth response or user is null");
@@ -387,29 +391,27 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void navigateBasedOnUserType() {
-        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - navigateBasedOnUserType");
+        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - navigateBasedOnUserType called");
+        
+        if (!authManager.isSessionValid()) {
+            Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - Invalid session detected, clearing and restarting login");
+            authManager.logout();
+            recreate();
+            return;
+        }
+        
+        String userType = authManager.getUserTypeSafe();
+        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - User type: '" + userType + "'");
+        
         try {
-            // UNIFIED SYSTEM: All admin/vet/doctor roles go to same interface
-            if (authManager.isVet()) { // This now covers admin, vet, doctor
-                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - User is medical professional, navigating to vet interface");
-                navigateToVetInterface(); // Use single interface for all medical professionals
-            } else {
-                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - User is farmer, checking profile");
-                String accessToken = authManager.getAccessToken();
-                String userId = authManager.getUserId();
-                String email = authManager.getUserEmail();
-
-                if (!TextUtils.isEmpty(accessToken) && !TextUtils.isEmpty(userId) && !TextUtils.isEmpty(email)) {
-                    checkFarmerProfile(accessToken, userId, email);
-                } else {
-                    Log.w(TAG, "[LWENA27] " + getCurrentTime() + " - Missing auth data, performing fresh login");
-                    // Clear invalid session and show login screen
-                    authManager.logout();
-                }
-            }
+            // Use NavigationManager for centralized routing
+            com.example.fowltyphoidmonitor.utils.NavigationManager.navigateToUserInterface(this, true);
+            finish();
         } catch (Exception e) {
-            Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error in navigation, defaulting to main activity", e);
-            goToMainActivity();
+            Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Navigation failed", e);
+            Toast.makeText(this, "Navigation error. Please try logging in again.", Toast.LENGTH_LONG).show();
+            authManager.logout();
+            recreate();
         }
     }
 
@@ -417,29 +419,35 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - navigateToVetInterface");
         authManager.setLoggedIn(true);
         try {
+            // Primary: Try AdminMainActivity
             Intent intent = new Intent(LoginActivity.this, AdminMainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Successfully navigated to AdminMainActivity");
         } catch (Exception e) {
-            Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - AdminMainActivity not found for vet, trying AdminConsultationActivity", e);
+            Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - AdminMainActivity failed, trying VetConsultationInboxActivity", e);
             try {
-                Intent intent = new Intent(LoginActivity.this, AdminConsultationActivity.class);
-                intent.putExtra("USER_TYPE", "vet");
+                // Fallback 1: Try the new comprehensive vet consultation system
+                Intent intent = new Intent(LoginActivity.this, com.example.fowltyphoidmonitor.ui.vet.VetConsultationInboxActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();
+                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Successfully navigated to VetConsultationInboxActivity");
             } catch (Exception e2) {
-                Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - AdminConsultationActivity not found for vet, trying DashboardActivity", e2);
+                Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - VetConsultationInboxActivity failed, trying AdminConsultationActivity", e2);
                 try {
-                    Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
-                    intent.putExtra("USER_TYPE", "vet");
+                    // Fallback 2: Try AdminConsultationActivity
+                    Intent intent = new Intent(LoginActivity.this, AdminConsultationActivity.class);
+                    intent.putExtra("userType", "vet"); // Changed: Use camelCase for consistency
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
+                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Successfully navigated to AdminConsultationActivity");
                 } catch (Exception e3) {
                     Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - All vet activities failed", e3);
-                    Toast.makeText(this, "Imeshindikana kufungua ukurasa wa madaktari", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Hitilafu: Imeshindikana kufungua ukurasa wa madaktari.\n\nTafadhali:\n1. Hakikisha umeinstall programu kwa usahihi\n2. Jaribu kutoka na kuingia tena\n3. Wasiliana na msimamizi wa mfumo", Toast.LENGTH_LONG).show();
+                    authManager.logout(); // Clear session to force fresh login
                 }
             }
         }

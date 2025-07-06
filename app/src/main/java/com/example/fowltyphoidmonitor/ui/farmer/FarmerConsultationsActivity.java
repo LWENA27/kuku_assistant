@@ -35,6 +35,7 @@ public class FarmerConsultationsActivity extends AppCompatActivity {
     // Authentication constants
     private static final String PREFS_NAME = "FowlTyphoidMonitorPrefs";
     private static final String KEY_USERNAME = "username";
+    // User type constants - internal app format (camelCase key, normalized values)
     private static final String KEY_USER_TYPE = "userType";
     private static final String USER_TYPE_FARMER = "farmer";
     private static final String TAG = "FarmerConsultationsActivity";

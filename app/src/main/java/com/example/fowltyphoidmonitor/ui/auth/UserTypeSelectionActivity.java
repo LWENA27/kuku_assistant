@@ -21,6 +21,7 @@ public class UserTypeSelectionActivity extends AppCompatActivity {
     private static final String ADMIN_PREFS_NAME = "FowlTyphoidMonitorAdminPrefs";
     private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
     private static final String KEY_IS_ADMIN_LOGGED_IN = "isAdminLoggedIn";
+    // User type constants - internal app format (camelCase key, normalized values)
     private static final String KEY_USER_TYPE = "userType";
     private static final String USER_TYPE_VET = "vet";
 

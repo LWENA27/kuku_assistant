@@ -26,11 +26,12 @@ import java.util.Locale;
 
 public class RequestConsultationActivity extends AppCompatActivity {
 
-    // Authentication constants - matching AdminMainActivity
+    // Authentication constants - matching AdminMainActivity for consistency
     private static final String PREFS_NAME = "FowlTyphoidMonitorPrefs";
     private static final String KEY_USERNAME = "username";
+    // User type constants - internal app format (camelCase key, normalized values)
     private static final String KEY_USER_TYPE = "userType";
-    // Removed: Only 'admin' and 'farmer' supported
+    // Note: Only 'farmer' and 'vet' supported in unified system
     private static final String USER_TYPE_FARMER = "farmer";
     private static final String TAG = "RequestConsultationActivity";
 

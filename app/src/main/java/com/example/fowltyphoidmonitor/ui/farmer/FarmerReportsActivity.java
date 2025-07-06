@@ -71,8 +71,9 @@ public class FarmerReportsActivity extends AppCompatActivity {
 
         // Check authentication using AuthManager
         com.example.fowltyphoidmonitor.services.auth.AuthManager authManager = com.example.fowltyphoidmonitor.services.auth.AuthManager.getInstance(this);
-        if (!authManager.isLoggedIn() || !"farmer".equals(authManager.getUserType())) {
-            Log.d(TAG, "User not logged in or not a farmer, redirecting");
+        String userType = authManager.getUserTypeSafe();
+        if (!authManager.isLoggedIn() || !"farmer".equals(userType)) {
+            Log.d(TAG, "User not logged in or not a farmer (userType: '" + userType + "'), redirecting");
             finish();
             startActivity(new Intent(this, com.example.fowltyphoidmonitor.ui.auth.LoginActivity.class));
             return;
@@ -103,8 +104,9 @@ public class FarmerReportsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         com.example.fowltyphoidmonitor.services.auth.AuthManager authManager = com.example.fowltyphoidmonitor.services.auth.AuthManager.getInstance(this);
-        if (!authManager.isLoggedIn() || !"farmer".equals(authManager.getUserType())) {
-            Log.d(TAG, "User not logged in (onResume), redirecting");
+        String userType = authManager.getUserTypeSafe();
+        if (!authManager.isLoggedIn() || !"farmer".equals(userType)) {
+            Log.d(TAG, "User not logged in (onResume) or not a farmer (userType: '" + userType + "'), redirecting");
             finish();
             startActivity(new Intent(this, com.example.fowltyphoidmonitor.ui.auth.LoginActivity.class));
             return;

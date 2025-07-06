@@ -109,10 +109,10 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
                 btnSave.setText("Hifadhi Mabadiliko");
             }
 
-            etLocation.setHint("Eneo la shamba (mfano: Ubungo, Dar es Salaam)");
-            etFarmSize.setHint("Idadi ya kuku (mfano: 50)");
-            etFarmAddress.setHint("Anwani kamili ya shamba (mfano: Kijiji Chamwino, Kata Igamba)");
-            etFarmType.setHint("Aina ya ufugaji (mfano: Mayai, Nyama, Kienyeji)");
+            etLocation.setHint("mfano: Ubungo, Dar es Salaam");
+            etFarmSize.setHint("mfano: 50");
+            etFarmAddress.setHint("mfano: Kijiji Chamwino, Kata Igamba");
+            etFarmType.setHint("mfano: Mayai, Nyama, Kienyeji");
             etFarmSize.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
             tvErrorMessage.setVisibility(View.GONE);
 
@@ -277,6 +277,15 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
     }
 
     private void saveProfileData() {
+        // PROTECTION: Check user type BEFORE saving
+        String userType = authManager.getUserType();
+        Log.d(TAG, "🔍 BEFORE PROFILE SAVE - User type: '" + userType + "'");
+        
+        if (userType == null || userType.trim().isEmpty()) {
+            Log.e(TAG, "❌ USER TYPE NULL BEFORE SAVE! Fixing it now...");
+            authManager.setUserType("farmer"); // Force it to farmer
+        }
+        
         String location = etLocation.getText().toString().trim();
         String farmSizeStr = etFarmSize.getText().toString().trim();
         String farmAddress = etFarmAddress.getText().toString().trim();
@@ -352,6 +361,26 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
             @Override
             public void onSuccess() {
                 showLoading(false);
+                
+                // PROTECTION: Ensure user type is still valid after database save
+                String userType = authManager.getUserType();
+                Log.d(TAG, "🔍 AFTER DATABASE SAVE - User type: '" + userType + "'");
+                
+                if (userType == null || userType.trim().isEmpty()) {
+                    Log.e(TAG, "❌ USER TYPE NULL AFTER SAVE! Fixing it now...");
+                    authManager.setUserType("farmer"); // Force it to farmer
+                }
+                
+                // Mark profile as complete after successful save
+                authManager.markProfileComplete();
+                
+                // MORE PROTECTION: Log complete auth state
+                Log.d(TAG, "🔍 Auth state after profile save:");
+                Log.d(TAG, "  - Logged in: " + authManager.isLoggedIn());
+                Log.d(TAG, "  - User type: '" + authManager.getUserType() + "'");
+                Log.d(TAG, "  - User ID: " + authManager.getUserId());
+                Log.d(TAG, "  - Session valid: " + authManager.isSessionValid());
+                
                 Toast.makeText(FarmerProfileEditActivity.this, "Wasifu umesasishwa kwa mafanikio", Toast.LENGTH_SHORT).show();
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra(EXTRA_PROFILE_UPDATED, true);
@@ -371,6 +400,19 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
             @Override
             public void onError(String errorMessage) {
                 showLoading(false);
+                
+                // PROTECTION: Ensure user type is still valid even on error
+                String userType = authManager.getUserType();
+                Log.d(TAG, "🔍 AFTER DATABASE ERROR - User type: '" + userType + "'");
+                
+                if (userType == null || userType.trim().isEmpty()) {
+                    Log.e(TAG, "❌ USER TYPE NULL AFTER ERROR! Fixing it now...");
+                    authManager.setUserType("farmer"); // Force it to farmer
+                }
+                
+                // Still mark profile as complete even if database save failed (offline scenario)
+                authManager.markProfileComplete();
+                
                 Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error saving to database: " + errorMessage);
                 showErrorMessage("Wasifu umehifadhiwa bila kuunganisha kwenye mtandao");
                 Toast.makeText(FarmerProfileEditActivity.this, "Wasifu umehifadhiwa bila kuunganisha kwenye mtandao", Toast.LENGTH_SHORT).show();

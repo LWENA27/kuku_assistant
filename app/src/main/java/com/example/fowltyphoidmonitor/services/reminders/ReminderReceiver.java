@@ -24,10 +24,11 @@ public class ReminderReceiver extends BroadcastReceiver {
 
     // Authentication constants
     private static final String PREFS_NAME = "FowlTyphoidMonitorPrefs";
+    // User type constants - internal app format (camelCase key, normalized values)
     private static final String KEY_USER_TYPE = "userType";
     private static final String USER_TYPE_FARMER = "farmer";
     private static final String USER_TYPE_VET = "vet";
-    private static final String USER_TYPE_ADMIN = "admin";
+    private static final String USER_TYPE_ADMIN = "vet";  // Internal: admin maps to vet for consistency
 
     @Override
     public void onReceive(Context context, Intent intent) {

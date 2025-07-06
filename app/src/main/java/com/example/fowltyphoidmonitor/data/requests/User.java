@@ -170,7 +170,7 @@ public class User {
     // Helper methods
 
     /**
-     * Get the user type from metadata
+     * Get the user type from metadata (API format: user_type, internal: userType)
      * @return The user type (farmer, vet, admin) or null if not found
      */
     public String getUserType() {
@@ -212,7 +212,7 @@ public class User {
      * @return true if user is an admin (based on email or user type)
      */
     public boolean isAdmin() {
-        // Check user_type first
+        // Check userType first (API uses user_type key)
         if (userMetadata != null && userMetadata.containsKey("user_type")) {
             Object userTypeObj = userMetadata.get("user_type");
             if (userTypeObj != null && ROLE_ADMIN.equalsIgnoreCase(userTypeObj.toString())) {
