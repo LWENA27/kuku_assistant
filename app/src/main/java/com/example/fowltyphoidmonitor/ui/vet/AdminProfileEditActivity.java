@@ -59,10 +59,10 @@ public class AdminProfileEditActivity extends AppCompatActivity {
     private void initViews() {
         Log.d(TAG, "Initializing views...");
         
-        // Fixed to match the IDs in the activity_profile_edit.xml layout file
-        etUsername = findViewById(R.id.etFullName);  // Using etFullName for username
-        Log.d(TAG, "etUsername (etFullName) found: " + (etUsername != null));
-        
+        // Updated to match the IDs in the enhanced activity_profile_edit.xml layout file
+        etUsername = findViewById(R.id.etFarmName);  // Using etFarmName for admin username
+        Log.d(TAG, "etUsername (etFarmName) found: " + (etUsername != null));
+
         etLocation = findViewById(R.id.etLocation);
         Log.d(TAG, "etLocation found: " + (etLocation != null));
         

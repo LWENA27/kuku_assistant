@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,17 +43,34 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
     private static final String KEY_PROFILE_COMPLETE = "isProfileComplete";
     public static final String EXTRA_PROFILE_UPDATED = "profile_updated";
 
+    // UI Elements - Enhanced with new fields
+    private TextInputEditText etFarmName;
     private TextInputEditText etLocation;
     private TextInputEditText etFarmSize;
     private TextInputEditText etFarmAddress;
-    private TextInputEditText etFarmType;
+    private AutoCompleteTextView etFarmType;
+    private TextInputEditText etExperience;
     private MaterialButton btnSave;
     private MaterialButton btnCancel;
     private ImageButton btnBackEdit;
+    private ImageButton btnDismissError;
     private MaterialButton btnChangePhoto;
     private CircleImageView profileImageEdit;
     private TextView tvErrorMessage;
+    private TextView tvLoadingMessage;
     private View loadingOverlay;
+    private View errorCard;
+    private View progressStep3;
+
+    // Enhanced form validation and UX
+    private String[] farmTypeOptions = {
+        "Mayai (Egg Production)",
+        "Nyama (Meat Production)",
+        "Kienyeji (Free Range)",
+        "Broiler (Commercial Meat)",
+        "Layer (Commercial Eggs)",
+        "Kienyeji na Kisasa (Mixed)"
+    };
 
     private AuthManager authManager;
     private Uri selectedImageUri = null;
@@ -84,22 +103,30 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
 
     private void initViews() {
         try {
+            etFarmName = findViewById(R.id.etFarmName);
             etLocation = findViewById(R.id.etLocation);
             etFarmSize = findViewById(R.id.etFarmSize);
             etFarmAddress = findViewById(R.id.etFarmAddress);
             etFarmType = findViewById(R.id.etFarmType);
+            etExperience = findViewById(R.id.etExperience);
             btnSave = findViewById(R.id.btnSave);
             btnCancel = findViewById(R.id.btnCancel);
             btnBackEdit = findViewById(R.id.btnBackEdit);
+            btnDismissError = findViewById(R.id.btnDismissError);
             btnChangePhoto = findViewById(R.id.btnChangePhoto);
             profileImageEdit = findViewById(R.id.profileImageEdit);
             tvErrorMessage = findViewById(R.id.tvErrorMessage);
+            tvLoadingMessage = findViewById(R.id.tvLoadingMessage);
             loadingOverlay = findViewById(R.id.loadingOverlay);
+            errorCard = findViewById(R.id.errorCard);
+            progressStep3 = findViewById(R.id.progressStep3);
 
             clearEditTextSpans(etLocation);
             clearEditTextSpans(etFarmSize);
             clearEditTextSpans(etFarmAddress);
-            clearEditTextSpans(etFarmType);
+            clearAutoCompleteSpans(etFarmType);
+            clearEditTextSpans(etFarmName);
+            clearEditTextSpans(etExperience);
 
             if (isNewUser) {
                 setTitle("Jaza Wasifu");
@@ -116,6 +143,10 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
             etFarmSize.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
             tvErrorMessage.setVisibility(View.GONE);
 
+            // Setup farm type dropdown
+            ArrayAdapter<String> farmTypeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, farmTypeOptions);
+            etFarmType.setAdapter(farmTypeAdapter);
+
             Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Views initialized successfully");
         } catch (Exception e) {
             Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error initializing views: " + e.getMessage(), e);
@@ -126,6 +157,16 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
     private void clearEditTextSpans(TextInputEditText editText) {
         if (editText != null && editText.getText() instanceof SpannableStringBuilder) {
             SpannableStringBuilder spannable = (SpannableStringBuilder) editText.getText();
+            Object[] spans = spannable.getSpans(0, spannable.length(), Object.class);
+            for (Object span : spans) {
+                spannable.removeSpan(span);
+            }
+        }
+    }
+
+    private void clearAutoCompleteSpans(AutoCompleteTextView autoCompleteTextView) {
+        if (autoCompleteTextView != null && autoCompleteTextView.getText() instanceof SpannableStringBuilder) {
+            SpannableStringBuilder spannable = (SpannableStringBuilder) autoCompleteTextView.getText();
             Object[] spans = spannable.getSpans(0, spannable.length(), Object.class);
             for (Object span : spans) {
                 spannable.removeSpan(span);
@@ -235,11 +276,18 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
     }
 
     private void displayFarmerData(Farmer farmer) {
-        String displayName = authManager.getDisplayName() != null ? authManager.getDisplayName() : farmer.getFullName() != null ? farmer.getFullName() : "";
         etLocation.setText(farmer.getFarmLocation() != null ? farmer.getFarmLocation() : "");
         etFarmSize.setText(farmer.getBirdCount() != null ? String.valueOf(farmer.getBirdCount()) : "");
         etFarmAddress.setText(farmer.getFarmAddress() != null ? farmer.getFarmAddress() : "");
         etFarmType.setText(farmer.getBirdType() != null ? farmer.getBirdType() : "");
+
+        // Load farm name and experience from SharedPreferences since they're not in the database model
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        String farmName = prefs.getString("farmName", "");
+        String experience = prefs.getString("experience", "");
+
+        etFarmName.setText(farmName);
+        etExperience.setText(experience);
     }
 
     private void loadDefaultsFromPrefs() {
@@ -248,15 +296,19 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
         int farmSize = prefs.getInt("farmSize", 0);
         String farmAddress = prefs.getString("farmAddress", "");
         String farmType = prefs.getString("farmType", "");
+        String farmName = prefs.getString("farmName", "");
+        String experience = prefs.getString("experience", "");
 
         if (!location.isEmpty()) etLocation.setText(location);
         if (farmSize > 0) etFarmSize.setText(String.valueOf(farmSize));
         if (!farmAddress.isEmpty()) etFarmAddress.setText(farmAddress);
         if (!farmType.isEmpty()) etFarmType.setText(farmType);
+        if (!farmName.isEmpty()) etFarmName.setText(farmName);
+        if (!experience.isEmpty()) etExperience.setText(experience);
 
         Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Loaded data from prefs - Location: " +
                 location + ", Farm Size: " + farmSize + ", Farm Address: " + farmAddress +
-                ", Farm Type: " + farmType);
+                ", Farm Type: " + farmType + ", Farm Name: " + farmName + ", Experience: " + experience);
     }
 
     private void setupClickListeners() {
@@ -274,22 +326,25 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
             }
         });
         btnChangePhoto.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
+        btnDismissError.setOnClickListener(v -> errorCard.setVisibility(View.GONE));
     }
 
     private void saveProfileData() {
         // PROTECTION: Check user type BEFORE saving
         String userType = authManager.getUserType();
         Log.d(TAG, "🔍 BEFORE PROFILE SAVE - User type: '" + userType + "'");
-        
+
         if (userType == null || userType.trim().isEmpty()) {
             Log.e(TAG, "❌ USER TYPE NULL BEFORE SAVE! Fixing it now...");
             authManager.setUserType("farmer"); // Force it to farmer
         }
-        
+
         String location = etLocation.getText().toString().trim();
         String farmSizeStr = etFarmSize.getText().toString().trim();
         String farmAddress = etFarmAddress.getText().toString().trim();
         String farmType = etFarmType.getText().toString().trim();
+        String farmName = etFarmName.getText().toString().trim();
+        String experience = etExperience.getText().toString().trim();
 
         if (location.isEmpty()) {
             etLocation.setError("Mahali pahitajika");
@@ -339,6 +394,8 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
         editor.putInt("farmSize", farmSize);
         editor.putString("farmAddress", farmAddress);
         editor.putString("farmType", farmType);
+        editor.putString("farmName", farmName);
+        editor.putString("experience", experience);
         editor.putBoolean(KEY_PROFILE_COMPLETE, true);
         boolean saved = editor.commit();
 
@@ -352,35 +409,36 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
 
         Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Profile saved to prefs - Username: " +
                 username + ", Location: " + location + ", Farm Size: " + farmSize +
-                ", Farm Address: " + farmAddress + ", Farm Type: " + farmType);
+                ", Farm Address: " + farmAddress + ", Farm Type: " + farmType +
+                ", Farm Name: " + farmName + ", Experience: " + experience);
 
         SharedPreferences authPrefs = getSharedPreferences(AuthManager.PREFS_NAME, MODE_PRIVATE);
         authPrefs.edit().putBoolean(AuthManager.KEY_PROFILE_COMPLETE, true).apply();
 
-        saveToDatabase(location, farmSize, farmAddress, farmType, new DatabaseSaveCallback() {
+        saveToDatabase(location, farmSize, farmAddress, farmType, farmName, experience, new DatabaseSaveCallback() {
             @Override
             public void onSuccess() {
                 showLoading(false);
-                
+
                 // PROTECTION: Ensure user type is still valid after database save
                 String userType = authManager.getUserType();
                 Log.d(TAG, "🔍 AFTER DATABASE SAVE - User type: '" + userType + "'");
-                
+
                 if (userType == null || userType.trim().isEmpty()) {
                     Log.e(TAG, "❌ USER TYPE NULL AFTER SAVE! Fixing it now...");
                     authManager.setUserType("farmer"); // Force it to farmer
                 }
-                
+
                 // Mark profile as complete after successful save
                 authManager.markProfileComplete();
-                
+
                 // MORE PROTECTION: Log complete auth state
                 Log.d(TAG, "🔍 Auth state after profile save:");
                 Log.d(TAG, "  - Logged in: " + authManager.isLoggedIn());
                 Log.d(TAG, "  - User type: '" + authManager.getUserType() + "'");
                 Log.d(TAG, "  - User ID: " + authManager.getUserId());
                 Log.d(TAG, "  - Session valid: " + authManager.isSessionValid());
-                
+
                 Toast.makeText(FarmerProfileEditActivity.this, "Wasifu umesasishwa kwa mafanikio", Toast.LENGTH_SHORT).show();
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra(EXTRA_PROFILE_UPDATED, true);
@@ -400,19 +458,19 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
             @Override
             public void onError(String errorMessage) {
                 showLoading(false);
-                
+
                 // PROTECTION: Ensure user type is still valid even on error
                 String userType = authManager.getUserType();
                 Log.d(TAG, "🔍 AFTER DATABASE ERROR - User type: '" + userType + "'");
-                
+
                 if (userType == null || userType.trim().isEmpty()) {
                     Log.e(TAG, "❌ USER TYPE NULL AFTER ERROR! Fixing it now...");
                     authManager.setUserType("farmer"); // Force it to farmer
                 }
-                
+
                 // Still mark profile as complete even if database save failed (offline scenario)
                 authManager.markProfileComplete();
-                
+
                 Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Error saving to database: " + errorMessage);
                 showErrorMessage("Wasifu umehifadhiwa bila kuunganisha kwenye mtandao");
                 Toast.makeText(FarmerProfileEditActivity.this, "Wasifu umehifadhiwa bila kuunganisha kwenye mtandao", Toast.LENGTH_SHORT).show();
@@ -430,6 +488,7 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
     private void showErrorMessage(String message) {
         tvErrorMessage.setText(message);
         tvErrorMessage.setVisibility(View.VISIBLE);
+        errorCard.setVisibility(View.VISIBLE);
     }
 
     private void showLoading(boolean isLoading) {
@@ -445,7 +504,7 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
         void onError(String errorMessage);
     }
 
-    private void saveToDatabase(String location, int farmSize, String farmAddress, String farmType, DatabaseSaveCallback callback) {
+    private void saveToDatabase(String location, int farmSize, String farmAddress, String farmType, String farmName, String experience, DatabaseSaveCallback callback) {
         try {
             if (currentFarmer == null) {
                 currentFarmer = new Farmer();
@@ -464,6 +523,7 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
             currentFarmer.setBirdCount(farmSize);
             currentFarmer.setFarmAddress(farmAddress);
             currentFarmer.setBirdType(farmType);
+            // Note: farmName and experience are stored only in SharedPreferences since they're not in the database schema
             currentFarmer.setPassword(null);
             if (selectedImageUri != null) {
                 Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Image URI set but not uploaded: " + selectedImageUri);
@@ -577,5 +637,7 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
         if (etFarmSize != null) etFarmSize.clearFocus();
         if (etFarmAddress != null) etFarmAddress.clearFocus();
         if (etFarmType != null) etFarmType.clearFocus();
+        if (etFarmName != null) etFarmName.clearFocus();
+        if (etExperience != null) etExperience.clearFocus();
     }
 }

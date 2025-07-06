@@ -2,6 +2,7 @@
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
@@ -10,274 +11,516 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_height="wrap_content">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <!-- Modern Header with Gradient -->
+        <LinearLayout
+            android:id="@+id/headerSection"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/primary_color"
-            android:elevation="4dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:titleTextColor="@android:color/white">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/gradient_header_bg"
+            android:paddingTop="40dp"
+            android:paddingBottom="24dp"
+            android:paddingHorizontal="16dp"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <ImageButton
-                android:id="@+id/btnBackEdit"
+            <!-- Top Bar with Back Button and Title -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="24dp">
+
+                <ImageButton
+                    android:id="@+id/btnBackEdit"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_arrow_back"
+                    android:tint="@android:color/white"
+                    android:contentDescription="Rudi nyuma"
+                    android:padding="12dp" />
+
+                <TextView
+                    android:id="@+id/tvHeaderTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Hariri Wasifu Wako"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_marginEnd="48dp" />
+
+            </LinearLayout>
+
+            <!-- Profile Picture Section with Enhanced Design -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:layout_gravity="center"
+                app:cardCornerRadius="70dp"
+                app:cardElevation="8dp"
+                android:layout_marginBottom="16dp">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/profileImageEdit"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/default_profile"
+                        android:scaleType="centerCrop" />
+
+                    <!-- Camera Overlay -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#40000000" />
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_camera"
+                        android:tint="@android:color/white" />
+
+                </FrameLayout>
+            </androidx.cardview.widget.CardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnChangePhoto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="8dp"
-                android:src="@drawable/ic_back"
-                android:contentDescription="Rudi nyuma" />
+                android:layout_gravity="center"
+                android:text="Badilisha Picha"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                app:icon="@drawable/ic_camera"
+                app:iconTint="@android:color/white"
+                app:iconSize="20dp" />
 
-        </androidx.appcompat.widget.Toolbar>
+        </LinearLayout>
 
+        <!-- Progress Indicator -->
+        <LinearLayout
+            android:id="@+id/progressIndicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@id/headerSection">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="4dp"
+                android:layout_weight="1"
+                android:background="@color/primary_color"
+                android:layout_marginEnd="4dp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="4dp"
+                android:layout_weight="1"
+                android:background="@color/primary_color"
+                android:layout_marginHorizontal="4dp" />
+
+            <View
+                android:id="@+id/progressStep3"
+                android:layout_width="0dp"
+                android:layout_height="4dp"
+                android:layout_weight="1"
+                android:background="#E0E0E0"
+                android:layout_marginStart="4dp" />
+
+        </LinearLayout>
+
+        <!-- Error Message with Better Design -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/errorCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="#FFEBEE"
+            app:layout_constraintTop_toBottomOf="@id/progressIndicator">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_alert_triangle"
+                    android:tint="#C62828"
+                    android:layout_marginEnd="12dp" />
+
+                <TextView
+                    android:id="@+id/tvErrorMessage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="#C62828"
+                    android:textSize="14sp"
+                    tools:text="Kuna hitilafu katika fomu" />
+
+                <ImageButton
+                    android:id="@+id/btnDismissError"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_close"
+                    android:tint="#C62828"
+                    android:contentDescription="Funga ujumbe" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Main Content Card -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/mainContentCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="24dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp"
+            app:layout_constraintTop_toBottomOf="@id/errorCard">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <!-- Section Header -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="24dp">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_farmer_avatar"
+                        android:tint="@color/primary_color"
+                        android:layout_marginEnd="12dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Taarifa za Shamba"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_color_primary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Jaza taarifa muhimu za shamba lako"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_color_secondary"
+                            android:layout_marginTop="4dp" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Enhanced Form Fields -->
+
+                <!-- Farm Name Field -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilFarmName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:hintTextColor="@color/primary_color"
+                    app:boxStrokeColor="@color/primary_color"
+                    app:startIconDrawable="@drawable/ic_farm"
+                    app:startIconTint="@color/primary_color"
+                    app:helperText="Mfano: Shamba la Kuku Kibao"
+                    app:helperTextEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etFarmName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Jina la Shamba (hiari)"
+                        android:inputType="textCapWords"
+                        android:imeOptions="actionNext" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Location Field with Enhanced UX -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:hintTextColor="@color/primary_color"
+                    app:boxStrokeColor="@color/primary_color"
+                    app:startIconDrawable="@drawable/ic_location"
+                    app:startIconTint="@color/primary_color"
+                    app:endIconMode="custom"
+                    app:endIconDrawable="@drawable/ic_gps"
+                    app:endIconTint="@color/primary_color"
+                    app:helperText="Mfano: Ubungo, Dar es Salaam"
+                    app:helperTextEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etLocation"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Eneo la Shamba *"
+                        android:inputType="textCapWords"
+                        android:imeOptions="actionNext" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Bird Count with Visual Indicators -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilFarmSize"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:hintTextColor="@color/primary_color"
+                    app:boxStrokeColor="@color/primary_color"
+                    app:startIconDrawable="@drawable/ic_chicken"
+                    app:startIconTint="@color/primary_color"
+                    app:suffixText="kuku"
+                    app:helperText="Idadi ya kuku uliyo nao sasa"
+                    app:helperTextEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etFarmSize"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Idadi ya Kuku *"
+                        android:inputType="number"
+                        android:imeOptions="actionNext" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Farm Type with Dropdown -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilFarmType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    app:hintTextColor="@color/primary_color"
+                    app:boxStrokeColor="@color/primary_color"
+                    app:startIconDrawable="@drawable/ic_category"
+                    app:startIconTint="@color/primary_color"
+                    app:helperText="Chagua aina ya ufugaji unaoufanya"
+                    app:helperTextEnabled="true">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/etFarmType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Aina ya Ufugaji *"
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:imeOptions="actionNext" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Farm Address with Better Layout -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilFarmAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:hintTextColor="@color/primary_color"
+                    app:boxStrokeColor="@color/primary_color"
+                    app:startIconDrawable="@drawable/ic_address"
+                    app:startIconTint="@color/primary_color"
+                    app:helperText="Mfano: Kijiji Chamwino, Kata Igamba"
+                    app:helperTextEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etFarmAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Anwani Kamili ya Shamba"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:lines="3"
+                        android:maxLines="5"
+                        android:imeOptions="actionNext" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Experience Field -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilExperience"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:hintTextColor="@color/primary_color"
+                    app:boxStrokeColor="@color/primary_color"
+                    app:startIconDrawable="@drawable/ic_experience"
+                    app:startIconTint="@color/primary_color"
+                    app:suffixText="miaka"
+                    app:helperText="Muda uliokua ukifuga kuku (hiari)"
+                    app:helperTextEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etExperience"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Uzoefu wa Ufugaji"
+                        android:inputType="number"
+                        android:imeOptions="actionDone" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Required Fields Notice -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="12dp"
+                    android:background="@drawable/info_background"
+                    android:layout_marginBottom="24dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_info"
+                        android:tint="@color/primary_color"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Sehemu zilizo na alama (*) ni lazima zijazwe"
+                        android:textSize="12sp"
+                        android:textColor="@color/primary_color" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Action Buttons with Enhanced Design -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="32dp"
+            app:layout_constraintTop_toBottomOf="@id/mainContentCard">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancel"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Ghairi"
+                android:textSize="16sp"
+                android:textAllCaps="false"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                app:strokeColor="@color/primary_color"
+                app:strokeWidth="2dp"
+                app:icon="@drawable/ic_close"
+                app:iconTint="@color/primary_color" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSave"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="Hifadhi"
+                android:textSize="16sp"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                app:backgroundTint="@color/primary_color"
+                app:icon="@drawable/ic_save"
+                app:iconTint="@android:color/white" />
+
+        </LinearLayout>
+
+        <!-- Loading Overlay with Enhanced Design -->
         <FrameLayout
             android:id="@+id/loadingOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#80000000"
             android:visibility="gone"
+            android:clickable="true"
+            android:focusable="true"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <ProgressBar
-                android:id="@+id/progressBar"
+            <androidx.cardview.widget.CardView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:indeterminateTint="@color/primary_color" />
-
-        </FrameLayout>
-
-        <TextView
-            android:id="@+id/tvErrorMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp"
-            android:background="#FFEBEE"
-            android:padding="12dp"
-            android:textColor="#C62828"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/toolbar" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="16dp"
-            android:paddingTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/tvErrorMessage">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="@android:color/white">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp"
+                    android:padding="32dp"
                     android:gravity="center">
 
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/profileImageEdit"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_marginBottom="8dp"
-                        android:src="@drawable/default_profile" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnChangePhoto"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Badilisha Picha"
-                        android:textSize="12sp"
-                        style="@style/Widget.MaterialComponents.Button.TextButton" />
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    <ProgressBar
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginBottom="16dp"
+                        android:indeterminateTint="@color/primary_color" />
 
                     <TextView
-                        android:layout_width="match_parent"
+                        android:id="@+id/tvLoadingMessage"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Taarifa za Shamba"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
+                        android:text="Inahifadhi..."
+                        android:textSize="16sp"
                         android:textColor="@color/text_color_primary"
-                        android:layout_marginBottom="16dp" />
+                        android:textStyle="bold" />
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilLocation"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:hintTextColor="@color/primary_color"
-                        app:boxStrokeColor="@color/primary_color">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etLocation"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Eneo la Shamba"
-                            android:inputType="text"
-                            android:imeOptions="flagNoExtractUi" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilFarmSize"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:hintTextColor="@color/primary_color"
-                        app:boxStrokeColor="@color/primary_color">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etFarmSize"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Idadi ya Kuku"
-                            android:inputType="number"
-                            android:imeOptions="flagNoExtractUi" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilFarmAddress"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:hintTextColor="@color/primary_color"
-                        app:boxStrokeColor="@color/primary_color">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etFarmAddress"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Anwani ya Shamba"
-                            android:inputType="textMultiLine"
-                            android:lines="2"
-                            android:imeOptions="flagNoExtractUi" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilFarmType"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        app:hintTextColor="@color/primary_color"
-                        app:boxStrokeColor="@color/primary_color">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etFarmType"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Aina ya Ufugaji"
-                            android:inputType="text"
-                            android:imeOptions="flagNoExtractUi" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilFullName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etFullName"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilEmail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etEmail"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilPhoneNumber"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etPhoneNumber"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/tilExperience"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etExperience"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                        android:text="Tafadhali subiri"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_color_secondary"
+                        android:layout_marginTop="4dp" />
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+        </FrameLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="32dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnCancel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    android:text="Ghairi"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    app:strokeColor="@color/primary_color" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSave"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:text="Hifadhi"
-                    style="@style/Widget.MaterialComponents.Button"
-                    app:backgroundTint="@color/primary_color" />
-
-            </LinearLayout>
-        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

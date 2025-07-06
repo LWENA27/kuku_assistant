@@ -1,59 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="20dp">
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#E3F2FD" />
+    <corners android:radius="8dp" />
+    <stroke
+        android:width="1dp"
+        android:color="#BBDEFB" />
+</shape>
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Taarifa Kuhusu Fowl Typhoid"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
-
-        <Button
-            android:id="@+id/btnCauses"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Sababu za Ugonjwa"
-            android:layout_marginBottom="8dp" />
-
-        <Button
-            android:id="@+id/btnSymptoms"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Dalili"
-            android:layout_marginBottom="8dp" />
-
-        <Button
-            android:id="@+id/btnTreatment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Matibabu"
-            android:layout_marginBottom="8dp" />
-
-        <Button
-            android:id="@+id/btnPrevention"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Njia za Kujikinga"
-            android:layout_marginBottom="16dp" />
-
-        <TextView
-            android:id="@+id/txtInfo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="16sp"
-            android:padding="10dp"
-            android:background="#F0F0F0"
-            android:textColor="#333" />
-    </LinearLayout>
-</ScrollView>
