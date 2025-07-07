@@ -739,17 +739,43 @@ public class AuthManager {
     }
 
     /**
+     * Normalize and validate userType based on email and known admin list
+     * Ensures that known vet/admin emails are never set to 'farmer'
+     */
+    private String normalizeUserType(String userType, String email) {
+        if (userType == null || userType.trim().isEmpty()) {
+            userType = "farmer";
+            Log.w(TAG, "[USER_TYPE_FIX] userType was null/empty, defaulting to 'farmer' for email: " + email);
+        }
+        userType = userType.toLowerCase().trim();
+        // If this is a known admin/vet email, never allow 'farmer'
+        for (String adminEmail : ADMIN_EMAILS) {
+            if (email != null && email.equalsIgnoreCase(adminEmail)) {
+                if (!"vet".equals(userType)) {
+                    Log.w(TAG, "[USER_TYPE_FIX] Known admin/vet email '" + email + "' had userType '" + userType + "', correcting to 'vet'");
+                    userType = "vet";
+                }
+                break;
+            }
+        }
+        if (!"farmer".equals(userType) && !"vet".equals(userType)) {
+            Log.w(TAG, "[USER_TYPE_FIX] Invalid userType '" + userType + "' for email: " + email + ", normalizing to 'farmer'");
+            userType = "farmer";
+        }
+        return userType;
+    }
+
+    /**
      * Get the current user type (farmer, vet) - NEVER RETURNS NULL
      * Note: Admin users are mapped to "vet" internally
      * @return Current user type with safe fallback to "farmer"
      */
     public String getUserType() {
         String userType = prefs.getString(KEY_USER_TYPE, "farmer");
-        if (userType == null || userType.trim().isEmpty()) {
-            userType = "farmer"; // Always default to farmer
-            setUserType(userType); // Save the default
-        }
-        return userType.toLowerCase().trim();
+        String email = prefs.getString(KEY_USER_EMAIL, "");
+        userType = normalizeUserType(userType, email);
+        setUserType(userType); // Always save the normalized value
+        return userType;
     }
 
     /**

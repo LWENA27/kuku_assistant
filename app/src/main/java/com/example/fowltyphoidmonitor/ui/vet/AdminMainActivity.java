@@ -163,6 +163,14 @@ public class AdminMainActivity extends AppCompatActivity {
         } else {
             loadFarmerDashboard();
         }
+
+        // Prevent farmers from accessing vet/admin interface
+        if ("farmer".equalsIgnoreCase(userType)) {
+            Log.w(TAG, "Farmer user attempting to access vet/admin interface, redirecting");
+            com.example.fowltyphoidmonitor.utils.NavigationManager.navigateToUserInterface(this, true);
+            finish();
+            return;
+        }
     }
 
     @Override
