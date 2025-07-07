@@ -75,6 +75,11 @@
             android:exported="false"
             android:theme="@style/Theme.FowlTyphoidMonitor" />
         <activity
+            android:name=".ui.farmer.TyphoidEducationActivity"
+            android:exported="false"
+            android:label="Elimu kuhusu Typhoid ya Kuku"
+            android:parentActivityName=".ui.farmer.MainActivity" />
+        <activity
             android:name=".ui.farmer.FarmerReportsActivity"
             android:exported="false"
             android:parentActivityName=".ui.farmer.MainActivity" />

@@ -36,10 +36,46 @@ public class ConsultationMessage {
     @SerializedName("sender_role")
     private String senderRole;
 
+    // Additional properties for enhanced chat functionality
+    @SerializedName("message_type")
+    private String messageType; // "text", "system", "attachment"
+
+    @SerializedName("message_status")
+    private String messageStatus; // "pending", "sent", "delivered", "read"
+
+    @SerializedName("attachment_url")
+    private String attachmentUrl;
+
+    @SerializedName("attachment_type")
+    private String attachmentType; // "image", "document", "audio"
+
+    @SerializedName("consultation_status")
+    private String consultationStatus; // "active", "resolved", "pending"
+
+    // Status enum for message delivery status
+    public enum Status {
+        PENDING("pending"),
+        SENT("sent"),
+        DELIVERED("delivered"),
+        READ("read");
+
+        private final String value;
+
+        Status(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
     // Constructor
     public ConsultationMessage() {
         this.id = UUID.randomUUID().toString();
         this.createdAt = new Date();
+        this.messageType = "text";
+        this.messageStatus = "pending";
     }
 
     // Getters and Setters
@@ -113,5 +149,78 @@ public class ConsultationMessage {
 
     public void setSenderRole(String senderRole) {
         this.senderRole = senderRole;
+    }
+
+    // New getter/setter methods for enhanced chat functionality
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
+    }
+
+    public String getMessageText() {
+        return message; // Alias for getMessage()
+    }
+
+    public void setMessageText(String messageText) {
+        this.message = messageText;
+    }
+
+    public String getContent() {
+        return message; // Alias for getMessage()
+    }
+
+    public void setContent(String content) {
+        this.message = content;
+    }
+
+    public String getSenderName() {
+        return senderUsername; // Alias for getSenderUsername()
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderUsername = senderName;
+    }
+
+    public String getMessageStatus() {
+        return messageStatus;
+    }
+
+    public void setMessageStatus(String messageStatus) {
+        this.messageStatus = messageStatus;
+    }
+
+    public void setStatus(Status status) {
+        this.messageStatus = status.getValue();
+    }
+
+    public String getAttachmentUrl() {
+        return attachmentUrl;
+    }
+
+    public void setAttachmentUrl(String attachmentUrl) {
+        this.attachmentUrl = attachmentUrl;
+    }
+
+    public String getAttachmentType() {
+        return attachmentType;
+    }
+
+    public void setAttachmentType(String attachmentType) {
+        this.attachmentType = attachmentType;
+    }
+
+    public String getConsultationStatus() {
+        return consultationStatus;
+    }
+
+    public void setConsultationStatus(String consultationStatus) {
+        this.consultationStatus = consultationStatus;
+    }
+
+    public boolean hasAttachment() {
+        return attachmentUrl != null && !attachmentUrl.trim().isEmpty();
     }
 }

@@ -129,6 +129,34 @@ public class SupabaseChatService {
     }
 
     /**
+     * Delete a message
+     */
+    public void deleteMessage(String messageId, final ChatCallback callback) {
+        // For now, this is a placeholder implementation
+        // In a real implementation, you would call the backend to delete the message
+        Log.d(TAG, "Delete message requested for ID: " + messageId);
+        if (callback != null) {
+            callback.onSuccess();
+        }
+    }
+
+    /**
+     * Mark consultation as resolved
+     */
+    public void markConsultationResolved(String consultationId, final ChatCallback callback) {
+        updateConsultationStatus(consultationId, "resolved", callback);
+    }
+
+    /**
+     * Send typing indicator
+     */
+    public void sendTypingIndicator(String consultationId, boolean isTyping) {
+        // For now, this is a placeholder implementation
+        // In a real implementation, you would send real-time typing indicators
+        Log.d(TAG, "Typing indicator: " + isTyping + " for consultation: " + consultationId);
+    }
+
+    /**
      * Interface for chat callbacks
      */
     public interface ChatCallback {

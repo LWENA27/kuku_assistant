@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Chat message item for messages received from other users -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:gravity="start">
+
+    <!-- Sender Avatar -->
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/imgSenderAvatar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/default_profile"
+        android:layout_marginEnd="8dp"
+        android:layout_gravity="bottom" />
+
+    <!-- Message Container -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.7"
+        android:orientation="vertical">
+
+        <!-- Sender Name (for group chats or vet identification) -->
+        <TextView
+            android:id="@+id/txtSenderName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dkt. Mwalimu"
+            android:textColor="@color/primary_color"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="2dp"
+            android:layout_marginStart="4dp"
+            tools:text="Dkt. Mwalimu" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@android:color/white"
+            android:layout_marginEnd="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <!-- Message Text -->
+                <TextView
+                    android:id="@+id/txtMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Hujambo mfugaji. Naona kuku wako wana dalili za ugonjwa. Je, wamekuwa wakinywa maji?"
+                    android:textColor="@color/text_color_primary"
+                    android:textSize="16sp"
+                    android:lineSpacingMultiplier="1.2"
+                    tools:text="Sample reply from vet" />
+
+                <!-- Attachment Preview (if any) -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/attachmentPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="2dp"
+                    tools:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/imgAttachment"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        tools:src="@drawable/ic_image" />
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Quick Action Buttons (for vet responses) -->
+                <LinearLayout
+                    android:id="@+id/quickActionButtons"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone"
+                    tools:visibility="gone">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnMarkResolved"
+                        android:layout_width="0dp"
+                        android:layout_height="36dp"
+                        android:layout_weight="1"
+                        android:text="Shauri limemalizika"
+                        android:textSize="12sp"
+                        android:layout_marginEnd="4dp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        app:strokeColor="@color/success_color"
+                        android:textColor="@color/success_color" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnNeedMoreInfo"
+                        android:layout_width="0dp"
+                        android:layout_height="36dp"
+                        android:layout_weight="1"
+                        android:text="Nahitaji taarifa zaidi"
+                        android:textSize="12sp"
+                        android:layout_marginStart="4dp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        app:strokeColor="@color/primary_color"
+                        android:textColor="@color/primary_color" />
+
+                </LinearLayout>
+
+                <!-- Message Info -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="start|center_vertical"
+                    android:layout_marginTop="4dp">
+
+                    <!-- Timestamp -->
+                    <TextView
+                        android:id="@+id/txtTimestamp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="12:35"
+                        android:textColor="@color/text_color_secondary"
+                        android:textSize="12sp"
+                        tools:text="12:35" />
+
+                    <!-- Spacer -->
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" />
+
+                    <!-- Professional Badge (for vets) -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipProfessionalBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:text="Daktari"
+                        android:textSize="10sp"
+                        app:chipBackgroundColor="@color/primary_color"
+                        android:textColor="@android:color/white"
+                        app:chipMinHeight="20dp"
+                        app:chipStartPadding="6dp"
+                        app:chipEndPadding="6dp"
+                        app:chipIcon="@drawable/ic_verified"
+                        app:chipIconSize="12dp"
+                        app:chipIconTint="@android:color/white" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+    <!-- Spacer to push message to left -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_weight="0.3" />
+
+</LinearLayout>

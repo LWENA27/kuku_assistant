@@ -1,56 +1,347 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="@color/chat_background"
+    tools:context=".ui.common.BaseChatActivity">
 
-    <ListView
-        android:id="@+id/chatListView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:divider="@null"
-        android:dividerHeight="0dp"
-        android:stackFromBottom="true"
-        android:transcriptMode="alwaysScroll" />
-
-    <LinearLayout
-        android:id="@+id/typingIndicatorLayout"
+    <!-- Modern Chat Header with Gradient -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:visibility="gone">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:elevation="8dp">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Anaandika..."
-            android:textStyle="italic" />
-    </LinearLayout>
+            android:orientation="vertical"
+            android:background="@drawable/gradient_header_bg"
+            android:padding="16dp">
 
+            <!-- Top Bar with Back Button and Actions -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_arrow_back"
+                    android:tint="@android:color/white"
+                    android:contentDescription="Rudi nyuma"
+                    android:padding="12dp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginHorizontal="12dp">
+
+                    <TextView
+                        android:id="@+id/txtConsultationTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Mazungumzo ya Ushauri"
+                        android:textColor="@android:color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+
+                    <TextView
+                        android:id="@+id/txtParticipantInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Mfugaji: John Doe"
+                        android:textColor="#E0FFFFFF"
+                        android:textSize="14sp"
+                        android:layout_marginTop="2dp"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
+
+                </LinearLayout>
+
+                <!-- Online Status Indicator -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <View
+                        android:id="@+id/onlineStatusIndicator"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:background="@drawable/online_status_indicator"
+                        android:layout_marginBottom="4dp" />
+
+                    <TextView
+                        android:id="@+id/txtLastSeen"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mkuu"
+                        android:textColor="#B0FFFFFF"
+                        android:textSize="10sp" />
+
+                </LinearLayout>
+
+                <!-- Menu Button -->
+                <ImageButton
+                    android:id="@+id/btnMenu"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_more_vert"
+                    android:tint="@android:color/white"
+                    android:contentDescription="Menyu zaidi"
+                    android:padding="12dp"
+                    android:layout_marginStart="8dp" />
+
+            </LinearLayout>
+
+            <!-- Consultation Status Chip -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipConsultationStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Inaendelea"
+                android:textColor="@android:color/white"
+                app:chipBackgroundColor="#4CAF50"
+                app:chipStrokeWidth="0dp"
+                android:layout_marginTop="8dp"
+                app:chipIcon="@drawable/ic_chat_active"
+                app:chipIconTint="@android:color/white" />
+
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Main Chat Content -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="8dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <EditText
-            android:id="@+id/messageEditText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Andika ujumbe..."
-            android:imeOptions="actionSend"
-            android:inputType="textMultiLine"
-            android:maxLines="4" />
+        <!-- Chat Messages Area with Pull to Refresh -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
-        <Button
-            android:id="@+id/sendButton"
-            android:layout_width="wrap_content"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewMessages"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                android:clipToPadding="false"
+                android:scrollbars="vertical"
+                tools:listitem="@layout/item_chat_message_received" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <!-- Typing Indicator -->
+        <LinearLayout
+            android:id="@+id/typingIndicatorLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="Tuma" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:background="#F5F5F5"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <ProgressBar
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="8dp"
+                android:indeterminateTint="@color/primary_color" />
+
+            <TextView
+                android:id="@+id/txtTypingIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Daktari anaandika..."
+                android:textSize="14sp"
+                android:textColor="@color/text_color_secondary"
+                android:fontFamily="sans-serif-medium" />
+
+        </LinearLayout>
+
+        <!-- Quick Replies (for Vets) -->
+        <HorizontalScrollView
+            android:id="@+id/quickRepliesScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:padding="8dp"
+            android:background="#FAFAFA"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipQuickReply1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tumia dawa ya..."
+                    android:layout_marginEnd="8dp"
+                    app:chipBackgroundColor="@color/primary_color"
+                    android:textColor="@android:color/white" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipQuickReply2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Punguza chakula"
+                    android:layout_marginEnd="8dp"
+                    app:chipBackgroundColor="@color/primary_color"
+                    android:textColor="@android:color/white" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipQuickReply3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tenga kuku waliogonjwa"
+                    android:layout_marginEnd="8dp"
+                    app:chipBackgroundColor="@color/primary_color"
+                    android:textColor="@android:color/white" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipQuickReply4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ongeza maji"
+                    app:chipBackgroundColor="@color/primary_color"
+                    android:textColor="@android:color/white" />
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <!-- Message Input Area -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@android:color/white"
+            android:elevation="8dp">
+
+            <!-- Message Input Bar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="12dp">
+
+                <!-- Attachment Button -->
+                <ImageButton
+                    android:id="@+id/btnAttachment"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_attach_file"
+                    android:tint="@color/primary_color"
+                    android:contentDescription="Ambatisha faili"
+                    android:padding="12dp" />
+
+                <!-- Message Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="8dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxStrokeColor="@color/primary_color"
+                    app:hintTextColor="@color/primary_color">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etMessage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Andika ujumbe wako..."
+                        android:maxLines="4"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:imeOptions="actionSend" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Send Button -->
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/btnSendMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_send"
+                    app:backgroundTint="@color/primary_color"
+                    app:tint="@android:color/white"
+                    app:fabSize="mini"
+                    android:contentDescription="Tuma ujumbe" />
+
+            </LinearLayout>
+
+            <!-- Voice Recording Indicator (for future enhancement) -->
+            <LinearLayout
+                android:id="@+id/voiceRecordingLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:background="#FFECB3"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_mic"
+                    android:tint="#FF6F00"
+                    android:layout_marginEnd="8dp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Inarekodi sauti..."
+                    android:textColor="#FF6F00"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtRecordingDuration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:15"
+                    android:textColor="#FF6F00"
+                    android:fontFamily="monospace" />
+
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
-</LinearLayout>
+    <!-- Floating Action Button for Quick Actions -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabQuickActions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_quick_reply"
+        app:backgroundTint="@color/accent_color"
+        app:tint="@android:color/white"
+        android:contentDescription="Vitendo vya haraka"
+        android:visibility="gone" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -54,9 +54,10 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
     private TextView notificationBadge;
     private LinearLayout alertsContainer;
 
-    // Additional UI elements for modern design - Fixed to use correct types
-    private View btnSubmitReport, btnSymptomTracker, btnRequestConsultation;
-    private View btnViewMyReports, btnDiseaseInfo, btnEditProfile;
+    // Additional UI elements for current layout design
+    private View btnChatAssistant, btnReportProblem, btnTrackHealth, btnTalkToVet;
+    private View btnProfile, btnSettings, btnViewMyReports, btnDiseaseInfo;
+    private View btnLogout;
     private CardView alertsCard;
 
     // Auth manager
@@ -172,49 +173,18 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
         progressBar = findViewById(R.id.progressBar);
         loadingOverlay = findViewById(R.id.loadingOverlay);
 
-        // Modern UI elements - Quick actions (handle both MaterialButton and LinearLayout)
-        try {
-            btnSubmitReport = findViewById(R.id.btnSubmitReport);
-        } catch (ClassCastException e) {
-            Log.w(TAG, "btnSubmitReport is not a MaterialButton, skipping");
-            btnSubmitReport = null;
-        }
+        // Modern UI elements - Current layout interface buttons
+        btnChatAssistant = findViewById(R.id.btnChatAssistant);
+        btnReportProblem = findViewById(R.id.btnReportProblem);
+        btnTrackHealth = findViewById(R.id.btnTrackHealth);
+        btnTalkToVet = findViewById(R.id.btnTalkToVet);
 
-        try {
-            btnSymptomTracker = findViewById(R.id.btnSymptomTracker);
-        } catch (ClassCastException e) {
-            Log.w(TAG, "btnSymptomTracker is not a MaterialButton, skipping");
-            btnSymptomTracker = null;
-        }
-
-        try {
-            btnRequestConsultation = findViewById(R.id.btnRequestConsultation);
-        } catch (ClassCastException e) {
-            Log.w(TAG, "btnRequestConsultation is not a MaterialButton, skipping");
-            btnRequestConsultation = null;
-        }
-
-        // Farm management buttons (handle both MaterialButton and LinearLayout)
-        try {
-            btnViewMyReports = findViewById(R.id.btnViewMyReports);
-        } catch (ClassCastException e) {
-            Log.w(TAG, "btnViewMyReports is not a MaterialButton, skipping");
-            btnViewMyReports = null;
-        }
-
-        try {
-            btnDiseaseInfo = findViewById(R.id.btnDiseaseInfo);
-        } catch (ClassCastException e) {
-            Log.w(TAG, "btnDiseaseInfo is not a MaterialButton, skipping");
-            btnDiseaseInfo = null;
-        }
-
-        try {
-            btnEditProfile = findViewById(R.id.btnEditProfile);
-        } catch (ClassCastException e) {
-            Log.w(TAG, "btnEditProfile is not a MaterialButton, skipping");
-            btnEditProfile = null;
-        }
+        // Secondary buttons
+        btnProfile = findViewById(R.id.btnProfile);
+        btnSettings = findViewById(R.id.btnSettings);
+        btnViewMyReports = findViewById(R.id.btnViewMyReports);
+        btnDiseaseInfo = findViewById(R.id.btnDiseaseInfo);
+        btnLogout = findViewById(R.id.btnLogout);
 
         // Cards
         alertsCard = findViewById(R.id.alertsCard);
@@ -550,67 +520,119 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
     // ========== CLICK LISTENERS ==========
 
     private void setupClickListeners() {
-        // Quick Actions - Enhanced with better error handling and correct routing
-        if (btnSubmitReport != null) {
-            btnSubmitReport.setOnClickListener(v -> {
-                Log.d(TAG, "Submit Report button clicked");
+        // Main Action Buttons - Current Layout Interface
+        if (btnChatAssistant != null) {
+            btnChatAssistant.setOnClickListener(v -> {
+                Log.d(TAG, "Chat Assistant button clicked");
+                try {
+                    Intent intent = new Intent(MainActivity.this, FarmerConsultationsActivity.class);
+                    intent.putExtra("chat_mode", "assistant");
+                    startActivity(intent);
+                    Log.d(TAG, "Successfully navigated to Chat Assistant");
+                } catch (Exception e) {
+                    Log.e(TAG, "Error navigating to Chat Assistant: " + e.getMessage(), e);
+                    Toast.makeText(MainActivity.this, "Msaidizi wa kuku haitumiki kwa sasa", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        if (btnReportProblem != null) {
+            btnReportProblem.setOnClickListener(v -> {
+                Log.d(TAG, "Report Problem button clicked");
                 try {
                     Intent intent = new Intent(MainActivity.this, ReportSymptomsActivity.class);
                     startActivity(intent);
-                    Log.d(TAG, "Successfully navigated to ReportSymptomsActivity from quick actions");
+                    Log.d(TAG, "Successfully navigated to ReportSymptomsActivity");
                 } catch (Exception e) {
-                    Log.e(TAG, "Error navigating to ReportSymptomsActivity from quick actions: " + e.getMessage(), e);
+                    Log.e(TAG, "Error navigating to ReportSymptomsActivity: " + e.getMessage(), e);
                     Toast.makeText(MainActivity.this, "Imeshindikana kufungua ripoti ya magonjwa", Toast.LENGTH_SHORT).show();
                 }
             });
-        } else {
-            Log.w(TAG, "btnSubmitReport is null - quick action report button not found");
-            // Try to find alternative report buttons
-            setupAlternativeReportButtons();
         }
 
-        if (btnSymptomTracker != null) {
-            btnSymptomTracker.setOnClickListener(v -> {
-                Log.d(TAG, "Symptom Tracker button clicked");
+        if (btnTrackHealth != null) {
+            btnTrackHealth.setOnClickListener(v -> {
+                Log.d(TAG, "Track Health button clicked");
                 try {
                     Intent intent = new Intent(MainActivity.this, SymptomTrackerActivity.class);
                     startActivity(intent);
-                    Log.d(TAG, "Successfully navigated to SymptomTrackerActivity from quick actions");
+                    Log.d(TAG, "Successfully navigated to SymptomTrackerActivity");
                 } catch (Exception e) {
-                    Log.e(TAG, "Error navigating to SymptomTrackerActivity from quick actions: " + e.getMessage(), e);
-                    Toast.makeText(MainActivity.this, "Imeshindikana kufungua ufuatiliaji wa dalili", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error navigating to SymptomTrackerActivity: " + e.getMessage(), e);
+                    Toast.makeText(MainActivity.this, "Imeshindikana kufungua ufuatiliaji wa afya", Toast.LENGTH_SHORT).show();
                 }
             });
         }
 
-        if (btnRequestConsultation != null) {
-            btnRequestConsultation.setOnClickListener(v -> {
-                Log.d(TAG, "Request Consultation button clicked");
+        if (btnTalkToVet != null) {
+            btnTalkToVet.setOnClickListener(v -> {
+                Log.d(TAG, "Talk to Vet button clicked");
                 try {
                     Intent intent = new Intent(MainActivity.this, FarmerConsultationsActivity.class);
                     startActivity(intent);
-                    Log.d(TAG, "Successfully navigated to FarmerConsultationsActivity from quick actions");
+                    Log.d(TAG, "Successfully navigated to FarmerConsultationsActivity");
                 } catch (Exception e) {
-                    Log.e(TAG, "Error navigating to FarmerConsultationsActivity from quick actions: " + e.getMessage(), e);
-                    Toast.makeText(MainActivity.this, "Imeshindikana kufungua mahojiano ya daktari", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error navigating to FarmerConsultationsActivity: " + e.getMessage(), e);
+                    Toast.makeText(MainActivity.this, "Imeshindikana kufungua mazungumzo na daktari", Toast.LENGTH_SHORT).show();
                 }
             });
         }
 
-        // Farm Management buttons
+        // Secondary Action Buttons
+        if (btnProfile != null) {
+            btnProfile.setOnClickListener(v -> {
+                Log.d(TAG, "Profile button clicked");
+                try {
+                    Intent intent = new Intent(MainActivity.this, FarmerProfileEditActivity.class);
+                    startActivity(intent);
+                    Log.d(TAG, "Successfully navigated to FarmerProfileEditActivity");
+                } catch (Exception e) {
+                    Log.e(TAG, "Error navigating to ProfileActivity: " + e.getMessage(), e);
+                    Toast.makeText(MainActivity.this, "Imeshindikana kufungua wasifu", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        if (btnSettings != null) {
+            btnSettings.setOnClickListener(v -> {
+                Log.d(TAG, "Settings button clicked");
+                try {
+                    Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                    startActivity(intent);
+                    Log.d(TAG, "Successfully navigated to SettingsActivity");
+                } catch (Exception e) {
+                    Log.e(TAG, "Error navigating to SettingsActivity: " + e.getMessage(), e);
+                    Toast.makeText(MainActivity.this, "Imeshindikana kufungua mipangilio", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
         if (btnViewMyReports != null) {
-            btnViewMyReports.setOnClickListener(v ->
-                    navigateToActivity(FarmerReportsActivity.class));
+            btnViewMyReports.setOnClickListener(v -> {
+                Log.d(TAG, "View My Reports button clicked");
+                try {
+                    Intent intent = new Intent(MainActivity.this, FarmerReportsActivity.class);
+                    startActivity(intent);
+                    Log.d(TAG, "Successfully navigated to FarmerReportsActivity");
+                } catch (Exception e) {
+                    Log.e(TAG, "Error navigating to FarmerReportsActivity: " + e.getMessage(), e);
+                    Toast.makeText(MainActivity.this, "Imeshindikana kufungua ripoti zangu", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         if (btnDiseaseInfo != null) {
-            btnDiseaseInfo.setOnClickListener(v ->
-                    navigateToActivity(DiseaseInfoActivity.class));
-        }
-
-
-        if (btnEditProfile != null) {
-            btnEditProfile.setOnClickListener(v -> navigateToProfileEditActivity());
+            btnDiseaseInfo.setOnClickListener(v -> {
+                Log.d(TAG, "Disease Info button clicked - opening Typhoid Education");
+                try {
+                    Intent intent = new Intent(MainActivity.this, TyphoidEducationActivity.class);
+                    startActivity(intent);
+                    Log.d(TAG, "Successfully navigated to TyphoidEducationActivity");
+                } catch (Exception e) {
+                    Log.e(TAG, "Error navigating to TyphoidEducationActivity: " + e.getMessage(), e);
+                    Toast.makeText(MainActivity.this, "Imeshindikana kufungua elimu ya typhoid", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
         // Notification bell
@@ -621,6 +643,12 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
             });
         }
 
+        // Logout button
+        MaterialButton btnLogout = findViewById(R.id.btnLogout);
+        if (btnLogout != null) {
+            btnLogout.setOnClickListener(v -> logout());
+        }
+
         // Legacy feature buttons (backward compatibility)
         setupLegacyFeatureButtons();
     }
@@ -628,7 +656,7 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
     private void setupLegacyFeatureButtons() {
         // Profile edit button (legacy)
         MaterialButton btnEditProfileLegacy = findViewById(R.id.btnEditProfile);
-        if (btnEditProfileLegacy != null && btnEditProfile == null) {
+        if (btnEditProfileLegacy != null) {
             btnEditProfileLegacy.setOnClickListener(v -> navigateToProfileEditActivity());
         }
 
@@ -679,210 +707,6 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
                 }
             });
         }
-
-        // Logout button
-        MaterialButton btnLogout = findViewById(R.id.btnLogout);
-        if (btnLogout != null) {
-            btnLogout.setOnClickListener(v -> logout());
-        }
-    }
-
-    private void setupAlternativeReportButtons() {
-        Log.d(TAG, "Setting up alternative report buttons for different actions");
-
-        // Try to find report disease buttons with different possible IDs
-        String[] possibleReportButtonIds = {
-                "btnReportSymptoms",
-                "btnReport",
-                "btnSubmitReport",
-                "btnReportDiseases",
-                "btnRipotiMagonjwa"
-        };
-
-        // Try to find symptom tracker buttons with different possible IDs
-        String[] possibleTrackerButtonIds = {
-                "btnTrackSymptoms",
-                "btnSymptomTracker",
-                "btnFollowUp",
-                "btnFuatiliaDalili"
-        };
-
-        // Try to find consultation buttons with different possible IDs
-        String[] possibleConsultationButtonIds = {
-                "btnConsultation",
-                "btnRequestConsultation",
-                "btnConsultVet",
-                "btnShauriNaDaktari"
-        };
-
-        // Set up report buttons
-        for (String buttonId : possibleReportButtonIds) {
-            try {
-                int id = getResources().getIdentifier(buttonId, "id", getPackageName());
-                if (id != 0) {
-                    View button = findViewById(id);
-                    if (button != null) {
-                        Log.d(TAG, "Found alternative report button with ID: " + buttonId);
-                        button.setOnClickListener(v -> {
-                            Log.d(TAG, "Alternative report button clicked: " + buttonId);
-                            try {
-                                Intent intent = new Intent(MainActivity.this, ReportSymptomsActivity.class);
-                                startActivity(intent);
-                                Log.d(TAG, "Successfully navigated to ReportSymptomsActivity from alternative button");
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error navigating from alternative button: " + e.getMessage(), e);
-                                Toast.makeText(MainActivity.this, "Imeshindikana kufungua ripoti ya magonjwa", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                }
-            } catch (Exception e) {
-                Log.w(TAG, "Could not find button with ID: " + buttonId);
-            }
-        }
-
-        // Set up symptom tracker buttons
-        for (String buttonId : possibleTrackerButtonIds) {
-            try {
-                int id = getResources().getIdentifier(buttonId, "id", getPackageName());
-                if (id != 0) {
-                    View button = findViewById(id);
-                    if (button != null) {
-                        Log.d(TAG, "Found alternative symptom tracker button with ID: " + buttonId);
-                        button.setOnClickListener(v -> {
-                            Log.d(TAG, "Alternative symptom tracker button clicked: " + buttonId);
-                            try {
-                                Intent intent = new Intent(MainActivity.this, SymptomTrackerActivity.class);
-                                startActivity(intent);
-                                Log.d(TAG, "Successfully navigated to SymptomTrackerActivity from alternative button");
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error navigating from alternative button: " + e.getMessage(), e);
-                                Toast.makeText(MainActivity.this, "Imeshindikana kufungua ufuatiliaji wa dalili", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                }
-            } catch (Exception e) {
-                Log.w(TAG, "Could not find button with ID: " + buttonId);
-            }
-        }
-
-        // Set up consultation buttons
-        for (String buttonId : possibleConsultationButtonIds) {
-            try {
-                int id = getResources().getIdentifier(buttonId, "id", getPackageName());
-                if (id != 0) {
-                    View button = findViewById(id);
-                    if (button != null) {
-                        Log.d(TAG, "Found alternative consultation button with ID: " + buttonId);
-                        button.setOnClickListener(v -> {
-                            Log.d(TAG, "Alternative consultation button clicked: " + buttonId);
-                            try {
-                                Intent intent = new Intent(MainActivity.this, FarmerConsultationsActivity.class);
-                                startActivity(intent);
-                                Log.d(TAG, "Successfully navigated to FarmerConsultationsActivity from alternative button");
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error navigating from alternative button: " + e.getMessage(), e);
-                                Toast.makeText(MainActivity.this, "Imeshindikana kufungua mahojiano ya daktari", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                }
-            } catch (Exception e) {
-                Log.w(TAG, "Could not find button with ID: " + buttonId);
-            }
-        }
-
-        // Handle quick actions container for any missing buttons
-        try {
-            // Look for quick actions container with error handling for missing IDs
-            LinearLayout quickActionsContainer = null;
-
-            try {
-                quickActionsContainer = findViewById(R.id.llQuickActions);
-            } catch (Exception e) {
-                Log.d(TAG, "llQuickActions not found");
-            }
-
-            if (quickActionsContainer == null) {
-                try {
-                    int id = getResources().getIdentifier("quickActionsContainer", "id", getPackageName());
-                    if (id != 0) {
-                        quickActionsContainer = findViewById(id);
-                      }
-                } catch (Exception e) {
-                    Log.d(TAG, "quickActionsContainer not found");
-                }
-            }
-
-            if (quickActionsContainer == null) {
-                try {
-                    int id = getResources().getIdentifier("vitendoHaraka", "id", getPackageName());
-                    if (id != 0) {
-                        quickActionsContainer = findViewById(id);
-                      }
-                } catch (Exception e) {
-                    Log.d(TAG, "vitendoHaraka not found");
-                }
-            }
-
-            if (quickActionsContainer != null) {
-                Log.d(TAG, "Found quick actions container with " + quickActionsContainer.getChildCount() + " children");
-                
-                // We'll try to infer which button is which based on their order
-                // This assumes a typical layout of Report, Track, Consult
-                if (quickActionsContainer.getChildCount() >= 3) {
-                    // First child - Report Disease
-                    View reportChild = quickActionsContainer.getChildAt(0);
-                    if (reportChild != null) {
-                        reportChild.setOnClickListener(v -> {
-                            Log.d(TAG, "First quick action child clicked (Report)");
-                            try {
-                                Intent intent = new Intent(MainActivity.this, ReportSymptomsActivity.class);
-                                startActivity(intent);
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error navigating from container child: " + e.getMessage(), e);
-                                Toast.makeText(MainActivity.this, "Imeshindikana kufungua ripoti ya magonjwa", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                    
-                    // Second child - Track Symptoms
-                    View trackChild = quickActionsContainer.getChildAt(1);
-                    if (trackChild != null) {
-                        trackChild.setOnClickListener(v -> {
-                            Log.d(TAG, "Second quick action child clicked (Track)");
-                            try {
-                                Intent intent = new Intent(MainActivity.this, SymptomTrackerActivity.class);
-                                startActivity(intent);
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error navigating from container child: " + e.getMessage(), e);
-                                Toast.makeText(MainActivity.this, "Imeshindikana kufungua ufuatiliaji wa dalili", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                    
-                    // Third child - Consult Doctor
-                    View consultChild = quickActionsContainer.getChildAt(2);
-                    if (consultChild != null) {
-                        consultChild.setOnClickListener(v -> {
-                            Log.d(TAG, "Third quick action child clicked (Consult)");
-                            try {
-                                Intent intent = new Intent(MainActivity.this, FarmerConsultationsActivity.class);
-                                startActivity(intent);
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error navigating from container child: " + e.getMessage(), e);
-                                Toast.makeText(MainActivity.this, "Imeshindikana kufungua mahojiano ya daktari", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                }
-            } else {
-                Log.d(TAG, "No quick actions container found");
-            }
-        } catch (Exception e) {
-            Log.w(TAG, "Could not set up alternative container-based buttons: " + e.getMessage());
-        }
     }
 
     // ========== NAVIGATION ==========
@@ -895,8 +719,6 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
                 if (itemId == R.id.navigation_home) {
                     return true; // Already on home
                 } else if (itemId == R.id.navigation_report) {
-                    // Enhanced report navigation with better error handling
-                    // We'll make the report button navigate to the FarmerConsultationsActivity
                     try {
                         Intent intent = new Intent(MainActivity.this, ReportSymptomsActivity.class);
                         startActivity(intent);
@@ -908,9 +730,8 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
                         return false;
                     }
                 } else if (itemId == R.id.navigation_profile) {
-                    // Navigate to ProfileActivity (wasifu page) instead of directly to edit
                     try {
-                        Intent intent = new Intent(MainActivity.this, com.example.fowltyphoidmonitor.ui.common.ProfileActivity.class);
+                        Intent intent = new Intent(MainActivity.this, FarmerProfileEditActivity.class);
                         startActivity(intent);
                         Log.d(TAG, "Navigating to ProfileActivity from bottom nav");
                         return true;
@@ -946,11 +767,10 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
             Log.d(TAG, "Successfully navigated to " + activityClass.getSimpleName());
         } catch (Exception e) {
             Log.e(TAG, "Error navigating to " + activityClass.getSimpleName() + ": " + e.getMessage(), e);
-            
-            // Show appropriate message based on which activity failed to load
+
             String activityName = activityClass.getSimpleName();
             String errorMessage = "Feature not available";
-            
+
             if (activityName.contains("ReportSymptoms")) {
                 errorMessage = "Imeshindikana kufungua ripoti ya magonjwa";
             } else if (activityName.contains("SymptomTracker")) {
@@ -962,7 +782,7 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
             } else if (activityName.contains("Settings")) {
                 errorMessage = "Imeshindikana kufungua mipangilio";
             }
-            
+
             Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
         }
     }
@@ -1021,7 +841,6 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
             @Override
             public void onError(String error) {
                 setLoading(false);
-                // Even if there's an error, we should still log out locally
                 redirectToLogin();
             }
         });
@@ -1035,3 +854,4 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
         }
     }
 }
+

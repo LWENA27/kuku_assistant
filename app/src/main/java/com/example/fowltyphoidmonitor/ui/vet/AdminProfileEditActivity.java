@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -30,7 +31,7 @@ public class AdminProfileEditActivity extends AppCompatActivity {
     private TextInputEditText etLocation;
     private TextInputEditText etFarmSize;
     private TextInputEditText etFarmAddress;
-    private TextInputEditText etFarmType;
+    private AutoCompleteTextView etFarmType;  // Changed to AutoCompleteTextView to match layout
     private TextInputEditText etExperience;
     private MaterialButton btnSave;
     private ImageButton btnBackEdit;
