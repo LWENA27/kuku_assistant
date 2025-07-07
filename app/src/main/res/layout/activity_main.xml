@@ -188,19 +188,19 @@
                         android:textStyle="bold"
                         android:layout_marginBottom="16dp" />
 
-                    <!-- Chat with Assistant -->
+                    <!-- Typhoid Education -->
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnChatAssistant"
+                        android:id="@+id/btnTyphoidEducation"
                         android:layout_width="match_parent"
                         android:layout_height="70dp"
-                        android:text="💬 Ongea na Msaidizi wa Kuku"
+                        android:text="Elimu kuhusu Typhoid ya Kuku"
                         android:textColor="@android:color/white"
                         android:textSize="16sp"
                         android:textAllCaps="false"
                         android:textStyle="bold"
                         app:backgroundTint="@color/primary_color"
                         app:cornerRadius="12dp"
-                        app:icon="@drawable/ic_chat_active"
+                        app:icon="@drawable/ic_info"
                         app:iconGravity="start"
                         app:iconTint="@android:color/white"
                         android:layout_marginBottom="12dp"

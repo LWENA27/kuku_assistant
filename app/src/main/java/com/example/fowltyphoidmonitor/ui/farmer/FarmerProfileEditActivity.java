@@ -58,6 +58,7 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
     private CircleImageView profileImageEdit;
     private TextView tvErrorMessage;
     private TextView tvLoadingMessage;
+    private TextView tvHeaderTitle;
     private View loadingOverlay;
     private View errorCard;
     private View progressStep3;
@@ -117,6 +118,7 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
             profileImageEdit = findViewById(R.id.profileImageEdit);
             tvErrorMessage = findViewById(R.id.tvErrorMessage);
             tvLoadingMessage = findViewById(R.id.tvLoadingMessage);
+            tvHeaderTitle = findViewById(R.id.tvHeaderTitle);
             loadingOverlay = findViewById(R.id.loadingOverlay);
             errorCard = findViewById(R.id.errorCard);
             progressStep3 = findViewById(R.id.progressStep3);
@@ -128,11 +130,17 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
             clearEditTextSpans(etFarmName);
             clearEditTextSpans(etExperience);
 
+            // Update header title based on user status and display name
+            String displayName = authManager.getDisplayName();
             if (isNewUser) {
-                setTitle("Jaza Wasifu");
+                tvHeaderTitle.setText("Jaza Wasifu Wako");
                 btnSave.setText("Endelea");
             } else {
-                setTitle("Hariri Wasifu");
+                if (displayName != null && !displayName.isEmpty()) {
+                    tvHeaderTitle.setText("Wasifu wa " + displayName);
+                } else {
+                    tvHeaderTitle.setText("Hariri Wasifu Wako");
+                }
                 btnSave.setText("Hifadhi Mabadiliko");
             }
 
@@ -179,21 +187,38 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
 
         currentFarmer = new Farmer();
         String userId = authManager.getUserId();
-        if (userId != null) {
-            currentFarmer.setUserId(userId);
-        }
         String email = authManager.getUserEmail();
         String phone = authManager.getUserPhone();
+        String displayName = authManager.getDisplayName();
+        
+        if (userId != null) {
+            currentFarmer.setUserId(userId);
+            Log.d(TAG, "Set userId: " + userId);
+        }
+        
         if (email != null) {
             currentFarmer.setEmail(email);
+            Log.d(TAG, "Set email: " + email);
         }
+        
         if (phone != null) {
             currentFarmer.setPhoneNumber(phone);
+            Log.d(TAG, "Set phone: " + phone);
+        }
+        
+        if (displayName != null) {
+            currentFarmer.setFullName(displayName);
+            Log.d(TAG, "Set full name: " + displayName);
         }
 
+        // Load profile data based on user type
         if (!isNewUser) {
+            // For existing users, try to load from database first
+            Log.d(TAG, "Loading existing user profile from database...");
             loadFromDatabase();
         } else {
+            // For new users, load any previously saved data from preferences
+            Log.d(TAG, "Loading new user profile from preferences...");
             loadDefaultsFromPrefs();
         }
     }
@@ -219,6 +244,13 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
                         if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                             currentFarmer = response.body().get(0);
                             displayFarmerData(currentFarmer);
+                            
+                            // CRITICAL FIX: If we successfully loaded farmer data, mark profile as complete
+                            if (currentFarmer.isProfileComplete()) {
+                                authManager.markProfileComplete();
+                                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Profile marked as complete after loading from database");
+                            }
+                            
                             Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Loaded farmer data from API: " +
                                     currentFarmer.getFullName() + ", " + currentFarmer.getFarmLocation());
                         } else {
@@ -255,6 +287,13 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
                         if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()) {
                             currentFarmer = response.body().get(0);
                             displayFarmerData(currentFarmer);
+                            
+                            // CRITICAL FIX: If we successfully loaded farmer data, mark profile as complete
+                            if (currentFarmer.isProfileComplete()) {
+                                authManager.markProfileComplete();
+                                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Profile marked as complete after loading by email");
+                            }
+                            
                             Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Loaded farmer data by email: " +
                                     currentFarmer.getFullName() + ", " + currentFarmer.getFarmLocation());
                         } else {
@@ -276,39 +315,104 @@ public class FarmerProfileEditActivity extends AppCompatActivity {
     }
 
     private void displayFarmerData(Farmer farmer) {
-        etLocation.setText(farmer.getFarmLocation() != null ? farmer.getFarmLocation() : "");
-        etFarmSize.setText(farmer.getBirdCount() != null ? String.valueOf(farmer.getBirdCount()) : "");
-        etFarmAddress.setText(farmer.getFarmAddress() != null ? farmer.getFarmAddress() : "");
-        etFarmType.setText(farmer.getBirdType() != null ? farmer.getBirdType() : "");
+        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Displaying farmer data in form fields");
+        
+        // Display actual farmer data from database
+        if (farmer.getFarmLocation() != null && !farmer.getFarmLocation().isEmpty()) {
+            etLocation.setText(farmer.getFarmLocation());
+            Log.d(TAG, "Loaded location: " + farmer.getFarmLocation());
+        }
+        
+        if (farmer.getBirdCount() != null && farmer.getBirdCount() > 0) {
+            etFarmSize.setText(String.valueOf(farmer.getBirdCount()));
+            Log.d(TAG, "Loaded bird count: " + farmer.getBirdCount());
+        }
+        
+        if (farmer.getFarmAddress() != null && !farmer.getFarmAddress().isEmpty()) {
+            etFarmAddress.setText(farmer.getFarmAddress());
+            Log.d(TAG, "Loaded farm address: " + farmer.getFarmAddress());
+        }
+        
+        if (farmer.getBirdType() != null && !farmer.getBirdType().isEmpty()) {
+            etFarmType.setText(farmer.getBirdType());
+            Log.d(TAG, "Loaded bird type: " + farmer.getBirdType());
+        }
 
-        // Load farm name and experience from SharedPreferences since they're not in the database model
+        // Load additional data from SharedPreferences (for fields not in database model)
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         String farmName = prefs.getString("farmName", "");
         String experience = prefs.getString("experience", "");
 
-        etFarmName.setText(farmName);
-        etExperience.setText(experience);
+        if (!farmName.isEmpty()) {
+            etFarmName.setText(farmName);
+            Log.d(TAG, "Loaded farm name from prefs: " + farmName);
+        }
+        
+        if (!experience.isEmpty()) {
+            etExperience.setText(experience);
+            Log.d(TAG, "Loaded experience from prefs: " + experience);
+        }
+        
+        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Successfully populated form with farmer data");
     }
 
     private void loadDefaultsFromPrefs() {
+        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Loading profile data from SharedPreferences");
+        
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        
+        // Load all available data from preferences
         String location = prefs.getString("location", "");
         int farmSize = prefs.getInt("farmSize", 0);
         String farmAddress = prefs.getString("farmAddress", "");
         String farmType = prefs.getString("farmType", "");
         String farmName = prefs.getString("farmName", "");
         String experience = prefs.getString("experience", "");
-
-        if (!location.isEmpty()) etLocation.setText(location);
-        if (farmSize > 0) etFarmSize.setText(String.valueOf(farmSize));
-        if (!farmAddress.isEmpty()) etFarmAddress.setText(farmAddress);
-        if (!farmType.isEmpty()) etFarmType.setText(farmType);
-        if (!farmName.isEmpty()) etFarmName.setText(farmName);
-        if (!experience.isEmpty()) etExperience.setText(experience);
+        
+        // Also check AuthManager preferences for user display name
+        String displayName = authManager.getDisplayName();
+        String userEmail = authManager.getUserEmail();
+        
+        // Populate form fields with available data
+        if (!location.isEmpty()) {
+            etLocation.setText(location);
+            Log.d(TAG, "Loaded location from prefs: " + location);
+        }
+        
+        if (farmSize > 0) {
+            etFarmSize.setText(String.valueOf(farmSize));
+            Log.d(TAG, "Loaded farm size from prefs: " + farmSize);
+        }
+        
+        if (!farmAddress.isEmpty()) {
+            etFarmAddress.setText(farmAddress);
+            Log.d(TAG, "Loaded farm address from prefs: " + farmAddress);
+        }
+        
+        if (!farmType.isEmpty()) {
+            etFarmType.setText(farmType);
+            Log.d(TAG, "Loaded farm type from prefs: " + farmType);
+        }
+        
+        if (!farmName.isEmpty()) {
+            etFarmName.setText(farmName);
+            Log.d(TAG, "Loaded farm name from prefs: " + farmName);
+        } else if (displayName != null && !displayName.isEmpty()) {
+            // Use display name as default farm name if no farm name is set
+            String defaultFarmName = "Shamba la " + displayName;
+            etFarmName.setText(defaultFarmName);
+            Log.d(TAG, "Set default farm name: " + defaultFarmName);
+        }
+        
+        if (!experience.isEmpty()) {
+            etExperience.setText(experience);
+            Log.d(TAG, "Loaded experience from prefs: " + experience);
+        }
 
         Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Loaded data from prefs - Location: " +
                 location + ", Farm Size: " + farmSize + ", Farm Address: " + farmAddress +
-                ", Farm Type: " + farmType + ", Farm Name: " + farmName + ", Experience: " + experience);
+                ", Farm Type: " + farmType + ", Farm Name: " + farmName + ", Experience: " + experience +
+                ", Display Name: " + displayName + ", Email: " + userEmail);
     }
 
     private void setupClickListeners() {

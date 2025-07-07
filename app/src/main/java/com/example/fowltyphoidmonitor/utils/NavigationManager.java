@@ -32,26 +32,62 @@ public class NavigationManager {
             (Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK) : 
             Intent.FLAG_ACTIVITY_NEW_TASK;
         
-        // SIMPLIFIED: Only two options - farmer or vet
         try {
             if ("farmer".equalsIgnoreCase(userType)) {
+                Log.d(TAG, "Navigating to farmer interface (MainActivity)");
                 intent = new Intent(context, MainActivity.class);
-                Log.d(TAG, "Navigating to farmer MainActivity");
-            } else {
-                // Everything else goes to vet interface (vet, admin, doctor, etc.)
+            } else if ("vet".equalsIgnoreCase(userType) || "admin".equalsIgnoreCase(userType) || "doctor".equalsIgnoreCase(userType)) {
+                Log.d(TAG, "Navigating to vet/admin interface (AdminMainActivity)");
                 intent = new Intent(context, Class.forName("com.example.fowltyphoidmonitor.ui.vet.AdminMainActivity"));
-                Log.d(TAG, "Navigating to vet AdminMainActivity");
+            } else {
+                Log.w(TAG, "Unknown user type: '" + userType + "', defaulting to farmer interface");
+                intent = new Intent(context, MainActivity.class);
             }
             
             intent.setFlags(flags);
             context.startActivity(intent);
             Log.d(TAG, "Navigation successful for user type: " + userType);
         } catch (Exception e) {
-            Log.e(TAG, "Navigation failed, falling back to farmer interface", e);
+            Log.e(TAG, "Navigation failed for user type: " + userType + ", falling back to farmer interface", e);
             // Fallback to farmer interface if anything goes wrong
             intent = new Intent(context, MainActivity.class);
             intent.setFlags(flags);
             context.startActivity(intent);
+        }
+    }
+    
+    /**
+     * Navigate specifically to farmer interface
+     */
+    public static void navigateToFarmerInterface(Context context) {
+        Log.d(TAG, "Navigating to farmer interface");
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        context.startActivity(intent);
+    }
+    
+    /**
+     * Navigate specifically to vet/admin interface
+     */
+    public static void navigateToAdminInterface(Context context) {
+        Log.d(TAG, "Navigating to admin/vet interface");
+        try {
+            Intent intent = new Intent(context, Class.forName("com.example.fowltyphoidmonitor.ui.vet.AdminMainActivity"));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            context.startActivity(intent);
+        } catch (Exception e) {
+            Log.e(TAG, "AdminMainActivity not found, trying fallback", e);
+            try {
+                Intent intent = new Intent(context, Class.forName("com.example.fowltyphoidmonitor.ui.vet.AdminConsultationActivity"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                context.startActivity(intent);
+            } catch (Exception e2) {
+                Log.e(TAG, "All vet activities failed", e2);
+                // Show error to user
+                if (context instanceof android.app.Activity) {
+                    Toast.makeText(context, "Imeshindikana kufungua ukurasa wa madaktari. Tafadhali wasiliana na msimamizi.", Toast.LENGTH_LONG).show();
+                }
+            }
         }
     }
     

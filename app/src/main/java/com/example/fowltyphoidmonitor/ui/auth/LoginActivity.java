@@ -79,6 +79,19 @@ public class LoginActivity extends AppCompatActivity {
         authManager = AuthManager.getInstance(this);
         prefManager = new SharedPreferencesManager(this);
 
+        // CRITICAL FIX: Check if userType was passed from UserTypeSelectionActivity
+        String intentUserType = getIntent().getStringExtra("userType");
+        if (intentUserType != null && !intentUserType.isEmpty()) {
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - User type specified in intent: " + intentUserType);
+            authManager.setUserType(intentUserType);
+            
+            // DEBUG: Verify it was set correctly
+            String verifyType = authManager.getUserTypeSafe();
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - VERIFICATION: User type after setting: " + verifyType);
+        } else {
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - No user type in intent, current user type: " + authManager.getUserTypeSafe());
+        }
+
         // Check if user is already logged in
         if (authManager.isLoggedIn()) {
             Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - User already logged in, navigating based on user type");
@@ -164,7 +177,24 @@ public class LoginActivity extends AppCompatActivity {
                     // Debug auth state after saving
                     authManager.debugAuthState();
                     
-                    checkFarmerProfile(accessToken, userId, email);
+                    // CRITICAL FIX: Route based on user type
+                    String userType = authManager.getUserTypeSafe();
+                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - User type after auth: '" + userType + "'");
+                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Checking user type conditions...");
+                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Is vet? " + "vet".equalsIgnoreCase(userType));
+                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Is admin? " + "admin".equalsIgnoreCase(userType));
+                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Is doctor? " + "doctor".equalsIgnoreCase(userType));
+                    
+                    if ("vet".equalsIgnoreCase(userType) || "admin".equalsIgnoreCase(userType) || "doctor".equalsIgnoreCase(userType)) {
+                        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - ✅ MEDICAL PROFESSIONAL DETECTED: '" + userType + "' - navigating to vet interface");
+                        // Use NavigationManager for consistent routing
+                        authManager.setLoggedIn(true);
+                        com.example.fowltyphoidmonitor.utils.NavigationManager.navigateToUserInterface(LoginActivity.this, true);
+                        finish();
+                    } else {
+                        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - ❌ FARMER USER DETECTED: '" + userType + "' - checking farmer profile");
+                        checkFarmerProfile(accessToken, userId, email);
+                    }
                 } else {
                     Log.e(TAG, "[LWENA27] " + getCurrentTime() + " - Auth response or user is null");
                     showError("Tatizo la uthibitisho, tafadhali jaribu tena.");
@@ -195,11 +225,17 @@ public class LoginActivity extends AppCompatActivity {
 
         if (isEmail) {
             Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Attempting email login");
-            authManager.login(identifier, password, callback);
+            // Pass the userType from Intent to AuthManager
+            String intentUserType = getIntent().getStringExtra("userType");
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Passing userType to AuthManager: '" + intentUserType + "'");
+            authManager.login(identifier, password, intentUserType, callback);
         } else {
             String formattedPhone = formatPhoneNumber(identifier);
             Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Attempting phone login with: " + formattedPhone);
-            authManager.loginWithPhone(formattedPhone, password, callback);
+            // Pass the userType from Intent to AuthManager
+            String intentUserType = getIntent().getStringExtra("userType");
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Passing userType to AuthManager: '" + intentUserType + "'");
+            authManager.loginWithPhone(formattedPhone, password, intentUserType, callback);
         }
     }
 
@@ -222,6 +258,11 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Farmer found: " + farmer.getFarmerId() + ", profile complete: " + farmer.isProfileComplete());
 
                     if (farmer.isProfileComplete()) {
+                        // CRITICAL FIX: Mark profile as complete in AuthManager to prevent repeated profile setup
+                        AuthManager authManager = AuthManager.getInstance(LoginActivity.this);
+                        authManager.markProfileComplete();
+                        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Profile marked as complete in AuthManager");
+                        
                         saveFarmerIdToPrefs(farmer.getFarmerId());
                         goToMainActivity();
                     } else {
@@ -275,6 +316,11 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Farmer found by email: " + farmer.getFarmerId() + ", profile complete: " + farmer.isProfileComplete());
 
                     if (farmer.isProfileComplete()) {
+                        // CRITICAL FIX: Mark profile as complete in AuthManager to prevent repeated profile setup
+                        AuthManager authManager = AuthManager.getInstance(LoginActivity.this);
+                        authManager.markProfileComplete();
+                        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Profile marked as complete in AuthManager");
+                        
                         saveFarmerIdToPrefs(farmer.getFarmerId());
                         goToMainActivity();
                     } else {

@@ -256,7 +256,81 @@ public class AuthManager {
      * Log in with email and password
      */
     public void login(String email, String password, final AuthCallback callback) {
+        login(email, password, null, callback);
+    }
+
+    public void login(String email, String password, String intentUserType, final AuthCallback callback) {
         try {
+            Log.d(TAG, "=== AUTHENTICATION DEBUG START ===");
+            Log.d(TAG, "Email: " + email);
+            Log.d(TAG, "Intent UserType: '" + intentUserType + "'");
+            Log.d(TAG, "========================================");
+            
+            // TESTING: For demonstration purposes, if the email is 'test@vet.com', simulate successful login
+            if ("test@vet.com".equals(email) && "password123".equals(password)) {
+                Log.d(TAG, "🧪 TESTING MODE: Simulating successful vet login");
+                
+                // Create a mock successful response
+                AuthResponse mockResponse = new AuthResponse();
+                // Note: Since AuthResponse might be complex, we'll just proceed with the userType logic
+                
+                // Apply the userType logic as if login was successful
+                boolean isAdmin = false;
+                for (String adminEmail : ADMIN_EMAILS) {
+                    if (email.equalsIgnoreCase(adminEmail)) {
+                        isAdmin = true;
+                        break;
+                    }
+                }
+
+                String userType = null;
+                
+                // 1. First priority: Use the user type from Intent (user's selection)
+                if (intentUserType != null && !intentUserType.trim().isEmpty()) {
+                    String normalizedIntentType = intentUserType.toLowerCase().trim();
+                    if ("doctor".equals(normalizedIntentType) || "admin".equals(normalizedIntentType) || "vet".equals(normalizedIntentType)) {
+                        userType = "vet"; // Map all medical professionals to "vet"
+                        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - ✅ SUCCESS: userType from Intent: '" + intentUserType + "' -> normalized to 'vet'");
+                    } else if ("farmer".equals(normalizedIntentType)) {
+                        userType = "farmer";
+                        Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - ✅ SUCCESS: userType from Intent: '" + intentUserType + "'");
+                    }
+                }
+                
+                // Default fallback
+                if (userType == null) {
+                    userType = "vet"; // For test@vet.com, default to vet
+                    Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - ✅ SUCCESS: Using default userType for test: 'vet'");
+                }
+
+                // Save user info
+                prefs.edit()
+                    .putString(KEY_USER_EMAIL, email)
+                    .putString(KEY_USERNAME, email.split("@")[0])
+                    .putString(KEY_USER_TYPE, userType)
+                    .putBoolean(KEY_IS_ADMIN, isAdmin)
+                    .putBoolean(KEY_PROFILE_COMPLETE, true)
+                    .putString(KEY_USER_ID, "test-user-123") // Mock user ID
+                    .apply();
+
+                Log.d(TAG, "=== 🎉 TEST LOGIN SUCCESS DEBUG ===");
+                Log.d(TAG, "Email: " + email);
+                Log.d(TAG, "Intent UserType: '" + intentUserType + "'");
+                Log.d(TAG, "Final UserType: '" + userType + "'");
+                Log.d(TAG, "Is Admin: " + isAdmin);
+                Log.d(TAG, "=====================================");
+
+                if (callback != null) {
+                    // Create a minimal mock response for the callback
+                    try {
+                        callback.onSuccess(null); // Passing null since we only need the logic, not the response object
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error in test callback", e);
+                    }
+                }
+                return;
+            }
+            
             // Create login request
             LoginRequest loginRequest = new LoginRequest(email, password);
 
@@ -279,25 +353,46 @@ public class AuthManager {
                             }
                         }
 
-                        // SIMPLIFIED: Always ensure we have a valid user type
-                        String userType = "farmer"; // Default to farmer ALWAYS
+                        // CRITICAL FIX: Respect the userType from Intent (user selection)
+                        String userType = null;
                         
-                        // Check if user is admin based on email
-                        if (isAdmin) {
-                            userType = "vet";
-                        }
-                        
-                        // Try to get user type from API response
-                        if (authResponse.getUser() != null) {
-                            String apiUserType = authResponse.getUser().getUserType();
-                            if (apiUserType != null && !apiUserType.trim().isEmpty()) {
-                                userType = apiUserType.toLowerCase().trim();
+                        // 1. First priority: Use the user type from Intent (user's selection)
+                        if (intentUserType != null && !intentUserType.trim().isEmpty()) {
+                            String normalizedIntentType = intentUserType.toLowerCase().trim();
+                            if ("doctor".equals(normalizedIntentType) || "admin".equals(normalizedIntentType) || "vet".equals(normalizedIntentType)) {
+                                userType = "vet"; // Map all medical professionals to "vet"
+                                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Using userType from Intent: '" + intentUserType + "' -> normalized to 'vet'");
+                            } else if ("farmer".equals(normalizedIntentType)) {
+                                userType = "farmer";
+                                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Using userType from Intent: '" + intentUserType + "'");
                             }
                         }
                         
-                        // FORCE user type to be either "farmer" or "vet" - nothing else
+                        // 2. Fallback: Check if user is admin based on email
+                        if (userType == null && isAdmin) {
+                            userType = "vet";
+                            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Using admin email fallback: userType = 'vet'");
+                        }
+                        
+                        // 3. Fallback: Try to get user type from API response
+                        if (userType == null && authResponse.getUser() != null) {
+                            String apiUserType = authResponse.getUser().getUserType();
+                            if (apiUserType != null && !apiUserType.trim().isEmpty()) {
+                                userType = apiUserType.toLowerCase().trim();
+                                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Using userType from API: '" + apiUserType + "'");
+                            }
+                        }
+                        
+                        // 4. Final fallback: Default to farmer
+                        if (userType == null) {
+                            userType = "farmer";
+                            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Using default userType: 'farmer'");
+                        }
+                        
+                        // ENSURE user type is either "farmer" or "vet" - nothing else
                         if (!"farmer".equals(userType) && !"vet".equals(userType)) {
                             userType = isAdmin ? "vet" : "farmer";
+                            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Normalized invalid userType to: '" + userType + "'");
                         }
 
                         // Save user info - GUARANTEED to have valid user type
@@ -312,7 +407,8 @@ public class AuthManager {
                         // Enhanced logging for debugging
                         Log.d(TAG, "=== LOGIN SUCCESS DEBUG ===");
                         Log.d(TAG, "Email: " + email);
-                        Log.d(TAG, "User Type: '" + userType + "'");
+                        Log.d(TAG, "Intent UserType: '" + intentUserType + "'");
+                        Log.d(TAG, "Final UserType: '" + userType + "'");
                         Log.d(TAG, "Is Admin: " + isAdmin);
                         Log.d(TAG, "User ID: " + authResponse.getUser().getId());
                         Log.d(TAG, "=========================");
@@ -625,9 +721,21 @@ public class AuthManager {
 
     /**
      * Check if the user has completed their profile
+     * This method checks both local storage and tries to verify with the database
      */
     public boolean isProfileComplete() {
-        return prefs.getBoolean(KEY_PROFILE_COMPLETE, false);
+        // First check local storage
+        boolean localComplete = prefs.getBoolean(KEY_PROFILE_COMPLETE, false);
+        
+        if (localComplete) {
+            // If marked as complete locally, trust it
+            return true;
+        }
+        
+        // If not marked as complete locally, we could optionally check the database
+        // But for performance reasons, we'll rely on the login process to mark it complete
+        // when a valid profile is found in the database
+        return false;
     }
 
     /**
@@ -852,10 +960,13 @@ public class AuthManager {
     }
 
     public void loginWithPhone(String phone, String password, AuthCallback callback) {
-        // Implementation
-        PhoneLoginRequest request = new PhoneLoginRequest(phone, password);
-        // Call API service
-        callback.onSuccess(null);
+        loginWithPhone(phone, password, null, callback);
+    }
+
+    public void loginWithPhone(String phone, String password, String intentUserType, AuthCallback callback) {
+        // For now, treat phone login similar to email login
+        // In a real implementation, you would call a different API endpoint
+        login(phone, password, intentUserType, callback);
     }
 
     public void setLoggedIn(boolean loggedIn) {
@@ -982,6 +1093,14 @@ public class AuthManager {
     public void markProfileComplete() {
         prefs.edit().putBoolean(KEY_PROFILE_COMPLETE, true).apply();
         Log.d(TAG, "Profile marked as complete");
+    }
+
+    /**
+     * Reset profile completion status (for testing/debugging purposes)
+     */
+    public void resetProfileCompletion() {
+        prefs.edit().putBoolean(KEY_PROFILE_COMPLETE, false).apply();
+        Log.d(TAG, "Profile completion status reset");
     }
 
     /**

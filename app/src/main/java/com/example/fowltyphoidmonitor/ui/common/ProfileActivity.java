@@ -137,23 +137,23 @@ public class ProfileActivity extends AppCompatActivity {
      * Navigate to the correct profile edit activity based on user type
      */
     private void navigateToCorrectProfileEditActivity() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String userType = prefs.getString(KEY_USER_TYPE, USER_TYPE_FARMER);
+        String userType = authManager.getUserTypeSafe();
+        Log.d(TAG, "Navigating to profile edit for user type: " + userType);
 
         Intent editIntent;
         
         try {
-            if (USER_TYPE_ADMIN.equals(userType)) {
-                // Admin users go to AdminProfileEditActivity
+            if ("vet".equalsIgnoreCase(userType) || "admin".equalsIgnoreCase(userType) || "doctor".equalsIgnoreCase(userType)) {
+                // Vet/admin users go to AdminProfileEditActivity
                 editIntent = new Intent(this, com.example.fowltyphoidmonitor.ui.vet.AdminProfileEditActivity.class);
+                Log.d(TAG, "Navigating to AdminProfileEditActivity for vet/admin user");
             } else {
                 // Farmer users go to FarmerProfileEditActivity (default)
-                // REMOVED: VetProfileEditActivity - vet user type no longer supported
                 editIntent = new Intent(this, com.example.fowltyphoidmonitor.ui.farmer.FarmerProfileEditActivity.class);
+                Log.d(TAG, "Navigating to FarmerProfileEditActivity for farmer user");
             }
             
             startActivityForResult(editIntent, REQUEST_CODE_EDIT_PROFILE);
-            Log.d(TAG, "Navigating to profile edit for user type: " + userType);
             
         } catch (Exception e) {
             Log.e(TAG, "Error navigating to profile edit activity: " + e.getMessage(), e);
@@ -198,90 +198,121 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void loadProfileData() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-
-        // Get user data from different sources (AuthManager and local prefs)
-        String username = "";
-        String location = "";
-        int farmSize = 0;
-        String farmAddress = "";
-        String farmType = "";
-        int experience = 0;
-
+        Log.d(TAG, "Loading profile data...");
+        
         try {
-            // Try to get display name from AuthManager prefs first
-            SharedPreferences authPrefs = getSharedPreferences(AuthManager.PREFS_NAME, MODE_PRIVATE);
-            username = authPrefs.getString(AuthManager.KEY_DISPLAY_NAME, "");
+            // Get user information from AuthManager first
+            String displayName = authManager.getDisplayName();
+            String email = authManager.getUserEmail();
+            String userId = authManager.getCurrentUserId();
             
-            // If not found in AuthManager, try regular prefs
-            if (username.isEmpty()) {
-                username = prefs.getString("username", "");
+            Log.d(TAG, "AuthManager data - DisplayName: " + displayName + ", Email: " + email + ", UserId: " + userId);
+            
+            // Set username from AuthManager data
+            String username = "";
+            if (displayName != null && !displayName.trim().isEmpty()) {
+                username = displayName;
+            } else if (email != null && !email.trim().isEmpty()) {
+                username = email.contains("@") ? email.split("@")[0] : email;
+            } else {
+                username = "Mtumiaji";
             }
             
-            // Get all profile data from regular prefs (where profile edit activities save)
-            location = prefs.getString("location", "");
-            farmSize = prefs.getInt("farmSize", 0);
-            farmAddress = prefs.getString("farmAddress", "");
-            farmType = prefs.getString("farmType", "");
-            experience = prefs.getInt("experience", 0);
+            // Load additional profile data from SharedPreferences (saved by profile edit activities)
+            SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
             
-            // If still no data, check user type and show appropriate defaults
-            if (username.isEmpty()) {
-                String userType = prefs.getString(KEY_USER_TYPE, USER_TYPE_FARMER);
-                if (USER_TYPE_ADMIN.equals(userType)) {
-                    username = "Admin User";
+            // Get farmer-specific data using the keys that FarmerProfileEditActivity uses
+            String location = prefs.getString("farmer_location", "");
+            String birdCount = prefs.getString("bird_count", "");
+            String farmAddress = prefs.getString("farm_address", "");
+            String birdType = prefs.getString("bird_type", "");
+            String experience = prefs.getString("farmer_experience", "");
+            
+            Log.d(TAG, "SharedPreferences data - Location: " + location + ", BirdCount: " + birdCount + 
+                    ", Address: " + farmAddress + ", Type: " + birdType + ", Experience: " + experience);
+            
+            // Update UI with real data or appropriate fallbacks
+            txtUsername.setText(username);
+            
+            // Location
+            if (location != null && !location.trim().isEmpty()) {
+                txtLocation.setText("Eneo: " + location);
+            } else {
+                txtLocation.setText("Eneo: Halijatolewa");
+            }
+            
+            // Bird count
+            if (birdCount != null && !birdCount.trim().isEmpty()) {
+                txtFarmSize.setText("Idadi ya kuku: " + birdCount);
+            } else {
+                txtFarmSize.setText("Idadi ya kuku: Haijatolewa");
+            }
+            
+            // Farm address
+            if (txtFarmAddress != null) {
+                if (farmAddress != null && !farmAddress.trim().isEmpty()) {
+                    txtFarmAddress.setText("Anwani: " + farmAddress);
                 } else {
-                    username = "Farmer User";
+                    txtFarmAddress.setText("Anwani: Haijatolewa");
                 }
             }
             
+            // Bird type
+            if (txtFarmType != null) {
+                if (birdType != null && !birdType.trim().isEmpty()) {
+                    txtFarmType.setText("Aina ya kuku: " + birdType);
+                } else {
+                    txtFarmType.setText("Aina ya kuku: Haijatolewa");
+                }
+            }
+            
+            // Experience
+            if (txtExperience != null) {
+                if (experience != null && !experience.trim().isEmpty()) {
+                    txtExperience.setText("Uzoefu: " + experience);
+                } else {
+                    txtExperience.setText("Uzoefu: Haujatolewa");
+                }
+            }
+            
+            Log.d(TAG, "Profile data loaded and displayed successfully");
+            
         } catch (Exception e) {
             Log.e(TAG, "Error loading profile data: " + e.getMessage(), e);
-            // Use safe defaults on error
-            username = "User";
-            location = "Haijajazwa";
-            farmSize = 0;
-            farmAddress = "Haijajazwa";
-            farmType = "Haijajazwa";
-            experience = 0;
+            
+            // Show safe defaults on error
+            txtUsername.setText("Mtumiaji");
+            txtLocation.setText("Eneo: Hitilafu katika kupakia");
+            txtFarmSize.setText("Idadi ya kuku: Hitilafu");
+            
+            if (txtFarmAddress != null) {
+                txtFarmAddress.setText("Anwani: Hitilafu");
+            }
+            if (txtFarmType != null) {
+                txtFarmType.setText("Aina ya kuku: Hitilafu");
+            }
+            if (txtExperience != null) {
+                txtExperience.setText("Uzoefu: Hitilafu");
+            }
+            
+            Toast.makeText(this, "Hitilafu katika kupakia wasifu", Toast.LENGTH_SHORT).show();
         }
-
-        // Set the data to the UI - show actual data or appropriate placeholders
-        txtUsername.setText(username.isEmpty() ? "Jina halijajazwa" : username);
-        txtLocation.setText("Eneo: " + (location.isEmpty() ? "Halijajazwa" : location));
-        txtFarmSize.setText("Idadi ya kuku: " + (farmSize > 0 ? String.valueOf(farmSize) : "Haijajazwa"));
-        
-        // Set farm information
-        if (txtFarmAddress != null) {
-            txtFarmAddress.setText("Anwani: " + (farmAddress.isEmpty() ? "Haijajazwa" : farmAddress));
-        }
-        if (txtFarmType != null) {
-            txtFarmType.setText("Aina ya kuku: " + (farmType.isEmpty() ? "Haijajazwa" : farmType));
-        }
-        if (txtExperience != null) {
-            txtExperience.setText("Uzoefu: " + (experience > 0 ? "Miaka " + experience : "Haujajazwa"));
-        }
-
-        // Log for debugging
-        Log.d(TAG, "Loaded profile - Username: " + username +
-                ", Location: " + location + ", Farm Size: " + farmSize +
-                ", Address: " + farmAddress + ", Type: " + farmType + ", Experience: " + experience);
-
-        Log.d(TAG, "Profile data loaded successfully");
     }
 
     /**
      * Get the appropriate home activity intent based on user type
      */
     private Intent getHomeActivityIntent() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String userType = prefs.getString(KEY_USER_TYPE, USER_TYPE_FARMER);
+        String userType = authManager.getUserTypeSafe();
+        Log.d(TAG, "Getting home intent for user type: " + userType);
 
-        if (USER_TYPE_ADMIN.equals(userType)) {
-            // Admin users go to AdminMainActivity
+        if ("vet".equalsIgnoreCase(userType) || "admin".equalsIgnoreCase(userType) || "doctor".equalsIgnoreCase(userType)) {
+            // Vet/admin users go to AdminMainActivity
+            Log.d(TAG, "Returning AdminMainActivity intent for vet/admin user");
             return new Intent(this, AdminMainActivity.class);
         } else {
             // Farmer users go to MainActivity
+            Log.d(TAG, "Returning MainActivity intent for farmer user");
             return new Intent(this, MainActivity.class);
         }
     }

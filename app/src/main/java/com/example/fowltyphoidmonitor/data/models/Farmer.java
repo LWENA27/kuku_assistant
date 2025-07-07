@@ -212,7 +212,13 @@ public class Farmer {
     }
 
     public boolean isProfileComplete() {
+        // Check essential fields for a complete farmer profile
         boolean hasLocation = farmLocation != null && !farmLocation.isEmpty();
-        return hasLocation; // Relaxed to allow missing fullName for new users
+        boolean hasBirdCount = birdCount != null && birdCount > 0;
+        boolean hasEmail = email != null && !email.isEmpty();
+        
+        // A profile is considered complete if it has location and email at minimum
+        // Bird count is optional (can be 0 for new farmers)
+        return hasLocation && hasEmail;
     }
 }

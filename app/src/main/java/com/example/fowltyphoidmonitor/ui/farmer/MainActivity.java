@@ -25,6 +25,7 @@ import com.example.fowltyphoidmonitor.services.notification.NotificationHelper;
 import com.example.fowltyphoidmonitor.ui.auth.LoginActivity;
 import com.example.fowltyphoidmonitor.ui.common.DiseaseInfoActivity;
 import com.example.fowltyphoidmonitor.ui.common.NotificationItem;
+import com.example.fowltyphoidmonitor.ui.common.ProfileActivity;
 import com.example.fowltyphoidmonitor.ui.common.ReminderActivity;
 import com.example.fowltyphoidmonitor.ui.common.SettingsActivity;
 import com.example.fowltyphoidmonitor.ui.common.SymptomTrackerActivity;
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
     private LinearLayout alertsContainer;
 
     // Additional UI elements for current layout design
-    private View btnChatAssistant, btnReportProblem, btnTrackHealth, btnTalkToVet;
+    private View btnTyphoidEducation, btnReportProblem, btnTrackHealth, btnTalkToVet;
     private View btnProfile, btnSettings, btnViewMyReports, btnDiseaseInfo;
     private View btnLogout;
     private CardView alertsCard;
@@ -174,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
         loadingOverlay = findViewById(R.id.loadingOverlay);
 
         // Modern UI elements - Current layout interface buttons
-        btnChatAssistant = findViewById(R.id.btnChatAssistant);
+        btnTyphoidEducation = findViewById(R.id.btnTyphoidEducation);
         btnReportProblem = findViewById(R.id.btnReportProblem);
         btnTrackHealth = findViewById(R.id.btnTrackHealth);
         btnTalkToVet = findViewById(R.id.btnTalkToVet);
@@ -521,17 +522,16 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
 
     private void setupClickListeners() {
         // Main Action Buttons - Current Layout Interface
-        if (btnChatAssistant != null) {
-            btnChatAssistant.setOnClickListener(v -> {
-                Log.d(TAG, "Chat Assistant button clicked");
+        if (btnTyphoidEducation != null) {
+            btnTyphoidEducation.setOnClickListener(v -> {
+                Log.d(TAG, "Typhoid Education button clicked");
                 try {
-                    Intent intent = new Intent(MainActivity.this, FarmerConsultationsActivity.class);
-                    intent.putExtra("chat_mode", "assistant");
+                    Intent intent = new Intent(MainActivity.this, TyphoidEducationActivity.class);
                     startActivity(intent);
-                    Log.d(TAG, "Successfully navigated to Chat Assistant");
+                    Log.d(TAG, "Successfully navigated to TyphoidEducationActivity");
                 } catch (Exception e) {
-                    Log.e(TAG, "Error navigating to Chat Assistant: " + e.getMessage(), e);
-                    Toast.makeText(MainActivity.this, "Msaidizi wa kuku haitumiki kwa sasa", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error navigating to TyphoidEducationActivity: " + e.getMessage(), e);
+                    Toast.makeText(MainActivity.this, "Imeshindikana kufungua elimu ya typhoid", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -583,9 +583,9 @@ public class MainActivity extends AppCompatActivity implements AppNotificationMa
             btnProfile.setOnClickListener(v -> {
                 Log.d(TAG, "Profile button clicked");
                 try {
-                    Intent intent = new Intent(MainActivity.this, FarmerProfileEditActivity.class);
+                    Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
                     startActivity(intent);
-                    Log.d(TAG, "Successfully navigated to FarmerProfileEditActivity");
+                    Log.d(TAG, "Successfully navigated to ProfileActivity");
                 } catch (Exception e) {
                     Log.e(TAG, "Error navigating to ProfileActivity: " + e.getMessage(), e);
                     Toast.makeText(MainActivity.this, "Imeshindikana kufungua wasifu", Toast.LENGTH_SHORT).show();

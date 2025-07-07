@@ -261,14 +261,14 @@
                     app:boxStrokeColor="@color/primary_color"
                     app:startIconDrawable="@drawable/ic_farm"
                     app:startIconTint="@color/primary_color"
-                    app:helperText="Mfano: Shamba la Kuku Kibao"
+                    app:helperText="Jina la shamba lako (hiari)"
                     app:helperTextEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etFarmName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Jina la Shamba (hiari)"
+                        android:hint="Jina la Shamba"
                         android:inputType="textCapWords"
                         android:imeOptions="actionNext" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -287,7 +287,7 @@
                     app:endIconMode="custom"
                     app:endIconDrawable="@drawable/ic_gps"
                     app:endIconTint="@color/primary_color"
-                    app:helperText="Mfano: Ubungo, Dar es Salaam"
+                    app:helperText="Eneo unaloishi au shamba lako"
                     app:helperTextEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -358,7 +358,7 @@
                     app:boxStrokeColor="@color/primary_color"
                     app:startIconDrawable="@drawable/ic_address"
                     app:startIconTint="@color/primary_color"
-                    app:helperText="Mfano: Kijiji Chamwino, Kata Igamba"
+                    app:helperText="Andika anwani kamili ya shamba lako"
                     app:helperTextEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText

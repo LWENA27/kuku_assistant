@@ -351,8 +351,18 @@ public class LauncherActivity extends AppCompatActivity {
                 }
             }
 
-            // Skip profile completion check for existing users
-            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Skipping profile completion check for existing user");
+            // Check if user profile is complete
+            boolean isProfileComplete = authManager.isProfileComplete();
+            
+            Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Profile completion check - " +
+                    "IsComplete: " + isProfileComplete);
+
+            // If profile is not complete, navigate to profile setup
+            if (!isProfileComplete) {
+                Log.d(TAG, "[LWENA27] " + getCurrentTime() + " - Profile incomplete, navigating to profile setup");
+                navigateToProfileSetup(userType);
+                return;
+            }
 
             // Route user directly to appropriate main activity
             updateLoadingMessage("Unaingia...");
